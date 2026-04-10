@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { faPen } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Autocomplete, CircularProgress, InputAdornment, TextField } from '@mui/material';

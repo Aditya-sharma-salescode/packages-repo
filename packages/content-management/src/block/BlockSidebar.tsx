@@ -2,7 +2,6 @@ import React from 'react';
 import { useBlock } from './BlockContext';
 import { BlockStep } from './types';
 import { ChevronLeft, ChevronRight, CheckCircle2 } from 'lucide-react';
-import salescodeLogo from '../../../assets/salescode.png';
 
 interface BlockSidebarProps {
   steps: BlockStep[];
@@ -39,11 +38,9 @@ export const BlockSidebar: React.FC<BlockSidebarProps> = ({ steps }) => {
       <div className="px-5 mb-6">
         {state.isSidebarCollapsed ? (
           <div className="w-12 h-12 mx-auto rounded-lg flex items-center justify-center overflow-hidden">
-            <img 
-              src={salescodeLogo} 
-              alt="Salescode" 
-              className="w-full h-full object-contain"
-            />
+            <div className="w-full h-full flex items-center justify-center bg-slate-100 text-slate-500 text-xs font-bold">
+              SC
+            </div>
           </div>
         ) : (
           <div className="space-y-1">

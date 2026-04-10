@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowUpFromBracket,

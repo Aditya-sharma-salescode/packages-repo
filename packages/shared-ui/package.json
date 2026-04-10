@@ -1,12 +1,8 @@
 {
-  "name": "@aditya-sharma-salescode/shared-ui",
+  "name": "@salescode/shared-ui",
   "version": "1.0.0",
   "private": false,
   "type": "module",
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com",
-    "access": "restricted"
-  },
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -23,7 +19,8 @@
   },
   "peerDependencies": {
     "react": "^18.0.0",
-    "react-dom": "^18.0.0"
+    "react-dom": "^18.0.0",
+    "react-hook-form": "^7.0.0"
   },
   "dependencies": {
     "class-variance-authority": "^0.7.1",
@@ -72,6 +69,7 @@
     "tsup": "^8.0.0",
     "typescript": "^5.8.3",
     "@types/react": "^18.3.23",
-    "@types/react-dom": "^18.3.7"
+    "@types/react-dom": "^18.3.7",
+    "react-hook-form": "^7.0.0"
   }
 }

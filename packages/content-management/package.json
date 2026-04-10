@@ -1,12 +1,8 @@
 {
-  "name": "@aditya-sharma-salescode/content-management",
+  "name": "@salescode/content-management",
   "version": "1.0.0",
   "private": false,
   "type": "module",
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com",
-    "access": "restricted"
-  },
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -27,7 +23,7 @@
     "react-router-dom": "^6.0.0"
   },
   "dependencies": {
-    "@aditya-sharma-salescode/shared-ui": "workspace:*",
+    "@salescode/shared-ui": "workspace:*",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@mui/icons-material": "^7.3.5",

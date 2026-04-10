@@ -22,11 +22,11 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { loadReportConfig, saveReportConfigLocal } from "@/features/reports-setup/config/reportConfigService";
-import { BEHAVIOR_FLAG_ALIASES } from "@/features/reports-setup/config/reportConfigRegistry";
+import { loadReportConfig, saveReportConfigLocal } from "../config/reportConfigService";
+import { BEHAVIOR_FLAG_ALIASES } from "../config/reportConfigRegistry";
 import { useActivityStore } from "@/features/form-builder/hooks/useActivityStore";
-import type { ReportCard } from "@/features/reports-setup/config/types";
-import { makeNewCard } from "@/features/reports-setup/config/types";
+import type { ReportCard } from "../config/types";
+import { makeNewCard } from "../config/types";
 import { useVoiceAgentContext } from "@/features/form-builder/voice/VoiceAgentContext";
 
 // ─── Mock pools ───────────────────────────────────────────────────────────────

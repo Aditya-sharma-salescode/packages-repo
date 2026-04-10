@@ -1,7 +1,7 @@
 /**
  * Reports — embedded within form-builder package.
  *
- * These are the same components as @aditya-sharma-salescode/reports-setup but wired
+ * These are the same components as @salescode/reports-setup but wired
  * to the form-builder's voice agent and activity store via local imports.
  * When this form-builder directory becomes its own package, the reports
  * ship with it — no extra dependency needed.

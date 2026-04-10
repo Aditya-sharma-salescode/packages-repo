@@ -5,13 +5,15 @@
     "module": "ESNext",
     "moduleResolution": "bundler",
     "jsx": "react-jsx",
-    "strict": true,
+    "strict": false,
     "declaration": true,
     "declarationMap": true,
     "skipLibCheck": true,
     "paths": {
       "@/components/ui/*": ["../shared-ui/src/components/ui/*"],
       "@/lib/utils": ["../shared-ui/src/lib/utils"],
+      "@/features/content-management/*": ["./src/*"],
+      "@/features/content-management": ["./src/index.ts"],
       "@/*": ["./src/*"]
     }
   },

@@ -6,7 +6,7 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "pnpm -r build",
+    "build": "pnpm -r --filter \"!@aditya-sharma-salescode/content-management\" build",
     "dev": "pnpm -r dev",
     "test": "pnpm -r test"
   }

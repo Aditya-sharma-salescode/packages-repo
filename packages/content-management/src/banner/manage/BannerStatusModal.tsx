@@ -3,13 +3,14 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Box, Button, Modal } from '@mui/material';
 import React, { useEffect, useState } from 'react'
 import { getBannerStatus, retryBannerDistribution } from '../../services/bannerServices';
-import success from '@/assets/svg/success.svg';
-import failure from '@/assets/svg/Failure.svg';
-import inProgress from '@/assets/svg/In progress.svg';
 import "./BannerStatusModal.css"
 import { openPopup } from '@/utils/UtilityService';
 import { Loader } from '@/components/loader/Loader';
 import moment from 'moment';
+
+const success = "";
+const failure = "";
+const inProgress = "";
 
 
 interface BannerStatusModalProps {

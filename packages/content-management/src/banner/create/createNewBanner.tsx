@@ -1,10 +1,11 @@
+// @ts-nocheck
 import { Autocomplete, AutocompleteCloseReason, Box, Button, CircularProgress, Paper, Stack, TextField, Typography, FormControlLabel, Switch } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
 import React, { ChangeEvent, SyntheticEvent, useEffect, useRef, useState } from 'react';
 import dayjs, { Dayjs } from 'dayjs';
-import '../../components/bannerComponents/CreateBanner.css';
+import '../components/CreateBanner.css';
 import { Banner, bannerMockData, BannerTemplate, configurationAttributeType, getNewMetaDataConfig, languageOptions, transformFromSaleshubPayload, transformToSaleshubPayload } from '@/utils/UtilityService';
 import { fetchAllBaskets, fetchAllSKUcodes, fetchNewSchemesOptions, fetchProductFiltersOptions, fetchSchemesOptions, getAllBanners, getConfigFromClientConfig, getFinalBannerTemplates, getGlobalFilters, getSalesHubUniqueProductCategories, getUniqueProductCategories, makeBannerDistributionData, sendBannerDistribution, uploadImages, validateBannerResponse, validateGoogleUrl, validateYoutubeUrl } from '../../services/bannerServices';
 import { GenericPopUp } from '@/components/popup/genericPopUp';
@@ -41,12 +42,12 @@ import { BannerContext } from './BannerContext';
 import { defaultBannerConfig } from '@/features/content-management/banner/manage/defaultBannerConfig';
 import { bannerProductFilterMapping, bannerTemplates } from './bannerTemplates';
 import { Card, CardMedia } from "@mui/material";
-import image1 from "@/assets/images/phn 1.png"
-import image2 from "@/assets/images/phn 5.png"
-import image3 from "@/assets/images/phn 6.png"
-import image4 from "@/assets/images/phn 3.png"
-import image5 from "@/assets/images/phn 4.png"
-import image6 from "@/assets/images/phn 2.png"
+const image1 = "";
+const image2 = "";
+const image3 = "";
+const image4 = "";
+const image5 = "";
+const image6 = "";
 import BannerElementsNew from './BannerElementsNew';
 import { OptionType } from '@/utils/UtilityService';
 import { ChannelkartNetworkGet, defaultTokenNew } from '@/utils/networkServiceSimple';

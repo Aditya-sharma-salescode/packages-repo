@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { faCamera, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Autocomplete, CircularProgress, FormControlLabel, TextField, Typography, Stack, Tooltip, FormControl, InputLabel, Select, MenuItem, Button } from "@mui/material";

@@ -1,6 +1,6 @@
 import { Backdrop, Box, Button, Modal, Paper, TextField, Tooltip, Typography } from "@mui/material";
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import "../manageBanner/ManageBanner.css";
+import "./ManageBanner.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFileExcel, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { DataGrid, GridColDef, GridColumnHeaderParams, GridOverlay } from "@mui/x-data-grid";

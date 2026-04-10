@@ -15,7 +15,7 @@ export { VoiceAgentProvider, useVoiceAgentContext } from "./voice/VoiceAgentCont
 export { useActivityStore } from "./hooks/useActivityStore";
 
 // ─── Embedded Reports (ships with form-builder) ──────────
-export { ReportConfigPage } from "./reports/config/ReportConfigPage";
+export { default as ReportConfigPage } from "./reports/config/ReportConfigPage";
 export { default as ReportPreviewPage } from "./reports/preview/ReportPreviewPage";
 export { default as ReportsPage } from "./reports/portal/ReportsPage";
 export { syncReportsAuthLocalStorage } from "./reports/portal/syncReportsAuth";

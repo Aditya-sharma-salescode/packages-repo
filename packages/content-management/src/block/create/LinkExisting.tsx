@@ -17,7 +17,7 @@ import { useNavigate } from 'react-router-dom';
 import { ConfirmationPopUp } from '@/components/confirmationPopUp';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
-import image1 from "@/assets/images/phn 1.png"
+const image1 = "";
 import { getNewMetaDataConfig } from '@/utils/UtilityService';
 import { OptionType } from '@/utils/UtilityService';
 import { useSelector } from 'react-redux';

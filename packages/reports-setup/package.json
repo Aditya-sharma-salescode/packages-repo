@@ -1,12 +1,8 @@
 {
-  "name": "@aditya-sharma-salescode/reports-setup",
+  "name": "@salescode/reports-setup",
   "version": "1.0.0",
   "private": false,
   "type": "module",
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com",
-    "access": "restricted"
-  },
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -25,10 +21,10 @@
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-router-dom": "^6.0.0",
-    "@aditya-sharma-salescode/form-builder": "workspace:*"
+    "@salescode/form-builder": "workspace:*"
   },
   "dependencies": {
-    "@aditya-sharma-salescode/shared-ui": "workspace:*",
+    "@salescode/shared-ui": "workspace:*",
     "@aditya-sharma-salescode/reports-ui": "^1.0.20",
     "lucide-react": "^0.462.0",
     "sonner": "^1.7.4",

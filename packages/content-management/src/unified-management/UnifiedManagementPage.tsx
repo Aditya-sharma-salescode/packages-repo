@@ -11,7 +11,6 @@ import CreateNewBanner from '@/features/content-management/banner/create/createN
 import CreateBucket from '@/features/content-management/bucket/create/CreateBucket';
 import CreateBasket from '@/features/content-management/basket/create/CreateBasket';
 import CreateBlock from '@/features/content-management/block/create/CreateBlock';
-import salescodeLogo from '../../assets/salescode.png';
 import { RoleSelectionModal } from './RoleSelectionModal';
 import { store } from '@/utils/UtilityService';
 
@@ -214,7 +213,9 @@ export const UnifiedManagementPage: React.FC = () => {
           <div className="px-5 mb-6">
             {isSidebarCollapsed ? (
               <div className="w-12 h-12 mx-auto rounded-lg flex items-center justify-center overflow-hidden">
-                <img src={salescodeLogo} alt="Salescode" className="w-full h-full object-contain" />
+                <div className="w-full h-full flex items-center justify-center bg-slate-100 text-slate-500 text-xs font-bold">
+                  SC
+                </div>
               </div>
             ) : (
               <div className="space-y-1">

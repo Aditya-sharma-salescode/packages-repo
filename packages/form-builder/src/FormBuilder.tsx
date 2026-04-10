@@ -49,10 +49,10 @@ import { generateFormFromJira } from "./utils/jiraFormGenerator";
 import type { FieldType } from "./types";
 import { cn } from "@/lib/utils";
 import { useNavigate, useParams } from "react-router-dom";
-import { ApiConstants } from "@/services/apiConstants";
 import { useActivityStore } from "./hooks/useActivityStore";
 import { useVoiceAgentContext } from "./voice/VoiceAgentContext";
 import { VoiceHighlightProvider, useVoiceHighlight } from "./voice/VoiceHighlightContext";
+import { useFormBuilderConfig } from "./provider";
 
 // Custom collision detection: prefer pointerWithin for better drop accuracy,
 // fallback to rectIntersection so drops always register
@@ -65,6 +65,7 @@ const customCollision: CollisionDetection = (args) => {
 export function FormBuilder() {
   const navigate = useNavigate();
   const { activityId } = useParams<{ activityId?: string }>();
+  const { services } = useFormBuilderConfig();
   const { getActivity, updateActivitySchema, loadFromLocalStorage: loadActivities } = useActivityStore();
   const {
     schema,
@@ -258,8 +259,9 @@ export function FormBuilder() {
       const token = authCookie ? JSON.parse(authCookie).token : null;
       const authToken = token || localStorage.getItem("auth_token") || null;
 
+      const jiraProxyBase = services.jiraProxyUrl || "/api/jira/issue";
       const response = await fetch(
-        `${ApiConstants.MarketplaceEndpoint}/api/jira/issue/${encodeURIComponent(issueKey)}`,
+        `${jiraProxyBase}/${encodeURIComponent(issueKey)}`,
         {
         method: "GET",
         headers: authToken ? { Authorization: `Bearer ${authToken}` } : undefined,
@@ -286,6 +288,10 @@ export function FormBuilder() {
     }
 
     setJiraLoading(false);
+    if (!issueData) {
+      toast.error("Failed to fetch Jira issue data");
+      return;
+    }
     setAiGenerating(true);
 
     try {

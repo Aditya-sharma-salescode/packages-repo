@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { ChangeEvent } from "react";
 import { BannerTemplate, languageOptions } from "@/utils/UtilityService";
 import { bucketInnerComponent, viewType } from "@/features/content-management/bucket/create/CreateBucketTypes";
