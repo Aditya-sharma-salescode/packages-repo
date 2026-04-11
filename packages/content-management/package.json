@@ -1,5 +1,5 @@
 {
-  "name": "@salescode/content-management",
+  "name": "@aditya-sharma-salescode/content-management",
   "version": "1.0.0",
   "private": false,
   "type": "module",
@@ -23,7 +23,7 @@
     "react-router-dom": "^6.0.0"
   },
   "dependencies": {
-    "@salescode/shared-ui": "workspace:*",
+    "@aditya-sharma-salescode/shared-ui": "workspace:*",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@mui/icons-material": "^7.3.5",

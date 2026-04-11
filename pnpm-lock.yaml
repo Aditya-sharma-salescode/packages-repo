@@ -10,6 +10,9 @@ importers:
 
   packages/content-management:
     dependencies:
+      '@aditya-sharma-salescode/shared-ui':
+        specifier: workspace:*
+        version: link:../shared-ui
       '@emotion/react':
         specifier: ^11.14.0
         version: 11.14.0(@types/react@18.3.28)(react@18.3.1)
@@ -43,9 +46,6 @@ importers:
       '@reduxjs/toolkit':
         specifier: ^2.11.2
         version: 2.11.2(react-redux@9.2.0(@types/react@18.3.28)(react@18.3.1)(redux@5.0.1))(react@18.3.1)
-      '@salescode/shared-ui':
-        specifier: workspace:*
-        version: link:../shared-ui
       axios:
         specifier: ^1.13.2
         version: 1.15.0
@@ -113,6 +113,9 @@ importers:
       '@aditya-sharma-salescode/reports-ui':
         specifier: ^1.0.20
         version: 1.0.20(oqf5qj5vs62w3vump44wc6b26i)
+      '@aditya-sharma-salescode/shared-ui':
+        specifier: workspace:*
+        version: link:../shared-ui
       '@dnd-kit/core':
         specifier: ^6.3.1
         version: 6.3.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -125,9 +128,6 @@ importers:
       '@hookform/resolvers':
         specifier: ^3.10.0
         version: 3.10.0(react-hook-form@7.72.1(react@18.3.1))
-      '@salescode/shared-ui':
-        specifier: workspace:*
-        version: link:../shared-ui
       '@tanstack/react-query':
         specifier: ^5.83.0
         version: 5.97.0(react@18.3.1)
@@ -180,13 +180,13 @@ importers:
 
   packages/reports-setup:
     dependencies:
+      '@aditya-sharma-salescode/form-builder':
+        specifier: workspace:*
+        version: link:../form-builder
       '@aditya-sharma-salescode/reports-ui':
         specifier: ^1.0.20
         version: 1.0.20(oqf5qj5vs62w3vump44wc6b26i)
-      '@salescode/form-builder':
-        specifier: workspace:*
-        version: link:../form-builder
-      '@salescode/shared-ui':
+      '@aditya-sharma-salescode/shared-ui':
         specifier: workspace:*
         version: link:../shared-ui
       lucide-react:

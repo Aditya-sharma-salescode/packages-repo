@@ -1,5 +1,5 @@
 {
-  "name": "@salescode/reports-setup",
+  "name": "@aditya-sharma-salescode/reports-setup",
   "version": "1.0.0",
   "private": false,
   "publishConfig": {
@@ -25,10 +25,10 @@
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-router-dom": "^6.0.0",
-    "@salescode/form-builder": "workspace:*"
+    "@aditya-sharma-salescode/form-builder": "workspace:*"
   },
   "dependencies": {
-    "@salescode/shared-ui": "workspace:*",
+    "@aditya-sharma-salescode/shared-ui": "workspace:*",
     "@aditya-sharma-salescode/reports-ui": "^1.0.20",
     "lucide-react": "^0.462.0",
     "sonner": "^1.7.4",

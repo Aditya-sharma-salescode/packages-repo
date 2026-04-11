@@ -1,5 +1,5 @@
 {
-  "name": "@salescode/form-builder",
+  "name": "@aditya-sharma-salescode/form-builder",
   "version": "1.0.0",
   "private": false,
   "publishConfig": {
@@ -27,7 +27,7 @@
     "react-router-dom": "^6.0.0"
   },
   "dependencies": {
-    "@salescode/shared-ui": "workspace:*",
+    "@aditya-sharma-salescode/shared-ui": "workspace:*",
     "@aditya-sharma-salescode/reports-ui": "^1.0.20",
     "@11labs/client": "^0.2.0",
     "@dnd-kit/core": "^6.3.1",
