@@ -12,12 +12,14 @@ import {
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { useActivityStore } from "../../hooks/useActivityStore";
+import { useFormBuilderConfig } from "../../provider";
 import { ActivityCard } from "./ActivityCard";
 import { ActivityPreview } from "./ActivityPreview";
 import { useVoiceAgentContext } from "../../voice/VoiceAgentContext";
 
 export function ManageForms() {
   const navigate = useNavigate();
+  const { routes } = useFormBuilderConfig();
   const {
     activities,
     selectedActivityId,
@@ -59,11 +61,11 @@ export function ManageForms() {
     setNewName("");
     setNewDescription("");
     toast.success(`"${activity.name}" created`);
-    navigate(`/form-builder/${activity.id}`);
+    navigate(routes.formBuilderActivity(activity.id));
   };
 
   const handleEdit = (activityId: string) => {
-    navigate(`/form-builder/${activityId}`);
+    navigate(routes.formBuilderActivity(activityId));
   };
 
   const handleDelete = (id: string) => {

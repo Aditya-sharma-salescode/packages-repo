@@ -65,7 +65,7 @@ const customCollision: CollisionDetection = (args) => {
 export function FormBuilder() {
   const navigate = useNavigate();
   const { activityId } = useParams<{ activityId?: string }>();
-  const { services } = useFormBuilderConfig();
+  const { services, routes } = useFormBuilderConfig();
   const { getActivity, updateActivitySchema, loadFromLocalStorage: loadActivities } = useActivityStore();
   const {
     schema,
@@ -361,7 +361,7 @@ export function FormBuilder() {
             variant="ghost"
             size="icon"
             className="h-8 w-8 shrink-0"
-            onClick={() => activityId ? navigate("/manage-forms") : navigate(-1)}
+            onClick={() => (activityId ? navigate(routes.manageForms) : navigate(-1))}
           >
             <ArrowLeft className="h-4 w-4" />
           </Button>
@@ -496,7 +496,7 @@ export function FormBuilder() {
             size="sm"
             variant="outline"
             className="h-8 text-xs gap-1.5"
-            onClick={() => navigate("/report-preview")}
+            onClick={() => navigate(routes.reportPreview)}
             title="View Reports"
           >
             <BarChart2 className="h-3.5 w-3.5" />

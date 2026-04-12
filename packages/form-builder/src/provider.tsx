@@ -1,4 +1,5 @@
-import React, { createContext, useContext } from "react";
+import React, { createContext, useContext, useMemo } from "react";
+import { buildFormBuilderRoutes, type FormBuilderResolvedRoutes } from "./routes";
 
 export interface FormBuilderFeatures {
   /** Include report config + preview pages. Default: true */
@@ -18,29 +19,57 @@ export interface FormBuilderConfig {
   features?: FormBuilderFeatures;
   endpoints?: Record<string, string>;
   services?: FormBuilderServiceOverrides;
+  /**
+   * Prefix for all form-builder routes (no trailing slash).
+   * Example: `/admin/suite` → `/admin/suite/manage-forms`, `/admin/suite/form-builder/:id`, etc.
+   */
+  routePrefix?: string;
 }
 
-const defaultConfig: Required<FormBuilderConfig> = {
+export type { FormBuilderResolvedRoutes };
+
+export interface FormBuilderContextValue extends Required<Omit<FormBuilderConfig, "routePrefix">> {
+  /** Normalized prefix (no trailing slash), may be empty */
+  routePrefix: string;
+  routes: FormBuilderResolvedRoutes;
+}
+
+const defaultRoutePrefix = "";
+const defaultRoutes = buildFormBuilderRoutes(defaultRoutePrefix);
+
+const defaultContextValue: FormBuilderContextValue = {
   features: { reports: true },
   endpoints: {},
   services: {},
+  routePrefix: defaultRoutePrefix,
+  routes: defaultRoutes,
 };
 
-const FormBuilderConfigContext = createContext<Required<FormBuilderConfig>>(defaultConfig);
+const FormBuilderConfigContext = createContext<FormBuilderContextValue>(defaultContextValue);
 
 export const FormBuilderProvider: React.FC<{
   config?: FormBuilderConfig;
   children: React.ReactNode;
 }> = ({ config = {}, children }) => {
-  const merged: Required<FormBuilderConfig> = {
-    ...defaultConfig,
-    ...config,
-    features: { ...defaultConfig.features, ...config.features },
-    endpoints: { ...defaultConfig.endpoints, ...config.endpoints },
-    services: { ...defaultConfig.services, ...config.services },
-  };
+  const routePrefix = useMemo(
+    () => (config.routePrefix ?? "").replace(/\/$/, ""),
+    [config.routePrefix]
+  );
+  const routes = useMemo(() => buildFormBuilderRoutes(routePrefix), [routePrefix]);
+
+  const value = useMemo<FormBuilderContextValue>(
+    () => ({
+      features: { ...defaultContextValue.features, ...config.features },
+      endpoints: { ...defaultContextValue.endpoints, ...config.endpoints },
+      services: { ...defaultContextValue.services, ...config.services },
+      routePrefix,
+      routes,
+    }),
+    [config.features, config.endpoints, config.services, routePrefix, routes]
+  );
+
   return (
-    <FormBuilderConfigContext.Provider value={merged}>
+    <FormBuilderConfigContext.Provider value={value}>
       {children}
     </FormBuilderConfigContext.Provider>
   );

@@ -35,6 +35,8 @@ import type { UICallbacks } from "./VoiceAgentContext";
 import type { FeedEntry } from "./VoiceActionFeedContext";
 import type { FieldType } from "../types";
 import { useConvaiAgent } from "./useConvaiAgent";
+import { useFormBuilderConfig } from "../provider";
+import { resolveLegacyNavigatePath } from "../routes";
 
 type EmitFeed = (entry: Omit<FeedEntry, "id" | "exiting">) => void;
 
@@ -123,6 +125,7 @@ export function useVoiceAgent(
 ) {
   const emit = (entry: Omit<FeedEntry, "id" | "exiting">) => emitFeedRef?.current?.(entry);
   const navigate = useNavigate();
+  const { routes } = useFormBuilderConfig();
 
   const {
     activities,
@@ -261,7 +264,7 @@ export function useVoiceAgent(
         );
         if (match) {
           activityIdRef.current = match.id;
-          setTimeout(() => navigate(`/form-builder/${match.id}`), 600);
+          setTimeout(() => navigate(routes.formBuilderActivity(match.id)), 600);
           // F1: proactive field summary from stored schema
           const allFields = match.schema.sections.flatMap((s) => s.fields);
           const summary = allFields.length
@@ -327,7 +330,7 @@ export function useVoiceAgent(
         emit({ icon: "file-plus", label: `Created "${activity.name}"`, color: "blue" });
         updateState({ stage: "building" });
         stageRef.current = "building";
-        setTimeout(() => navigate(`/form-builder/${activity.id}`), 900);
+        setTimeout(() => navigate(routes.formBuilderActivity(activity.id)), 900);
         // Detect topic from name so the agent can offer a relevant SUGGEST_FIELDS
         const nameLower = action.name.toLowerCase();
         const TOPIC_HINTS: Record<string, string> = {
@@ -685,7 +688,7 @@ export function useVoiceAgent(
         const rcCreate = { type: "RC_CREATE_REPORT" } as VoiceAction;
         const rcName   = { type: "RC_SET_DISPLAY_NAME", value: formName } as VoiceAction;
         pendingRCActionsRef.current.push(rcCreate, rcName);
-        setTimeout(() => navigate("/report-preview"), 800);
+        setTimeout(() => navigate(routes.reportPreview), 800);
 
         return `Saved "${formName}" with ${fieldCount} field${fieldCount !== 1 ? "s" : ""}! I've also created a report for it. Want me to suggest some configurations? Say "yes suggest config" or tell me what to set up.`;
       }
@@ -701,9 +704,13 @@ export function useVoiceAgent(
       }
 
       case "NAVIGATE": {
-        const label = action.route === "/manage-forms" ? "manage forms" : action.route.replace("/", "");
+        const target = resolveLegacyNavigatePath(routes, action.route);
+        const label =
+          target === routes.manageForms || action.route === "/manage-forms"
+            ? "manage forms"
+            : target.replace(/^\//, "").replace(/\//g, " ");
         emit({ icon: "arrow-right", label: `Navigating to ${label}`, color: "slate" });
-        setTimeout(() => navigate(action.route), 600);
+        setTimeout(() => navigate(target), 600);
         return `Navigating to ${label}.`;
       }
 
@@ -718,7 +725,7 @@ export function useVoiceAgent(
         const actId = activityIdRef.current || window.location.pathname.split("/form-builder/")[1];
         if (actId) updateActivitySchema(actId, exportSchema());
         toast.success("Opening reports…");
-        setTimeout(() => navigate("/report-preview"), 700);
+        setTimeout(() => navigate(routes.reportPreview), 700);
         return "Sure! Taking you to the reports section.";
       }
 
@@ -916,8 +923,11 @@ export function useVoiceAgent(
           if (fn && stageRef.current === "report-config") return fn(action);
           // Not on report-config — queue and navigate
           pendingRCActionsRef.current.push(action);
-          if (window.location.pathname !== "/report-preview" && window.location.pathname !== "/report-config") {
-            setTimeout(() => navigate("/report-preview"), 700);
+          if (
+            window.location.pathname !== routes.reportPreview &&
+            window.location.pathname !== routes.reportConfig
+          ) {
+            setTimeout(() => navigate(routes.reportPreview), 700);
             return "Navigating to reports. I'll execute that once we arrive.";
           }
           return "Report config is loading, please wait a moment.";
@@ -938,8 +948,8 @@ export function useVoiceAgent(
           if (fn && stageRef.current === "report-preview") return fn(action);
           // Not on preview page yet — queue and navigate; flush fires when page mounts
           pendingRPActionsRef.current.push(action);
-          if (window.location.pathname !== "/report-preview") {
-            setTimeout(() => navigate("/report-preview"), 700);
+          if (window.location.pathname !== routes.reportPreview) {
+            setTimeout(() => navigate(routes.reportPreview), 700);
             return "Navigating to report preview. I'll execute that once we arrive.";
           }
           return "Report preview is loading, please wait a moment.";
@@ -951,7 +961,7 @@ export function useVoiceAgent(
     addActivity, toggleActivity, removeActivity,
     addField, removeField, updateField, duplicateField, moveField, addSection, removeSection, renameSection,
     setMode, setFormName, exportSchema, importSchema, undo, redo, resetForm,
-    updateActivitySchema, loadFromLocalStorage, navigate, toggleTheme, updateState, uiCallbacksRef,
+    updateActivitySchema, loadFromLocalStorage, navigate, routes, toggleTheme, updateState, uiCallbacksRef,
     // new T2/T3 actions also depend on these — included above already
   ]);
 

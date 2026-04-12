@@ -1,15 +1,32 @@
 // ─── Provider & Config ───────────────────────────────────
-export { FormBuilderProvider, useFormBuilderConfig } from "./provider";
-export type { FormBuilderConfig, FormBuilderFeatures, FormBuilderServiceOverrides } from "./provider";
+export {
+  FormBuilderProvider,
+  useFormBuilderConfig,
+} from "./provider";
+export type {
+  FormBuilderConfig,
+  FormBuilderContextValue,
+  FormBuilderFeatures,
+  FormBuilderServiceOverrides,
+  FormBuilderResolvedRoutes,
+} from "./provider";
 
-// ─── Main Component ──────────────────────────────────────
+// ─── Routes (match React Router paths to `routePrefix` on the provider) ───
+export { buildFormBuilderRoutes, resolveLegacyNavigatePath } from "./routes";
+
+// ─── Shell: voice session + panel across manage / builder / reports ───
+export { FormBuilderLayout } from "./voice/FormBuilderLayout";
+
+// ─── Main screens ─────────────────────────────────────────
 export { FormBuilder } from "./FormBuilder";
+export { ManageForms } from "./components/ManageForms/ManageForms";
 
 // ─── Types ───────────────────────────────────────────────
 export type * from "./types";
 
 // ─── Voice Agent ─────────────────────────────────────────
 export { VoiceAgentProvider, useVoiceAgentContext } from "./voice/VoiceAgentContext";
+export type { UICallbacks } from "./voice/VoiceAgentContext";
 
 // ─── Hooks ───────────────────────────────────────────────
 export { useActivityStore } from "./hooks/useActivityStore";

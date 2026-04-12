@@ -28,6 +28,7 @@ import { useActivityStore } from "../../hooks/useActivityStore";
 import type { ReportCard } from "../config/types";
 import { makeNewCard } from "../config/types";
 import { useVoiceAgentContext } from "../../voice/VoiceAgentContext";
+import { useFormBuilderConfig } from "../../provider";
 
 // ─── Mock pools ───────────────────────────────────────────────────────────────
 
@@ -591,6 +592,7 @@ type Filters = typeof BLANK;
 
 export default function ReportPreviewPage() {
   const navigate   = useNavigate();
+  const { routes } = useFormBuilderConfig();
   const { activities, loadFromLocalStorage } = useActivityStore();
   const { registerUICallbacks, actions: { setStage } } = useVoiceAgentContext();
 
@@ -919,7 +921,7 @@ export default function ReportPreviewPage() {
     <div className="h-screen flex flex-col items-center justify-center gap-4 text-muted-foreground">
       <FileBarChart2 className="h-14 w-14 opacity-20"/>
       <p className="text-sm">No reports configured yet.</p>
-      <Button variant="outline" size="sm" onClick={()=>navigate("/report-config")}>Configure Reports</Button>
+      <Button variant="outline" size="sm" onClick={()=>navigate(routes.reportConfig)}>Configure Reports</Button>
     </div>
   );
 
@@ -953,7 +955,7 @@ export default function ReportPreviewPage() {
                 {r.name}
               </span>
               <button
-                onClick={()=>navigate("/report-config")}
+                onClick={()=>navigate(routes.reportConfig)}
                 title="Configure this report"
                 className="opacity-0 group-hover:opacity-100 h-6 w-6 flex items-center justify-center rounded hover:bg-muted/60 transition-all shrink-0">
                 <Settings2 className="h-3.5 w-3.5"/>
@@ -964,7 +966,7 @@ export default function ReportPreviewPage() {
 
         {/* Footer */}
         <div className="p-2.5 border-t">
-          <button onClick={()=>navigate("/report-config")}
+          <button onClick={()=>navigate(routes.reportConfig)}
             className="w-full flex items-center justify-center gap-1.5 h-8 text-xs text-muted-foreground hover:text-foreground border border-dashed rounded-md hover:bg-muted transition-colors">
             <Settings2 className="h-3.5 w-3.5"/> Update Configurations
           </button>

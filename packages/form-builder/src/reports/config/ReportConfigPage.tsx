@@ -46,6 +46,7 @@ import {
 } from "@/components/ui/select";
 
 import { useVoiceAgentContext } from "../../voice/VoiceAgentContext";
+import { useFormBuilderConfig } from "../../provider";
 
 import {
   type ReportCard,
@@ -114,6 +115,7 @@ function suggestConfig(card: ReportCard): { flags: Record<string, boolean>; mess
 
 function ReportConfigInner() {
   const navigate = useNavigate();
+  const { routes } = useFormBuilderConfig();
   const { registerUICallbacks, actions: { setStage } } = useVoiceAgentContext();
   useEffect(() => { setStage("report-config"); }, []);
 
@@ -526,7 +528,7 @@ function ReportConfigInner() {
 
           <Button
             variant="outline" size="sm"
-            onClick={() => navigate("/report-preview")}
+            onClick={() => navigate(routes.reportPreview)}
             disabled={!cards.length}
             title="Switch to report preview"
           >
