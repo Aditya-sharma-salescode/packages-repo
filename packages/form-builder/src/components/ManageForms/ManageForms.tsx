@@ -13,22 +13,27 @@ import {
 import { toast } from "sonner";
 import { useActivityStore } from "../../hooks/useActivityStore";
 import { useFormBuilderConfig } from "../../provider";
+import { useManageFormsStore } from "../../manage/useManageFormsStore";
 import { ActivityCard } from "./ActivityCard";
 import { ActivityPreview } from "./ActivityPreview";
 import { useVoiceAgentContext } from "../../voice/VoiceAgentContext";
 
 export function ManageForms() {
   const navigate = useNavigate();
-  const { routes } = useFormBuilderConfig();
+  const { routes, initialConfig, onConfigUpdate } = useFormBuilderConfig();
+
   const {
     activities,
     selectedActivityId,
-    loadFromLocalStorage,
+    setActivities,
     addActivity,
     removeActivity,
     toggleActivity,
     selectActivity,
+    loadFromLocalStorage,
   } = useActivityStore();
+
+  const { init, notifyUpdate, initialized } = useManageFormsStore();
 
   const [search, setSearch] = useState("");
   const [showAddDialog, setShowAddDialog] = useState(false);
@@ -39,9 +44,65 @@ export function ManageForms() {
   const { actions: { setStage } } = useVoiceAgentContext();
   useEffect(() => { setStage("manage-forms"); }, []);
 
+  // ── Init: load activities from initialConfig or localStorage ────────────
   useEffect(() => {
-    loadFromLocalStorage();
+    const fromConfig = init(initialConfig ?? {}, onConfigUpdate);
+
+    if (fromConfig.length > 0) {
+      /**
+       * Config provided activities. Merge with localStorage schemas so that
+       * any edits made in FormBuilder (which persists to localStorage) are
+       * reflected here even though the host hasn't re-passed initialConfig yet.
+       */
+      try {
+        const lsRaw = localStorage.getItem("formActivities");
+        const lsActivities = lsRaw ? JSON.parse(lsRaw) : [];
+        if (Array.isArray(lsActivities) && lsActivities.length > 0) {
+          const lsById = Object.fromEntries(lsActivities.map((a) => [a.id, a]));
+          const merged = fromConfig.map((a) =>
+            lsById[a.id] ? { ...a, schema: lsById[a.id].schema } : a,
+          );
+          setActivities(merged);
+          selectActivity(merged[0]?.id ?? null);
+          // Emit initial state so consumer's onConfigUpdate is aware
+          notifyUpdate(merged);
+          return;
+        }
+      } catch { /* ignore parse errors */ }
+
+      setActivities(fromConfig);
+      selectActivity(fromConfig[0]?.id ?? null);
+      notifyUpdate(fromConfig);
+    } else {
+      // No config provided — fall back to existing localStorage flow
+      loadFromLocalStorage();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // ── Subscribe to activity store so FormBuilder schema saves propagate ───
+  useEffect(() => {
+    if (!initialized || !onConfigUpdate) return;
+    // Any mutation in useActivityStore (including schema updates from FormBuilder)
+    // will trigger this subscriber and push the update through.
+    const unsub = useActivityStore.subscribe((state) => {
+      notifyUpdate(state.activities);
+    });
+    return unsub;
+  }, [initialized, onConfigUpdate, notifyUpdate]);
+
+  // ── Helpers that also trigger config update ───────────────────────────────
+
+  /**
+   * Push the current activity list to the consumer callback.
+   * Must be called AFTER the relevant useActivityStore action completes
+   * (Zustand mutations are synchronous so getState() is immediately fresh).
+   */
+  const syncConfig = () => {
+    if (initialized) {
+      notifyUpdate(useActivityStore.getState().activities);
+    }
+  };
 
   const selectedActivity = activities.find((a) => a.id === selectedActivityId);
 
@@ -50,6 +111,8 @@ export function ManageForms() {
       (a.name ?? "").toLowerCase().includes(search.toLowerCase()) ||
       (a.description ?? "").toLowerCase().includes(search.toLowerCase())
   );
+
+  // ── Action handlers ───────────────────────────────────────────────────────
 
   const handleAddActivity = () => {
     if (!newName.trim()) {
@@ -61,7 +124,13 @@ export function ManageForms() {
     setNewName("");
     setNewDescription("");
     toast.success(`"${activity.name}" created`);
+    syncConfig();
     navigate(routes.formBuilderActivity(activity.id));
+  };
+
+  const handleToggle = (id: string) => {
+    toggleActivity(id);
+    syncConfig();
   };
 
   const handleEdit = (activityId: string) => {
@@ -73,6 +142,7 @@ export function ManageForms() {
     removeActivity(id);
     setShowDeleteConfirm(null);
     toast.success(`"${activity?.name}" removed`);
+    syncConfig();
   };
 
   return (
@@ -133,7 +203,7 @@ export function ManageForms() {
                   activity={activity}
                   isSelected={selectedActivityId === activity.id}
                   onSelect={() => selectActivity(activity.id)}
-                  onToggle={() => toggleActivity(activity.id)}
+                  onToggle={() => handleToggle(activity.id)}
                   onEdit={() => handleEdit(activity.id)}
                   onDelete={() => setShowDeleteConfirm(activity.id)}
                 />
@@ -270,6 +340,5 @@ export function ManageForms() {
         </DialogContent>
       </Dialog>
     </div>
-
   );
 }

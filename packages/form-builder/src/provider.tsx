@@ -1,5 +1,8 @@
 import React, { createContext, useContext, useMemo } from "react";
 import { buildFormBuilderRoutes, type FormBuilderResolvedRoutes } from "./routes";
+import type { PortalConfig } from "./manage/types";
+
+export type { PortalConfig } from "./manage/types";
 
 export interface FormBuilderFeatures {
   /** Include report config + preview pages. Default: true */
@@ -32,14 +35,42 @@ export interface FormBuilderConfig {
    * Example: `/admin/suite` → `/admin/suite/manage-forms`, `/admin/suite/form-builder/:id`, etc.
    */
   routePrefix?: string;
+
+  // ── ManageForms config integration ────────────────────────────────────────
+
+  /**
+   * The full tenant / app JSON. If `features.app.config.schema` is present,
+   * ManageForms will initialise its activity list from it instead of localStorage.
+   * Toggling a form also updates `features.reports.config.report_list`.
+   *
+   * @example
+   * initialConfig={tenantJson}
+   */
+  initialConfig?: PortalConfig;
+
+  /**
+   * Called after every toggle / add / remove in ManageForms.
+   * Receives the full updated PortalConfig — wire to your persistence layer.
+   *
+   * @example
+   * onConfigUpdate={(cfg) => localStorage.setItem("portalConfig", JSON.stringify(cfg))}
+   * @example
+   * onConfigUpdate={(cfg) => api.savePortalConfig(tenantId, cfg)}
+   */
+  onConfigUpdate?: (updatedConfig: PortalConfig) => void;
 }
 
 export type { FormBuilderResolvedRoutes };
 
-export interface FormBuilderContextValue extends Required<Omit<FormBuilderConfig, "routePrefix">> {
+export interface FormBuilderContextValue
+  extends Required<
+    Omit<FormBuilderConfig, "routePrefix" | "initialConfig" | "onConfigUpdate">
+  > {
   /** Normalized prefix (no trailing slash), may be empty */
   routePrefix: string;
   routes: FormBuilderResolvedRoutes;
+  initialConfig: PortalConfig | undefined;
+  onConfigUpdate: ((updatedConfig: PortalConfig) => void) | undefined;
 }
 
 const defaultRoutePrefix = "";
@@ -57,6 +88,8 @@ const defaultContextValue: FormBuilderContextValue = {
   services: {},
   routePrefix: defaultRoutePrefix,
   routes: defaultRoutes,
+  initialConfig: undefined,
+  onConfigUpdate: undefined,
 };
 
 const FormBuilderConfigContext = createContext<FormBuilderContextValue>(defaultContextValue);
@@ -78,8 +111,10 @@ export const FormBuilderProvider: React.FC<{
       services: { ...defaultContextValue.services, ...config.services },
       routePrefix,
       routes,
+      initialConfig: config.initialConfig,
+      onConfigUpdate: config.onConfigUpdate,
     }),
-    [config.features, config.endpoints, config.services, routePrefix, routes]
+    [config.features, config.endpoints, config.services, config.initialConfig, config.onConfigUpdate, routePrefix, routes]
   );
 
   return (

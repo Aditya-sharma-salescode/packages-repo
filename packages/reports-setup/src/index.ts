@@ -2,6 +2,12 @@
 export { ReportsProvider, useReportsConfig } from "./provider";
 export type { ReportsConfig, ReportsFeatures, ReportsServiceOverrides } from "./provider";
 
+// ─── Manage Reports ──────────────────────────────────────
+export { ManageReports } from "./manage/ManageReports";
+export { useManageReportsStore } from "./manage/useManageReportsStore";
+export type { ViewMetaReport, AppConfig } from "./manage/types";
+export { buildUpdatedConfig } from "./manage/types";
+
 // ─── Report Configuration ────────────────────────────────
 export { default as ReportConfigPage } from "./config/ReportConfigPage";
 export { loadReportConfig, saveReportConfigLocal } from "./config/reportConfigService";

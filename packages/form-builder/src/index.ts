@@ -38,6 +38,11 @@ export type { AgentStage, VoiceAgentState, VoiceAgentActions } from "./voice/use
 // ─── Hooks ───────────────────────────────────────────────
 export { useActivityStore } from "./hooks/useActivityStore";
 
+// ─── ManageForms config bridge ───────────────────────────
+export { useManageFormsStore } from "./manage/useManageFormsStore";
+export type { PortalConfig, ActivityReport } from "./manage/types";
+export { buildPortalConfig, makeActivityReport } from "./manage/types";
+
 // ─── Embedded Reports (ships with form-builder) ──────────
 export { default as ReportConfigPage } from "./reports/config/ReportConfigPage";
 export { default as ReportPreviewPage } from "./reports/preview/ReportPreviewPage";

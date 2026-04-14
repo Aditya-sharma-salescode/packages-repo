@@ -1,4 +1,5 @@
 import React, { createContext, useContext } from "react";
+import type { AppConfig } from "./manage/types";
 
 export interface ReportsFeatures {
   /** Show the report config editor page. Default: true */
@@ -7,6 +8,8 @@ export interface ReportsFeatures {
   reportPreview?: boolean;
   /** Show the reports portal page. Default: true */
   reportsPortal?: boolean;
+  /** Show the manage reports page. Default: true */
+  manageReports?: boolean;
 }
 
 export interface ReportsServiceOverrides {
@@ -20,21 +23,66 @@ export interface ReportsConfig {
   features?: ReportsFeatures;
   endpoints?: Record<string, string>;
   services?: ReportsServiceOverrides;
+
+  // ── ManageReports integration ──────────────────────────────────────────────
+
+  /**
+   * The full tenant / app JSON containing `viewMeta.reports` (catalog) and
+   * optionally `features.reports.config.report_list` (already-enabled reports).
+   * Pass this so ManageReports can initialise from existing state.
+   */
+  initialConfig?: AppConfig;
+
+  /**
+   * Called every time the user toggles or edits a report in ManageReports.
+   * Receives the full updated config JSON — wire this to your persistence layer.
+   *
+   * @example
+   * onConfigUpdate={(cfg) => localStorage.setItem("appConfig", JSON.stringify(cfg))}
+   * @example
+   * onConfigUpdate={(cfg) => api.saveConfig(tenantId, cfg)}
+   */
+  onConfigUpdate?: (updatedConfig: AppConfig) => void;
+
+  /**
+   * Called when the user clicks the ⚙ settings icon on a report card.
+   * Receives the report's `id` — navigate to your config editor here.
+   *
+   * @example
+   * onEditReport={(id) => navigate(`/report-config?reportId=${id}`)}
+   */
+  onEditReport?: (reportId: string) => void;
 }
 
-const defaultConfig: Required<ReportsConfig> = {
-  features: { reportConfig: true, reportPreview: true, reportsPortal: true },
+// Context value shape (all fields required so consumers never get undefined)
+interface ReportsConfigContextValue extends Required<Omit<ReportsConfig, "initialConfig" | "onConfigUpdate" | "onEditReport">> {
+  initialConfig: AppConfig | undefined;
+  onConfigUpdate: ((updatedConfig: AppConfig) => void) | undefined;
+  onEditReport: ((reportId: string) => void) | undefined;
+}
+
+const defaultConfig: ReportsConfigContextValue = {
+  features: {
+    reportConfig: true,
+    reportPreview: true,
+    reportsPortal: true,
+    manageReports: true,
+  },
   endpoints: {},
   services: {},
+  initialConfig: undefined,
+  onConfigUpdate: undefined,
+  onEditReport: undefined,
 };
 
-const ReportsConfigContext = createContext<Required<ReportsConfig>>(defaultConfig);
+const ReportsConfigContext =
+  createContext<ReportsConfigContextValue>(defaultConfig);
 
 export const ReportsProvider: React.FC<{
   config?: ReportsConfig;
   children: React.ReactNode;
 }> = ({ config = {}, children }) => {
-  const merged: Required<ReportsConfig> = {
+  const merged: ReportsConfigContextValue = {
     ...defaultConfig,
     ...config,
     features: { ...defaultConfig.features, ...config.features },
