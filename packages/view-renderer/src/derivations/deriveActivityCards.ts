@@ -1,4 +1,5 @@
-import type { ViewMeta, TenantConfig, ActivityFieldTag } from '../types'
+import type { ViewMeta, DraftMap, ActivityFieldTag } from '../types'
+import { resolveTargetKeys } from '../utils/resolveTargetKeys'
 
 export interface ActivityCardItem {
   id: string
@@ -35,17 +36,25 @@ function extractFieldTags(child: {
 
 export function deriveActivityCards(
   viewMeta: ViewMeta,
-  draft: TenantConfig,
+  draftMap: DraftMap,
   activeNodeId: string,
 ): ActivityCardItem[] {
   const node = viewMeta.nodes.find((n) => n.node_id === activeNodeId)
   if (!node || node.node_type !== 'store_activity') return []
 
-  return node.children.map((child) => ({
-    id: child.activity_id,
-    label: child.activity_label,
-    description: child.activity_description,
-    enabled: draft.features[child.activity_id]?.enabled === true,
-    fields: extractFieldTags(child),
-  }))
+  const allKeys = Object.keys(draftMap)
+
+  return node.children.map((child) => {
+    const targetKeys = resolveTargetKeys(child.target_config_keys, node.target_config_keys, allKeys)
+    const enabled = targetKeys.every(
+      (key) => draftMap[key]?.features[child.activity_id]?.enabled === true,
+    )
+    return {
+      id: child.activity_id,
+      label: child.activity_label,
+      description: child.activity_description,
+      enabled,
+      fields: extractFieldTags(child),
+    }
+  })
 }

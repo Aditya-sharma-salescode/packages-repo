@@ -22,6 +22,8 @@ export type { FetchTenantConfigParams } from './api/configApi'
 export { getByPath, setByPath } from './utils/pathUtils'
 export { resolveSchemaFields, mergeFieldOverrides } from './utils/schemaUtils'
 export { reorderItem, updateItemField, toggleItem } from './utils/arrayOps'
+export { resolveTargetKeys } from './utils/resolveTargetKeys'
+export { singleConfigToMap, singleGlobalToMap } from './utils/migrationUtils'
 
 // Types
 export type {
@@ -41,7 +43,11 @@ export type {
   GlobalFeatureConfig,
   TenantFeatureConfig,
   TenantConfig,
-  EndpointsConfig,
+  AppTypeKey,
+  TenantConfigMap,
+  GlobalConfigMap,
+  DraftMap,
+  EndpointsConfigMap,
   CreateViewMetaProps,
   FeatureSelectionState,
 } from './types'

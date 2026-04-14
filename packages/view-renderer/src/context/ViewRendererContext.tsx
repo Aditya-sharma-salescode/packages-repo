@@ -1,5 +1,17 @@
 import { createContext, useContext, useState, useMemo, useCallback, useEffect, type ReactNode } from 'react'
-import type { ViewMeta, TenantConfig, TenantFeatureConfig, GlobalFeatureConfig, NodeMeta, EndpointsConfig, StoreActivityChild, FeatureChild } from '../types'
+import type {
+  ViewMeta,
+  TenantConfig,
+  TenantFeatureConfig,
+  GlobalFeatureConfig,
+  NodeMeta,
+  StoreActivityChild,
+  AppTypeKey,
+  TenantConfigMap,
+  GlobalConfigMap,
+  DraftMap,
+  EndpointsConfigMap,
+} from '../types'
 import type { NodeTab } from '../components/TopToggleList'
 import type { FeatureCardItem } from '../components/MiddleContent'
 import type { ActivityCardItem } from '../derivations/deriveActivityCards'
@@ -9,16 +21,17 @@ import { deriveFeatureCards } from '../derivations/deriveFeatureCards'
 import { deriveActivityCards } from '../derivations/deriveActivityCards'
 import { toggleFeature } from '../toggles/featureToggle'
 import { setByPath } from '../utils/pathUtils'
+import { resolveTargetKeys } from '../utils/resolveTargetKeys'
 
 export interface ViewRendererContextValue {
   // Immutable references (read-only, passed from host)
-  tenantConfig: TenantConfig | null
-  globalConfigs: GlobalFeatureConfig[]
+  tenantConfigMap: TenantConfigMap | null
+  globalConfigMap: GlobalConfigMap | null
   viewMeta: ViewMeta | null
   currentNodeMeta: NodeMeta | null
 
-  // Mutable draft (working copy being edited)
-  draft: TenantConfig | null
+  // Mutable drafts (working copies being edited)
+  draftMap: DraftMap | null
 
   // Derived state
   nodeTabs: NodeTab[]
@@ -27,6 +40,7 @@ export interface ViewRendererContextValue {
   activityCards: ActivityCardItem[]
   actions: Action[]
   isDirty: boolean
+  dirtyKeys: AppTypeKey[]
   isSaving: boolean
 
   // Action handlers
@@ -34,37 +48,46 @@ export interface ViewRendererContextValue {
   handleToggleFeature: (featureId: string, enabled: boolean) => void
   handleToggleActivity: (activityId: string, enabled: boolean) => void
   handleAdvancedSettings: (activityId: string) => void
-  handleUpdateDraft: (path: string, value: unknown) => void
+  handleUpdateDraft: (path: string, value: unknown, targetKeys?: AppTypeKey[]) => void
   handleSave: () => Promise<void>
   handleDiscard: () => void
 
   // Setters (escape hatches for advanced use)
-  setTenantConfig: (config: TenantConfig | null) => void
-  setGlobalConfigs: (configs: GlobalFeatureConfig[]) => void
+  setTenantConfigMap: (map: TenantConfigMap | null) => void
+  setGlobalConfigMap: (map: GlobalConfigMap | null) => void
   setCurrentNodeMeta: (node: NodeMeta | null) => void
-  setDraft: (draft: TenantConfig | null) => void
+  setDraftMap: (map: DraftMap | null) => void
 }
 
 const ViewRendererContext = createContext<ViewRendererContextValue | null>(null)
 
 export interface ViewRendererProviderProps {
   children: ReactNode
-  initialTenantConfig?: TenantConfig | null
-  initialGlobalConfigs?: GlobalFeatureConfig[]
+  initialTenantConfigMap?: TenantConfigMap | null
+  initialGlobalConfigMap?: GlobalConfigMap | null
   initialViewMeta?: ViewMeta | null
-  onSave?: (draft: TenantConfig) => Promise<void>
-  endpoints?: EndpointsConfig
-  onBeforeSave?: (draft: TenantConfig) => Record<string, unknown>
-  onSaveSuccess?: (nodeType: string) => void
-  onSaveError?: (nodeType: string, error: Error) => void
+  onSave?: (configKey: AppTypeKey, draft: TenantConfig) => Promise<void>
+  endpoints?: EndpointsConfigMap
+  onBeforeSave?: (configKey: AppTypeKey, draft: TenantConfig) => Record<string, unknown>
+  onSaveSuccess?: (nodeType: string, configKey: AppTypeKey) => void
+  onSaveError?: (nodeType: string, configKey: AppTypeKey, error: Error) => void
   onAdvancedSettings?: (activityId: string, currentConfig: Record<string, unknown> | null) => void
-  onDraftChange?: (draft: TenantConfig | null) => void
+  onDraftChange?: (draftMap: DraftMap | null) => void
+}
+
+function cloneConfigMap(map: TenantConfigMap | null | undefined): DraftMap | null {
+  if (!map) return null
+  const cloned: DraftMap = {}
+  for (const key of Object.keys(map)) {
+    cloned[key] = structuredClone(map[key])
+  }
+  return cloned
 }
 
 export function ViewRendererProvider({
   children,
-  initialTenantConfig = null,
-  initialGlobalConfigs = [],
+  initialTenantConfigMap = null,
+  initialGlobalConfigMap = null,
   initialViewMeta = null,
   onSave,
   endpoints,
@@ -74,29 +97,35 @@ export function ViewRendererProvider({
   onAdvancedSettings,
   onDraftChange,
 }: ViewRendererProviderProps) {
-  const [tenantConfig, setTenantConfig] = useState<TenantConfig | null>(initialTenantConfig)
-  const [globalConfigs, setGlobalConfigs] = useState<GlobalFeatureConfig[]>(initialGlobalConfigs)
+  const [tenantConfigMap, setTenantConfigMap] = useState<TenantConfigMap | null>(initialTenantConfigMap)
+  const [globalConfigMap, setGlobalConfigMap] = useState<GlobalConfigMap | null>(initialGlobalConfigMap)
   const [viewMeta, setViewMeta] = useState<ViewMeta | null>(initialViewMeta)
   const [currentNodeMeta, setCurrentNodeMeta] = useState<NodeMeta | null>(null)
-  const [draft, setDraft] = useState<TenantConfig | null>(
-    initialTenantConfig ? structuredClone(initialTenantConfig) : null,
+  const [draftMap, setDraftMap] = useState<DraftMap | null>(
+    () => cloneConfigMap(initialTenantConfigMap),
   )
   const [isSaving, setIsSaving] = useState(false)
   const [activeNodeId, setActiveNodeId] = useState<string>(
     () => initialViewMeta?.nodes[0]?.node_id ?? '',
   )
 
+  // All config keys present in the draft map
+  const allConfigKeys = useMemo(
+    () => (draftMap ? Object.keys(draftMap) : []),
+    [draftMap],
+  )
+
   // Sync when host passes new initial props (e.g. after re-fetch)
   useEffect(() => {
-    if (initialTenantConfig) {
-      setTenantConfig(initialTenantConfig)
-      setDraft(structuredClone(initialTenantConfig))
+    if (initialTenantConfigMap) {
+      setTenantConfigMap(initialTenantConfigMap)
+      setDraftMap(cloneConfigMap(initialTenantConfigMap))
     }
-  }, [initialTenantConfig])
+  }, [initialTenantConfigMap])
 
   useEffect(() => {
-    setGlobalConfigs(initialGlobalConfigs)
-  }, [initialGlobalConfigs])
+    setGlobalConfigMap(initialGlobalConfigMap)
+  }, [initialGlobalConfigMap])
 
   useEffect(() => {
     if (initialViewMeta) {
@@ -118,19 +147,23 @@ export function ViewRendererProvider({
   )
 
   const featureCards = useMemo(
-    () => (viewMeta && draft && activeNodeId ? deriveFeatureCards(viewMeta, draft, activeNodeId) : []),
-    [viewMeta, draft, activeNodeId],
+    () => (viewMeta && draftMap && activeNodeId ? deriveFeatureCards(viewMeta, draftMap, activeNodeId) : []),
+    [viewMeta, draftMap, activeNodeId],
   )
 
   const activityCards = useMemo(
-    () => (viewMeta && draft && activeNodeId ? deriveActivityCards(viewMeta, draft, activeNodeId) : []),
-    [viewMeta, draft, activeNodeId],
+    () => (viewMeta && draftMap && activeNodeId ? deriveActivityCards(viewMeta, draftMap, activeNodeId) : []),
+    [viewMeta, draftMap, activeNodeId],
   )
 
-  const isDirty = useMemo(
-    () => JSON.stringify(tenantConfig) !== JSON.stringify(draft),
-    [tenantConfig, draft],
-  )
+  const dirtyKeys = useMemo(() => {
+    if (!tenantConfigMap || !draftMap) return []
+    return Object.keys(draftMap).filter(
+      (key) => JSON.stringify(tenantConfigMap[key]) !== JSON.stringify(draftMap[key]),
+    )
+  }, [tenantConfigMap, draftMap])
+
+  const isDirty = dirtyKeys.length > 0
 
   const actions = useMemo<Action[]>(() => [
     { id: 'save', label: 'Save', variant: 'primary', disabled: !isDirty || isSaving },
@@ -139,8 +172,8 @@ export function ViewRendererProvider({
 
   // Notify host of draft changes
   useEffect(() => {
-    onDraftChange?.(draft)
-  }, [draft, onDraftChange])
+    onDraftChange?.(draftMap)
+  }, [draftMap, onDraftChange])
 
   // Action handlers
   const handleSelectNode = useCallback((nodeId: string) => {
@@ -148,147 +181,206 @@ export function ViewRendererProvider({
   }, [])
 
   const handleToggleFeature = useCallback((featureId: string, enabled: boolean) => {
-    if (!viewMeta || !draft || !tenantConfig || !globalConfigs.length) return
+    if (!viewMeta || !draftMap || !tenantConfigMap || !globalConfigMap) return
 
     for (const node of viewMeta.nodes) {
       if (node.node_type === 'feature_selection') {
         const child = node.children.find((c) => c.feature_id === featureId)
         if (child) {
-          const { updatedFeatures } = toggleFeature(
-            child,
-            enabled,
-            draft.features,
-            globalConfigs,
-            tenantConfig.features,
-          )
-          setDraft({ ...draft, features: updatedFeatures })
+          const targetKeys = resolveTargetKeys(child.target_config_keys, node.target_config_keys, allConfigKeys)
+          const newDraftMap = { ...draftMap }
+
+          for (const key of targetKeys) {
+            const draft = newDraftMap[key]
+            const original = tenantConfigMap[key]
+            const globals = globalConfigMap[key] ?? []
+            if (!draft || !original) continue
+
+            const { updatedFeatures } = toggleFeature(
+              child,
+              enabled,
+              draft.features,
+              globals,
+              original.features,
+            )
+            newDraftMap[key] = { ...draft, features: updatedFeatures }
+          }
+
+          setDraftMap(newDraftMap)
           break
         }
       }
     }
-  }, [viewMeta, draft, tenantConfig, globalConfigs])
+  }, [viewMeta, draftMap, tenantConfigMap, globalConfigMap, allConfigKeys])
 
   const handleToggleActivity = useCallback((activityId: string, enabled: boolean) => {
     console.log('[ViewRenderer] toggleActivity', { activityId, enabled })
-    if (!viewMeta || !draft || !tenantConfig) return
+    if (!viewMeta || !draftMap || !tenantConfigMap) return
 
     for (const node of viewMeta.nodes) {
       if (node.node_type === 'store_activity') {
         const child = node.children.find((c: StoreActivityChild) => c.activity_id === activityId)
         if (child) {
-          const updatedFeatures = { ...draft.features }
+          const targetKeys = resolveTargetKeys(child.target_config_keys, node.target_config_keys, allConfigKeys)
+          const newDraftMap = { ...draftMap }
 
-          if (!enabled) {
-            // Toggle OFF — remove the feature
-            delete updatedFeatures[activityId]
-          } else {
-            // Toggle ON — restore from original tenant config, or use activity_default
-            const original = tenantConfig.features[activityId]
-            if (original) {
-              updatedFeatures[activityId] = { ...structuredClone(original), enabled: true }
-            } else if (child.activity_default) {
-              updatedFeatures[activityId] = structuredClone(child.activity_default) as unknown as TenantFeatureConfig
-              updatedFeatures[activityId].enabled = true
+          for (const key of targetKeys) {
+            const draft = newDraftMap[key]
+            const original = tenantConfigMap[key]
+            if (!draft || !original) continue
+
+            const updatedFeatures = { ...draft.features }
+
+            if (!enabled) {
+              delete updatedFeatures[activityId]
             } else {
-              updatedFeatures[activityId] = { enabled: true, strategies: {}, config: {}, services: {} }
-            }
-          }
-
-          // Sync outletActivityTabs array
-          const outletActivity = updatedFeatures.outlet_activity ?? draft.features.outlet_activity
-          if (outletActivity) {
-            const config = outletActivity.config as Record<string, unknown>
-            const currentTabs = Array.isArray(config.outletActivityTabs)
-              ? [...(config.outletActivityTabs as Record<string, unknown>[])]
-              : []
-
-            if (enabled && child.tab_default) {
-              if (!currentTabs.some((t) => t.id === child.activity_id)) {
-                currentTabs.push({ ...child.tab_default })
+              const originalFeature = original.features[activityId]
+              if (originalFeature) {
+                updatedFeatures[activityId] = { ...structuredClone(originalFeature), enabled: true }
+              } else if (child.activity_default) {
+                updatedFeatures[activityId] = structuredClone(child.activity_default) as unknown as TenantFeatureConfig
+                updatedFeatures[activityId].enabled = true
+              } else {
+                updatedFeatures[activityId] = { enabled: true, strategies: {}, config: {}, services: {} }
               }
-            } else {
-              const idx = currentTabs.findIndex((t) => t.id === child.activity_id)
-              if (idx !== -1) currentTabs.splice(idx, 1)
             }
 
-            updatedFeatures.outlet_activity = {
-              ...outletActivity,
-              config: { ...config, outletActivityTabs: currentTabs },
+            // Sync outletActivityTabs array
+            const outletActivity = updatedFeatures.outlet_activity ?? draft.features.outlet_activity
+            if (outletActivity) {
+              const config = outletActivity.config as Record<string, unknown>
+              const currentTabs = Array.isArray(config.outletActivityTabs)
+                ? [...(config.outletActivityTabs as Record<string, unknown>[])]
+                : []
+
+              if (enabled && child.tab_default) {
+                if (!currentTabs.some((t) => t.id === child.activity_id)) {
+                  currentTabs.push({ ...child.tab_default })
+                }
+              } else {
+                const idx = currentTabs.findIndex((t) => t.id === child.activity_id)
+                if (idx !== -1) currentTabs.splice(idx, 1)
+              }
+
+              updatedFeatures.outlet_activity = {
+                ...outletActivity,
+                config: { ...config, outletActivityTabs: currentTabs },
+              }
             }
+
+            newDraftMap[key] = { ...draft, features: updatedFeatures }
           }
 
-          setDraft({ ...draft, features: updatedFeatures })
+          setDraftMap(newDraftMap)
           break
         }
       }
     }
-  }, [viewMeta, draft, tenantConfig])
+  }, [viewMeta, draftMap, tenantConfigMap, allConfigKeys])
 
   const handleAdvancedSettings = useCallback((activityId: string) => {
-    if (!draft) return
-    const currentConfig = draft.features[activityId]?.config ?? null
+    if (!draftMap) return
+    // Read from first available config key
+    const firstKey = allConfigKeys[0]
+    const currentConfig = firstKey ? draftMap[firstKey]?.features[activityId]?.config ?? null : null
     console.log('[ViewRenderer] advancedSettings fired', { activityId, hasCallback: !!onAdvancedSettings, currentConfig })
     onAdvancedSettings?.(activityId, currentConfig as Record<string, unknown> | null)
-  }, [draft, onAdvancedSettings])
+  }, [draftMap, allConfigKeys, onAdvancedSettings])
 
-  const handleUpdateDraft = useCallback((path: string, value: unknown) => {
-    setDraft((prev) => {
+  const handleUpdateDraft = useCallback((path: string, value: unknown, targetKeys?: AppTypeKey[]) => {
+    setDraftMap((prev) => {
       if (!prev) return prev
-      return setByPath(prev as unknown as Record<string, unknown>, path, value) as unknown as TenantConfig
+      const keys = targetKeys ?? Object.keys(prev)
+      const updated = { ...prev }
+      for (const key of keys) {
+        if (!updated[key]) continue
+        updated[key] = setByPath(
+          updated[key] as unknown as Record<string, unknown>,
+          path,
+          value,
+        ) as unknown as TenantConfig
+      }
+      return updated
     })
   }, [])
 
   const handleSave = useCallback(async () => {
-    if (!draft) return
+    if (!draftMap || dirtyKeys.length === 0) return
     setIsSaving(true)
     try {
+      const nodeType = activeNodeMeta?.node_type ?? 'unknown'
+
       if (onSave) {
-        // Consumer owns the save logic
-        await onSave(draft)
-        setTenantConfig(structuredClone(draft))
-      } else if (endpoints?.tenantConfig) {
-        // Legacy: internal fetch (backward compat)
-        const nodeType = activeNodeMeta?.node_type ?? 'unknown'
-        const payload = onBeforeSave ? onBeforeSave(draft) : { config: draft }
-        const res = await fetch(endpoints.tenantConfig, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-        })
-        if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`)
-        setTenantConfig(structuredClone(draft))
-        onSaveSuccess?.(nodeType)
+        // Consumer owns the save logic — call per dirty key
+        const results = await Promise.allSettled(
+          dirtyKeys.map((key) => onSave(key, draftMap[key])),
+        )
+
+        const newTenantConfigMap = { ...tenantConfigMap }
+        for (let i = 0; i < dirtyKeys.length; i++) {
+          const key = dirtyKeys[i]
+          if (results[i].status === 'fulfilled') {
+            newTenantConfigMap[key] = structuredClone(draftMap[key])
+          }
+        }
+        setTenantConfigMap(newTenantConfigMap as TenantConfigMap)
+
+        // Re-throw first rejection if any
+        const firstRejection = results.find((r) => r.status === 'rejected')
+        if (firstRejection && firstRejection.status === 'rejected') {
+          throw firstRejection.reason
+        }
+      } else if (endpoints) {
+        // Legacy: per-key endpoint POST
+        for (const key of dirtyKeys) {
+          const endpoint = endpoints[key]
+          if (!endpoint) continue
+
+          try {
+            const payload = onBeforeSave ? onBeforeSave(key, draftMap[key]) : { config: draftMap[key] }
+            const res = await fetch(endpoint, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload),
+            })
+            if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`)
+
+            setTenantConfigMap((prev) => {
+              if (!prev) return prev
+              return { ...prev, [key]: structuredClone(draftMap[key]) }
+            })
+            onSaveSuccess?.(nodeType, key)
+          } catch (err) {
+            onSaveError?.(nodeType, key, err instanceof Error ? err : new Error(String(err)))
+          }
+        }
       }
     } catch (err) {
-      if (!onSave) {
-        const nodeType = activeNodeMeta?.node_type ?? 'unknown'
-        onSaveError?.(nodeType, err instanceof Error ? err : new Error(String(err)))
-      } else {
-        throw err
-      }
+      if (onSave) throw err
     } finally {
       setIsSaving(false)
     }
-  }, [draft, onSave, endpoints, activeNodeMeta, onBeforeSave, onSaveSuccess, onSaveError])
+  }, [draftMap, dirtyKeys, onSave, endpoints, activeNodeMeta, onBeforeSave, onSaveSuccess, onSaveError, tenantConfigMap])
 
   const handleDiscard = useCallback(() => {
-    if (tenantConfig) {
-      setDraft(structuredClone(tenantConfig))
+    if (tenantConfigMap) {
+      setDraftMap(cloneConfigMap(tenantConfigMap))
     }
-  }, [tenantConfig])
+  }, [tenantConfigMap])
 
   const value: ViewRendererContextValue = {
-    tenantConfig,
-    globalConfigs,
+    tenantConfigMap,
+    globalConfigMap,
     viewMeta,
     currentNodeMeta: activeNodeMeta ?? currentNodeMeta,
-    draft,
+    draftMap,
     nodeTabs,
     activeNodeId,
     featureCards,
     activityCards,
     actions,
     isDirty,
+    dirtyKeys,
     isSaving,
     handleSelectNode,
     handleToggleFeature,
@@ -297,10 +389,10 @@ export function ViewRendererProvider({
     handleUpdateDraft,
     handleSave,
     handleDiscard,
-    setTenantConfig,
-    setGlobalConfigs,
+    setTenantConfigMap,
+    setGlobalConfigMap,
     setCurrentNodeMeta,
-    setDraft,
+    setDraftMap,
   }
 
   return (

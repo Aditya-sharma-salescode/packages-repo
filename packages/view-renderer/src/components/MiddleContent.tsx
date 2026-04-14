@@ -1,5 +1,5 @@
-import type { CSSProperties } from 'react'
-import type { ConfigEditorNodeMeta } from '../types'
+import type { CSSProperties, ReactNode } from 'react'
+import type { ConfigEditorNodeMeta, NodeMeta } from '../types'
 import { useViewRenderer } from '../context/ViewRendererContext'
 import { ConfigEditorRenderer } from './ConfigEditorRenderer'
 import { StoreActivityRenderer } from './StoreActivityRenderer'
@@ -15,6 +15,7 @@ export interface MiddleContentProps {
   nodeType?: string
   features?: FeatureCardItem[]
   onToggleFeature?: (featureId: string, enabled: boolean) => void
+  renderNode?: (node: NodeMeta) => ReactNode | null
 }
 
 const styles = {
@@ -129,8 +130,17 @@ function FeatureSelectionRenderer({ features = [], onToggleFeature }: {
   )
 }
 
-export function MiddleContent({ nodeType, features, onToggleFeature }: MiddleContentProps) {
+export function MiddleContent({ nodeType, features, onToggleFeature, renderNode }: MiddleContentProps) {
   const ctx = useViewRenderer()
+
+  // Custom renderer override — checked before node_type switch
+  if (renderNode && ctx.currentNodeMeta) {
+    const custom = renderNode(ctx.currentNodeMeta)
+    if (custom !== null) {
+      return <div style={styles.container}>{custom}</div>
+    }
+  }
+
   const resolvedNodeType = nodeType ?? ctx.currentNodeMeta?.node_type
   const resolvedFeatures = features ?? ctx.featureCards
   const resolvedOnToggle = onToggleFeature ?? ctx.handleToggleFeature

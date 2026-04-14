@@ -1,18 +1,27 @@
-import type { ViewMeta, TenantConfig } from '../types'
+import type { ViewMeta, DraftMap } from '../types'
 import type { FeatureCardItem } from '../components/MiddleContent'
+import { resolveTargetKeys } from '../utils/resolveTargetKeys'
 
 export function deriveFeatureCards(
   viewMeta: ViewMeta,
-  draft: TenantConfig,
+  draftMap: DraftMap,
   activeNodeId: string,
 ): FeatureCardItem[] {
   const node = viewMeta.nodes.find((n) => n.node_id === activeNodeId)
   if (!node || node.node_type !== 'feature_selection') return []
 
-  return node.children.map((child) => ({
-    id: child.feature_id,
-    label: child.feature_label,
-    description: child.feature_description,
-    enabled: draft.features[child.feature_id]?.enabled === true,
-  }))
+  const allKeys = Object.keys(draftMap)
+
+  return node.children.map((child) => {
+    const targetKeys = resolveTargetKeys(child.target_config_keys, node.target_config_keys, allKeys)
+    const enabled = targetKeys.every(
+      (key) => draftMap[key]?.features[child.feature_id]?.enabled === true,
+    )
+    return {
+      id: child.feature_id,
+      label: child.feature_label,
+      description: child.feature_description,
+      enabled,
+    }
+  })
 }

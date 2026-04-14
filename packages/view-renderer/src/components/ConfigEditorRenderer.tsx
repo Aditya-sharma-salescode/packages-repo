@@ -2,6 +2,7 @@ import type { CSSProperties } from 'react'
 import type { ConfigEditorNodeMeta } from '../types'
 import { useViewRenderer } from '../context/ViewRendererContext'
 import { getByPath } from '../utils/pathUtils'
+import { resolveTargetKeys } from '../utils/resolveTargetKeys'
 import { FieldRenderer } from './FieldRenderer'
 
 export interface ConfigEditorRendererProps {
@@ -24,8 +25,9 @@ const styles = {
 }
 
 export function ConfigEditorRenderer({ node }: ConfigEditorRendererProps) {
-  const { draft, handleUpdateDraft } = useViewRenderer()
+  const { draftMap, handleUpdateDraft } = useViewRenderer()
   const fields = node.config
+  const allKeys = draftMap ? Object.keys(draftMap) : []
 
   if (!fields || fields.length === 0) {
     return <div style={styles.empty}>No fields configured for this node.</div>
@@ -34,13 +36,16 @@ export function ConfigEditorRenderer({ node }: ConfigEditorRendererProps) {
   return (
     <div style={styles.container}>
       {fields.map((field) => {
-        const currentValue = draft ? getByPath(draft, field.target_path) : undefined
+        const targetKeys = resolveTargetKeys(field.target_config_keys, node.target_config_keys, allKeys)
+        const primaryKey = targetKeys[0]
+        const primaryDraft = primaryKey && draftMap ? draftMap[primaryKey] : null
+        const currentValue = primaryDraft ? getByPath(primaryDraft, field.target_path) : undefined
         return (
           <FieldRenderer
             key={field.field_id}
             field={field}
             value={currentValue}
-            onChange={(value) => handleUpdateDraft(field.target_path, value)}
+            onChange={(value) => handleUpdateDraft(field.target_path, value, targetKeys)}
           />
         )
       })}

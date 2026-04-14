@@ -1,3 +1,15 @@
+// ── App-type keyed maps ──
+
+export type AppTypeKey = string
+
+export type TenantConfigMap = Record<AppTypeKey, TenantConfig>
+export type GlobalConfigMap = Record<AppTypeKey, GlobalFeatureConfig[]>
+export type DraftMap = Record<AppTypeKey, TenantConfig>
+
+// ── Endpoints config (per app-type key) ──
+
+export type EndpointsConfigMap = Record<AppTypeKey, string>
+
 // ── ViewMeta (simplified) ──
 
 export interface ViewMeta {
@@ -14,6 +26,7 @@ export interface NodeMetaBase {
   node_description: string
   node_type: string
   node_logo: string
+  target_config_keys?: AppTypeKey[]
 }
 
 // ── feature_selection node ──
@@ -23,6 +36,7 @@ export interface FeatureChild {
   feature_label: string
   feature_description: string
   feature_default?: Record<string, unknown>
+  target_config_keys?: AppTypeKey[]
 }
 
 export interface FeatureSelectionNodeMeta extends NodeMetaBase {
@@ -58,6 +72,7 @@ export interface ConfigEditorField {
   options?: { label: string; value: string }[]
   default_value?: unknown
   readonly?: boolean
+  target_config_keys?: AppTypeKey[]
   // list_selection specific:
   identity_key?: string
   list_options?: ListSelectionOption[]
@@ -87,6 +102,7 @@ export interface StoreActivityChild {
   activity_default?: Record<string, unknown>
   tab_default?: Record<string, unknown>
   fields?: ActivityFieldTag[]
+  target_config_keys?: AppTypeKey[]
 }
 
 export interface StoreActivityNodeMeta extends NodeMetaBase {
@@ -116,12 +132,6 @@ export interface GlobalFeatureConfig {
   fields: GlobalConfigField[]
   strategies: unknown[]
   services: unknown[]
-}
-
-// ── Endpoints config ──
-
-export interface EndpointsConfig {
-  tenantConfig: string
 }
 
 // ── Tenant config (from /tenant-config) ──
