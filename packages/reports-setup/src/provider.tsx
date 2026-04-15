@@ -1,5 +1,6 @@
 import React, { createContext, useContext } from "react";
 import type { AppConfig } from "./manage/types";
+import type { ReportCard } from "./config/types";
 
 export interface ReportsFeatures {
   /** Show the report config editor page. Default: true */
@@ -52,13 +53,36 @@ export interface ReportsConfig {
    * onEditReport={(id) => navigate(`/report-config?reportId=${id}`)}
    */
   onEditReport?: (reportId: string) => void;
+
+  // ── ReportConfigPage controlled mode ──────────────────────────────────────
+
+  /**
+   * When set, ReportConfigPage initialises from these cards instead of
+   * localStorage. Pass the report cards from your own state.
+   */
+  initialCards?: ReportCard[];
+
+  /**
+   * Called on every card mutation inside ReportConfigPage.
+   * Wire this to your persistence layer (e.g. setDraftMap).
+   * When provided, ReportConfigPage will NOT write to localStorage.
+   */
+  onCardsUpdate?: (cards: ReportCard[]) => void;
+
+  /**
+   * Pre-select this report in ReportConfigPage on mount.
+   */
+  selectedReportId?: string;
 }
 
 // Context value shape (all fields required so consumers never get undefined)
-interface ReportsConfigContextValue extends Required<Omit<ReportsConfig, "initialConfig" | "onConfigUpdate" | "onEditReport">> {
+interface ReportsConfigContextValue extends Required<Omit<ReportsConfig, "initialConfig" | "onConfigUpdate" | "onEditReport" | "initialCards" | "onCardsUpdate" | "selectedReportId">> {
   initialConfig: AppConfig | undefined;
   onConfigUpdate: ((updatedConfig: AppConfig) => void) | undefined;
   onEditReport: ((reportId: string) => void) | undefined;
+  initialCards: ReportCard[] | undefined;
+  onCardsUpdate: ((cards: ReportCard[]) => void) | undefined;
+  selectedReportId: string | undefined;
 }
 
 const defaultConfig: ReportsConfigContextValue = {
@@ -73,6 +97,9 @@ const defaultConfig: ReportsConfigContextValue = {
   initialConfig: undefined,
   onConfigUpdate: undefined,
   onEditReport: undefined,
+  initialCards: undefined,
+  onCardsUpdate: undefined,
+  selectedReportId: undefined,
 };
 
 const ReportsConfigContext =

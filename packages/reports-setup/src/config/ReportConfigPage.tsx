@@ -45,7 +45,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { useVoiceAgentContext } from "@/features/form-builder/voice/VoiceAgentContext";
+import { useVoiceAgentContextOptional } from "@/features/form-builder/voice/VoiceAgentContext";
 
 import {
   type ReportCard,
@@ -55,6 +55,7 @@ import {
 } from "./types";
 import { BEHAVIOR_FLAG_ALIASES, SECTION_ALIASES } from "./reportConfigRegistry";
 import { saveReportConfig, loadReportConfig, saveReportConfigLocal } from "./reportConfigService";
+import { useReportsConfig } from "../provider";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -114,7 +115,11 @@ function suggestConfig(card: ReportCard): { flags: Record<string, boolean>; mess
 
 function ReportConfigInner() {
   const navigate = useNavigate();
-  const { registerUICallbacks, actions: { setStage } } = useVoiceAgentContext();
+  const voiceCtx = useVoiceAgentContextOptional();
+  const registerUICallbacks = voiceCtx?.registerUICallbacks ?? (() => {});
+  const setStage = voiceCtx?.actions?.setStage ?? (() => {});
+  const { initialCards, onCardsUpdate, selectedReportId } = useReportsConfig();
+  const isControlled = !!(initialCards && initialCards.length > 0);
   useEffect(() => { setStage("report-config"); }, []);
 
   // ── Core state ─────────────────────────────────────────────────────────────
@@ -164,17 +169,27 @@ function ReportConfigInner() {
 
   // ── Load on mount ──────────────────────────────────────────────────────────
   useEffect(() => {
-    loadReportConfig(rolePrefix).then((loaded) => {
-      setCards(loaded.length ? loaded : []);
-      setSavedCards(loaded.length ? JSON.parse(JSON.stringify(loaded)) : []);
+    if (isControlled) {
+      setCards(initialCards!);
+      setSavedCards(JSON.parse(JSON.stringify(initialCards!)));
       setLoading(false);
-    });
+      if (selectedReportId) setSelectedId(selectedReportId);
+    } else {
+      loadReportConfig(rolePrefix).then((loaded) => {
+        setCards(loaded.length ? loaded : []);
+        setSavedCards(loaded.length ? JSON.parse(JSON.stringify(loaded)) : []);
+        setLoading(false);
+      });
+    }
   }, [rolePrefix]);
 
-  // ── Auto-save to localStorage on every cards change (after initial load) ───
-  // Ensures voice-created reports survive navigation and appear in preview.
+  // ── Auto-save on every cards change (after initial load) ───
+  // Controlled mode → notify consumer. Uncontrolled → localStorage fallback.
   useEffect(() => {
-    if (!loading) saveReportConfigLocal(cards, rolePrefix);
+    if (!loading) {
+      if (onCardsUpdate) onCardsUpdate(cards);
+      else saveReportConfigLocal(cards, rolePrefix);
+    }
   }, [cards, loading, rolePrefix]);
 
   // ── Push to history before a batch mutation ───────────────────────────────
@@ -269,7 +284,11 @@ function ReportConfigInner() {
   const doSave = useCallback(async () => {
     setSaving(true);
     try {
-      await saveReportConfig(cardsRef.current, rolePrefix);
+      if (onCardsUpdate) {
+        onCardsUpdate(cardsRef.current);
+      } else {
+        await saveReportConfig(cardsRef.current, rolePrefix);
+      }
       setSavedCards(JSON.parse(JSON.stringify(cardsRef.current)));
       toast.success("Report configuration saved!");
     } catch {
@@ -278,7 +297,7 @@ function ReportConfigInner() {
       setSaving(false);
       setShowDiffModal(false);
     }
-  }, [rolePrefix]);
+  }, [rolePrefix, onCardsUpdate]);
 
   const handleSave = useCallback(async () => {
     const errors = validateCards();
