@@ -3,6 +3,9 @@ import type { ConfigEditorNodeMeta, NodeMeta } from '../types'
 import { useViewRenderer } from '../context/ViewRendererContext'
 import { ConfigEditorRenderer } from './ConfigEditorRenderer'
 import { StoreActivityRenderer } from './StoreActivityRenderer'
+import { ReportsNodeRenderer } from './ReportsNodeRenderer'
+import { FormBuilderModal } from './FormBuilderModal'
+import { ReportsEditModal } from './ReportsEditModal'
 
 export interface FeatureCardItem {
   id: string
@@ -149,6 +152,20 @@ export function MiddleContent({ nodeType, features, onToggleFeature, renderNode 
     return <div style={styles.empty}>Select a node</div>
   }
 
+  if (ctx.currentNodeMeta?.data?.reports_catalog && resolvedNodeType === 'feature_selection') {
+    return (
+      <div style={styles.container}>
+        <ReportsNodeRenderer />
+        {ctx.advancedSettingsTarget && (
+          <ReportsEditModal
+            reportId={ctx.advancedSettingsTarget}
+            onClose={ctx.closeAdvancedSettings}
+          />
+        )}
+      </div>
+    )
+  }
+
   if (resolvedNodeType === 'feature_selection') {
     return (
       <div style={styles.container}>
@@ -168,6 +185,12 @@ export function MiddleContent({ nodeType, features, onToggleFeature, renderNode 
           onToggleActivity={ctx.handleToggleActivity}
           onAdvancedSettings={ctx.handleAdvancedSettings}
         />
+        {ctx.advancedSettingsTarget && (
+          <FormBuilderModal
+            activityId={ctx.advancedSettingsTarget}
+            onClose={ctx.closeAdvancedSettings}
+          />
+        )}
       </div>
     )
   }

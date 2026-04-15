@@ -10,7 +10,8 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
-    }
+    },
+    "./styles": "@aditya-sharma-salescode/shared-ui/dist/index.css"
   },
   "scripts": {
     "build": "tsup",
@@ -21,7 +22,12 @@
     "react-dom": "^18.0.0"
   },
   "dependencies": {
-    "lodash.merge": "^4.6.2"
+    "lodash.merge": "^4.6.2",
+    "react-router-dom": "^6.20.0",
+    "uuid": "^11.1.0",
+    "@aditya-sharma-salescode/reports-setup": "workspace:*",
+    "@aditya-sharma-salescode/form-builder": "workspace:*",
+    "@aditya-sharma-salescode/shared-ui": "workspace:*"
   },
   "devDependencies": {
     "tsup": "^8.0.0",

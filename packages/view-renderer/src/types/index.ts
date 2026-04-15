@@ -27,6 +27,7 @@ export interface NodeMetaBase {
   node_type: string
   node_logo: string
   target_config_keys?: AppTypeKey[]
+  data?: Record<string, unknown>
 }
 
 // ── feature_selection node ──

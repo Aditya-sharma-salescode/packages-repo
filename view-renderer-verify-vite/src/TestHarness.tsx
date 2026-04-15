@@ -4,7 +4,7 @@ import { DiffTab } from "./components/DiffTab";
 import { SaveOutputTab } from "./components/SaveOutputTab";
 import { TopToggleList, MiddleContent, BottomActionBar, ViewRendererProvider, CreateViewMeta } from "view-renderer";
 import { fetchTenantConfig, fetchGlobalConfigs } from "view-renderer";
-import type { ViewMeta, TenantConfig, GlobalFeatureConfig, DraftMap, TenantConfigMap, GlobalConfigMap, AppTypeKey, NodeMeta } from "view-renderer";
+import type { ViewMeta, TenantConfig, GlobalFeatureConfig, DraftMap, TenantConfigMap, GlobalConfigMap, AppTypeKey } from "view-renderer";
 
 type TabKey = "viewMeta" | "tenantConfig" | "globalSchema" | "draftState" | "saveOutput" | "createView";
 
@@ -249,11 +249,6 @@ function savePortalConfig(_draft: TenantConfig): void {
   alert("Portal save pressed");
 }
 
-// TODO: Integrate FormBuilder package for Advanced Settings modal
-// - Import FormBuilder, FormBuilderProvider, useActivityStore from @aditya-sharma-salescode/form-builder
-// - On gear click: seed useActivityStore with activity schema, open modal with FormBuilder in MemoryRouter
-// - On close: read updated schema from store, write back to draft via handleUpdateDraft
-// - Changes already made in form-builder package: VoiceAgentContext returns no-op stub, FormBuilder accepts activityId/onBack/onSchemaChange props
 
 export default function TestHarness() {
   const [leftCollapsed, setLeftCollapsed] = useState(false);
@@ -318,7 +313,10 @@ export default function TestHarness() {
         role: fetchRole || undefined,
         appType: fetchAppType || undefined,
       });
-      setTenantConfigJson(JSON.stringify(config, null, 2));
+      const json = JSON.stringify(config, null, 2);
+      setTenantConfigJson(json);
+      // Immediately parse so draft resets without waiting for the 800ms debounce
+      setTcParsed(safeParse<TenantConfig>(json));
     } catch (err: unknown) {
       setFetchError((err as Error).message || "Failed to fetch");
     } finally {
@@ -666,30 +664,11 @@ export default function TestHarness() {
 
                 console.warn(`[TestHarness] No save handler for configKey: "${configKey}"`);
               }}
-              onAdvancedSettings={(activityId, currentConfig) => {
-                // TODO: Open FormBuilder modal here (see TODO at top of file)
-                console.log('[TestHarness] onAdvancedSettings', { activityId, currentConfig })
-              }}
               onDraftChange={setDraftForDebug}
             >
               <div style={S.rightContent}>
                 <TopToggleList />
-                <MiddleContent
-                  renderNode={(node: NodeMeta) => {
-                    if (node.node_id === "reports") {
-                      return (
-                        <div style={{ padding: 24, textAlign: "center", color: "#6b7280" }}>
-                          <p style={{ fontSize: 14, fontWeight: 500 }}>Reports Setup</p>
-                          <p style={{ fontSize: 12, marginTop: 4 }}>
-                            TODO: Render ManageReports from @aditya-sharma-salescode/reports-setup here.
-                            This component receives full draftMap via useViewRenderer().
-                          </p>
-                        </div>
-                      );
-                    }
-                    return null;
-                  }}
-                />
+                <MiddleContent />
                 <BottomActionBar />
               </div>
             </ViewRendererProvider>

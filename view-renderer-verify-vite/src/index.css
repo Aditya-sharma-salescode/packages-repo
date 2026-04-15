@@ -1,2 +1,7 @@
 @import "tailwindcss";
 @source "./src";
+/* Scan bundled package dists for Tailwind classes */
+@source "../../packages/view-renderer/dist";
+@source "../../packages/shared-ui/dist";
+@source "../../packages/form-builder/dist";
+@source "../../packages/reports-setup/dist";

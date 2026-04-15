@@ -435,6 +435,15 @@ importers:
 
   packages/view-renderer:
     dependencies:
+      '@aditya-sharma-salescode/form-builder':
+        specifier: workspace:*
+        version: link:../form-builder
+      '@aditya-sharma-salescode/reports-setup':
+        specifier: workspace:*
+        version: link:../reports-setup
+      '@aditya-sharma-salescode/shared-ui':
+        specifier: workspace:*
+        version: link:../shared-ui
       lodash.merge:
         specifier: ^4.6.2
         version: 4.6.2
@@ -444,6 +453,12 @@ importers:
       react-dom:
         specifier: ^18.0.0
         version: 18.3.1(react@18.3.1)
+      react-router-dom:
+        specifier: ^6.20.0
+        version: 6.30.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      uuid:
+        specifier: ^11.1.0
+        version: 11.1.0
     devDependencies:
       '@types/lodash.merge':
         specifier: ^4.6.9
@@ -463,6 +478,9 @@ importers:
 
   view-renderer-verify-vite:
     dependencies:
+      '@aditya-sharma-salescode/shared-ui':
+        specifier: workspace:*
+        version: link:../packages/shared-ui
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -3621,6 +3639,10 @@ packages:
   util-deprecate@1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
 
+  uuid@11.1.0:
+    resolution: {integrity: sha512-0/A9rDy9P7cJ+8w1c9WD9V//9Wj15Ce2MPz8Ri6032usz+NfePxx5AcN3bN+r6ZL6jEo066/yNYB3tn4pQEx+A==}
+    hasBin: true
+
   uuid@13.0.0:
     resolution: {integrity: sha512-XQegIaBTVUjSHliKqcnFqYypAd4S+WCYt5NIeRs6w/UAry7z8Y9j5ZwRRL4kzq9U3sD6v+85er9FvkEaBpji2w==}
     hasBin: true
@@ -6644,6 +6666,8 @@ snapshots:
       react: 18.3.1
 
   util-deprecate@1.0.2: {}
+
+  uuid@11.1.0: {}
 
   uuid@13.0.0: {}
 

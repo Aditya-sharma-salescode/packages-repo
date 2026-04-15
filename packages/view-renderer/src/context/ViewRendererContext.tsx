@@ -48,6 +48,8 @@ export interface ViewRendererContextValue {
   handleToggleFeature: (featureId: string, enabled: boolean) => void
   handleToggleActivity: (activityId: string, enabled: boolean) => void
   handleAdvancedSettings: (activityId: string) => void
+  advancedSettingsTarget: string | null
+  closeAdvancedSettings: () => void
   handleUpdateDraft: (path: string, value: unknown, targetKeys?: AppTypeKey[]) => void
   handleSave: () => Promise<void>
   handleDiscard: () => void
@@ -56,7 +58,7 @@ export interface ViewRendererContextValue {
   setTenantConfigMap: (map: TenantConfigMap | null) => void
   setGlobalConfigMap: (map: GlobalConfigMap | null) => void
   setCurrentNodeMeta: (node: NodeMeta | null) => void
-  setDraftMap: (map: DraftMap | null) => void
+  setDraftMap: (map: DraftMap | null | ((prev: DraftMap | null) => DraftMap | null)) => void
 }
 
 const ViewRendererContext = createContext<ViewRendererContextValue | null>(null)
@@ -105,6 +107,7 @@ export function ViewRendererProvider({
     () => cloneConfigMap(initialTenantConfigMap),
   )
   const [isSaving, setIsSaving] = useState(false)
+  const [advancedSettingsTarget, setAdvancedSettingsTarget] = useState<string | null>(null)
   const [activeNodeId, setActiveNodeId] = useState<string>(
     () => initialViewMeta?.nodes[0]?.node_id ?? '',
   )
@@ -279,13 +282,18 @@ export function ViewRendererProvider({
   }, [viewMeta, draftMap, tenantConfigMap, allConfigKeys])
 
   const handleAdvancedSettings = useCallback((activityId: string) => {
-    if (!draftMap) return
-    // Read from first available config key
-    const firstKey = allConfigKeys[0]
-    const currentConfig = firstKey ? draftMap[firstKey]?.features[activityId]?.config ?? null : null
-    console.log('[ViewRenderer] advancedSettings fired', { activityId, hasCallback: !!onAdvancedSettings, currentConfig })
-    onAdvancedSettings?.(activityId, currentConfig as Record<string, unknown> | null)
+    console.log('[ViewRenderer] advancedSettings pressed', { activityId, willOpenModal: true })
+    setAdvancedSettingsTarget(activityId)
+    if (onAdvancedSettings && draftMap) {
+      const firstKey = allConfigKeys[0]
+      const currentConfig = firstKey ? draftMap[firstKey]?.features[activityId]?.config ?? null : null
+      onAdvancedSettings(activityId, currentConfig as Record<string, unknown> | null)
+    }
   }, [draftMap, allConfigKeys, onAdvancedSettings])
+
+  const closeAdvancedSettings = useCallback(() => {
+    setAdvancedSettingsTarget(null)
+  }, [])
 
   const handleUpdateDraft = useCallback((path: string, value: unknown, targetKeys?: AppTypeKey[]) => {
     setDraftMap((prev) => {
@@ -386,6 +394,8 @@ export function ViewRendererProvider({
     handleToggleFeature,
     handleToggleActivity,
     handleAdvancedSettings,
+    advancedSettingsTarget,
+    closeAdvancedSettings,
     handleUpdateDraft,
     handleSave,
     handleDiscard,
