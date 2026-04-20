@@ -272,67 +272,6 @@ export const AppPwaPreview = forwardRef<AppPwaPreviewHandle, AppPwaPreviewProps>
         title="App Preview"
         allow="clipboard-write"
       />
-      {status === 'loading' && (
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 12,
-            background: 'rgba(255,255,255,0.8)',
-            borderRadius: '8px',
-            fontSize: '14px',
-            color: '#666',
-          }}
-        >
-          <style>{`
-            @keyframes shimmer {
-              0% { background-position: -200% 0; }
-              100% { background-position: 200% 0; }
-            }
-          `}</style>
-          <div style={{ width: '80%', maxWidth: 260, display: 'flex', flexDirection: 'column', gap: 12 }}>
-            <div style={{
-              height: 40, width: '100%', borderRadius: 6,
-              background: 'linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%)',
-              backgroundSize: '200% 100%', animation: 'shimmer 1.5s infinite ease-in-out',
-            }} />
-            <div style={{
-              height: 16, width: '80%', borderRadius: 4,
-              background: 'linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%)',
-              backgroundSize: '200% 100%', animation: 'shimmer 1.5s infinite ease-in-out',
-            }} />
-            <div style={{
-              height: 16, width: '60%', borderRadius: 4,
-              background: 'linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%)',
-              backgroundSize: '200% 100%', animation: 'shimmer 1.5s infinite ease-in-out',
-            }} />
-            <div style={{
-              height: 16, width: '70%', borderRadius: 4,
-              background: 'linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%)',
-              backgroundSize: '200% 100%', animation: 'shimmer 1.5s infinite ease-in-out',
-            }} />
-          </div>
-          <button
-            onClick={reload}
-            style={{
-              fontSize: 12,
-              padding: '5px 16px',
-              background: '#0d9488',
-              color: '#fff',
-              border: 'none',
-              borderRadius: 6,
-              cursor: 'pointer',
-              fontWeight: 500,
-            }}
-          >
-            Retry
-          </button>
-        </div>
-      )}
     </div>
   )
 })
