@@ -51,4 +51,22 @@ jobs:
       - name: Publish workspaces
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GH_PACKAGES_TOKEN }}
-        run: pnpm -r publish --access=restricted --no-git-checks
+        run: |
+          publish_pkg() {
+            local dir="$1"
+            local name version output
+            name=$(node -p "require('./${dir}/package.json').name")
+            version=$(node -p "require('./${dir}/package.json').version")
+            echo "→ ${name}@${version}"
+            output=$(cd "${dir}" && npm publish --access=restricted --no-git-checks 2>&1) && { echo "  published"; return 0; }
+            echo "${output}" | grep -qE "EPUBLISHCONFLICT|already been published|cannot publish over|E409|E422" \
+              && { echo "  already published, skipping"; return 0; }
+            echo "${output}"; return 1
+          }
+
+          find packages -maxdepth 1 -mindepth 1 -type d | sort | while read dir; do
+            [ -f "${dir}/package.json" ] || continue
+            private=$(node -p "require('./${dir}/package.json').private // false")
+            [ "${private}" = "false" ] || continue
+            publish_pkg "${dir}" || exit 1
+          done
