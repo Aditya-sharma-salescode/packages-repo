@@ -34,7 +34,7 @@ export async function fetchTenantConfig(
 export async function fetchGlobalConfigs(
   baseUrl: string,
 ): Promise<GlobalFeatureConfig[]> {
-  const res = await fetch(`${baseUrl}/app/resolved_config`)
+  const res = await fetch(`${baseUrl}/global/`)
   if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`)
   const data = await res.json()
   const configs = data.config ?? data
