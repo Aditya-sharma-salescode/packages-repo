@@ -30,6 +30,10 @@ export interface ViewRendererContextValue {
   viewMeta: ViewMeta | null
   currentNodeMeta: NodeMeta | null
 
+  // PWA preview config (passed from host)
+  pwaUrl: string | null
+  pwaToken: string | null
+
   // Mutable drafts (working copies being edited)
   draftMap: DraftMap | null
 
@@ -48,6 +52,8 @@ export interface ViewRendererContextValue {
   handleToggleFeature: (featureId: string, enabled: boolean) => void
   handleToggleActivity: (activityId: string, enabled: boolean) => void
   handleAdvancedSettings: (activityId: string) => void
+  advancedSettingsTarget: string | null
+  closeAdvancedSettings: () => void
   handleUpdateDraft: (path: string, value: unknown, targetKeys?: AppTypeKey[]) => void
   handleSave: () => Promise<void>
   handleDiscard: () => void
@@ -56,7 +62,7 @@ export interface ViewRendererContextValue {
   setTenantConfigMap: (map: TenantConfigMap | null) => void
   setGlobalConfigMap: (map: GlobalConfigMap | null) => void
   setCurrentNodeMeta: (node: NodeMeta | null) => void
-  setDraftMap: (map: DraftMap | null) => void
+  setDraftMap: (map: DraftMap | null | ((prev: DraftMap | null) => DraftMap | null)) => void
 }
 
 const ViewRendererContext = createContext<ViewRendererContextValue | null>(null)
@@ -73,6 +79,8 @@ export interface ViewRendererProviderProps {
   onSaveError?: (nodeType: string, configKey: AppTypeKey, error: Error) => void
   onAdvancedSettings?: (activityId: string, currentConfig: Record<string, unknown> | null) => void
   onDraftChange?: (draftMap: DraftMap | null) => void
+  pwaUrl?: string
+  pwaToken?: string
 }
 
 function cloneConfigMap(map: TenantConfigMap | null | undefined): DraftMap | null {
@@ -96,6 +104,8 @@ export function ViewRendererProvider({
   onSaveError,
   onAdvancedSettings,
   onDraftChange,
+  pwaUrl,
+  pwaToken,
 }: ViewRendererProviderProps) {
   const [tenantConfigMap, setTenantConfigMap] = useState<TenantConfigMap | null>(initialTenantConfigMap)
   const [globalConfigMap, setGlobalConfigMap] = useState<GlobalConfigMap | null>(initialGlobalConfigMap)
@@ -105,6 +115,7 @@ export function ViewRendererProvider({
     () => cloneConfigMap(initialTenantConfigMap),
   )
   const [isSaving, setIsSaving] = useState(false)
+  const [advancedSettingsTarget, setAdvancedSettingsTarget] = useState<string | null>(null)
   const [activeNodeId, setActiveNodeId] = useState<string>(
     () => initialViewMeta?.nodes[0]?.node_id ?? '',
   )
@@ -279,13 +290,18 @@ export function ViewRendererProvider({
   }, [viewMeta, draftMap, tenantConfigMap, allConfigKeys])
 
   const handleAdvancedSettings = useCallback((activityId: string) => {
-    if (!draftMap) return
-    // Read from first available config key
-    const firstKey = allConfigKeys[0]
-    const currentConfig = firstKey ? draftMap[firstKey]?.features[activityId]?.config ?? null : null
-    console.log('[ViewRenderer] advancedSettings fired', { activityId, hasCallback: !!onAdvancedSettings, currentConfig })
-    onAdvancedSettings?.(activityId, currentConfig as Record<string, unknown> | null)
+    console.log('[ViewRenderer] advancedSettings pressed', { activityId, willOpenModal: true })
+    setAdvancedSettingsTarget(activityId)
+    if (onAdvancedSettings && draftMap) {
+      const firstKey = allConfigKeys[0]
+      const currentConfig = firstKey ? draftMap[firstKey]?.features[activityId]?.config ?? null : null
+      onAdvancedSettings(activityId, currentConfig as Record<string, unknown> | null)
+    }
   }, [draftMap, allConfigKeys, onAdvancedSettings])
+
+  const closeAdvancedSettings = useCallback(() => {
+    setAdvancedSettingsTarget(null)
+  }, [])
 
   const handleUpdateDraft = useCallback((path: string, value: unknown, targetKeys?: AppTypeKey[]) => {
     setDraftMap((prev) => {
@@ -373,6 +389,8 @@ export function ViewRendererProvider({
     globalConfigMap,
     viewMeta,
     currentNodeMeta: activeNodeMeta ?? currentNodeMeta,
+    pwaUrl: pwaUrl ?? null,
+    pwaToken: pwaToken ?? null,
     draftMap,
     nodeTabs,
     activeNodeId,
@@ -386,6 +404,8 @@ export function ViewRendererProvider({
     handleToggleFeature,
     handleToggleActivity,
     handleAdvancedSettings,
+    advancedSettingsTarget,
+    closeAdvancedSettings,
     handleUpdateDraft,
     handleSave,
     handleDiscard,

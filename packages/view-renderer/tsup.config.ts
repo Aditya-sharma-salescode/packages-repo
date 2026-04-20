@@ -7,5 +7,10 @@ export default defineConfig({
   splitting: false,
   sourcemap: true,
   clean: true,
-  external: ["react", "react-dom"],
+  external: ["react", "react-dom", "uuid"],
+  noExternal: [
+    "@aditya-sharma-salescode/reports-setup",
+    "@aditya-sharma-salescode/form-builder",
+    "react-router-dom",
+  ],
 });

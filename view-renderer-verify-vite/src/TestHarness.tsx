@@ -1,10 +1,27 @@
-import { useState, useEffect, useCallback, useMemo, type CSSProperties } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef, type CSSProperties } from "react";
+
+/** Hook: measure an element's size via ResizeObserver */
+function useElementSize<T extends HTMLElement>() {
+  const ref = useRef<T>(null);
+  const [size, setSize] = useState({ width: 0, height: 0 });
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const ro = new ResizeObserver(([entry]) => {
+      const { width, height } = entry.contentRect;
+      setSize({ width, height });
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+  return { ref, size };
+}
 import { JsonTab } from "./components/JsonTab";
 import { DiffTab } from "./components/DiffTab";
 import { SaveOutputTab } from "./components/SaveOutputTab";
-import { TopToggleList, MiddleContent, BottomActionBar, ViewRendererProvider, CreateViewMeta } from "view-renderer";
+import { TopToggleList, MiddleContent, BottomActionBar, ViewRendererProvider, CreateViewMeta, PhoneMockup, AppPwaPreview } from "view-renderer";
 import { fetchTenantConfig, fetchGlobalConfigs } from "view-renderer";
-import type { ViewMeta, TenantConfig, GlobalFeatureConfig, DraftMap, TenantConfigMap, GlobalConfigMap, AppTypeKey, NodeMeta } from "view-renderer";
+import type { ViewMeta, TenantConfig, GlobalFeatureConfig, DraftMap, TenantConfigMap, GlobalConfigMap, AppTypeKey, AppPwaPreviewHandle, PwaStatus } from "view-renderer";
 
 type TabKey = "viewMeta" | "tenantConfig" | "globalSchema" | "draftState" | "saveOutput" | "createView";
 
@@ -163,17 +180,73 @@ const S = {
     display: "flex",
     flexDirection: "column",
     minHeight: 0,
-    overflow: "auto",
+    overflow: "hidden",
     background: "#fff",
   } as CSSProperties,
   rightContent: {
     display: "flex",
-    flexDirection: "column",
-    minHeight: "100%",
-    maxWidth: 900,
-    margin: "0 auto",
+    flex: 1,
+    minHeight: 0,
     width: "100%",
+    gap: 16,
+    overflow: "hidden",
+  } as CSSProperties,
+  rightContentLeft: {
+    display: "flex",
+    flexDirection: "column",
+    flex: 1,
+    minHeight: 0,
+    minWidth: 0,
     padding: "0 16px",
+    overflow: "auto",
+  } as CSSProperties,
+  rightContentRight: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    flexShrink: 0,
+    padding: "12px 16px 12px 0",
+    gap: 8,
+    overflow: "auto",
+    minHeight: 0,
+  } as CSSProperties,
+  previewBtn: (status: string): CSSProperties => ({
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+    padding: "8px 32px",
+    fontSize: 13,
+    fontWeight: 600,
+    color: "#fff",
+    background: status === "applying" ? "#6b7280" : "#0d9488",
+    border: "none",
+    borderRadius: 8,
+    cursor: status === "loading" || status === "applying" ? "not-allowed" : "pointer",
+    opacity: status === "loading" ? 0.5 : 1,
+    transition: "all 0.15s ease",
+    minWidth: 120,
+  }),
+  spinner: {
+    display: "inline-block",
+    width: 14,
+    height: 14,
+    border: "2px solid rgba(255,255,255,0.3)",
+    borderTopColor: "#fff",
+    borderRadius: "50%",
+    animation: "spin 0.6s linear infinite",
+  } as CSSProperties,
+  previewErrorBanner: {
+    background: "#fef2f2",
+    border: "1px solid #fecaca",
+    color: "#dc2626",
+    fontSize: 12,
+    padding: "6px 12px",
+    borderRadius: 6,
+    display: "flex",
+    alignItems: "center",
+    maxWidth: "100%",
+    textAlign: "center",
   } as CSSProperties,
   placeholder: {
     display: "flex",
@@ -189,6 +262,23 @@ const S = {
     textAlign: "center",
   } as CSSProperties,
 } as const;
+
+// ── PWA URL builder ──
+
+/** Build PWA URL with tenant/auth query params for iframe embedding. */
+function getPwaUrl(
+  baseUrl: string,
+  params: { tenant: string; token?: string; playground?: boolean },
+): string {
+  const url = new URL(baseUrl);
+  url.searchParams.set("tenant", params.tenant);
+  if (params.token) url.searchParams.set("token", params.token);
+  if (params.playground) {
+    url.searchParams.set("playground", "true");
+    url.searchParams.set("origin", window.location.origin);
+  }
+  return url.toString();
+}
 
 // ── Multi-config helpers ──
 
@@ -249,11 +339,6 @@ function savePortalConfig(_draft: TenantConfig): void {
   alert("Portal save pressed");
 }
 
-// TODO: Integrate FormBuilder package for Advanced Settings modal
-// - Import FormBuilder, FormBuilderProvider, useActivityStore from @aditya-sharma-salescode/form-builder
-// - On gear click: seed useActivityStore with activity schema, open modal with FormBuilder in MemoryRouter
-// - On close: read updated schema from store, write back to draft via handleUpdateDraft
-// - Changes already made in form-builder package: VoiceAgentContext returns no-op stub, FormBuilder accepts activityId/onBack/onSchemaChange props
 
 export default function TestHarness() {
   const [leftCollapsed, setLeftCollapsed] = useState(false);
@@ -296,9 +381,49 @@ export default function TestHarness() {
   // Draft observation from provider (for debug panel)
   const [draftForDebug, setDraftForDebug] = useState<DraftMap | null>(null);
 
+  // PWA Preview settings (passed to ViewRendererProvider)
+  const [pwaBaseUrl, setPwaBaseUrl] = useState("http://localhost:8080");
+  const [pwaToken, setPwaToken] = useState("");
+
+  // Build full PWA URL with tenant query params
+  const pwaUrl = useMemo(
+    () => {
+      if (!pwaBaseUrl) return "";
+      try {
+        return getPwaUrl(pwaBaseUrl, {
+          tenant: fetchTenant,
+          token: pwaToken || undefined,
+          playground: true,
+        });
+      } catch {
+        return pwaBaseUrl; // fallback if URL is invalid
+      }
+    },
+    [pwaBaseUrl, fetchTenant, pwaToken],
+  );
+  const [livePreview, setLivePreview] = useState(false);
+  const previewRef = useRef<AppPwaPreviewHandle>(null);
+  const [previewStatus, setPreviewStatus] = useState<PwaStatus>('loading');
+  const [previewError, setPreviewError] = useState<string | null>(null);
+
   // Save status from provider callbacks
   const [updateError, setUpdateError] = useState<string | null>(null);
   const [updateSuccess, setUpdateSuccess] = useState<string | null>(null);
+
+  // Dynamic phone sizing — measure the right-side container and fit the phone
+  const { ref: phoneContainerRef, size: phoneContainerSize } = useElementSize<HTMLDivElement>();
+  const PHONE_ASPECT = 375 / 720; // width / height (screen only)
+  const BEZEL_EXTRA_H = 12 * 2 + 24 + 4 + 8; // bezel top+bottom + notch + home + gap
+  const BEZEL_EXTRA_W = 12 * 2; // bezel left+right
+  const BUTTON_AREA = 64; // preview button + toggle + error banner space
+  const SCALE = 0.85; // shrink phone to avoid overflow
+  const phoneDims = useMemo(() => {
+    const availH = phoneContainerSize.height - BUTTON_AREA;
+    if (availH <= 0) return { w: 320, h: 600 };
+    const screenH = Math.round((availH - BEZEL_EXTRA_H) * SCALE);
+    const screenW = Math.round(screenH * PHONE_ASPECT);
+    return { w: Math.max(screenW, 180), h: Math.max(screenH, 340) };
+  }, [phoneContainerSize.height]);
 
   const CONFIG_BASE_URL = "http://localhost:3000";
 
@@ -318,7 +443,10 @@ export default function TestHarness() {
         role: fetchRole || undefined,
         appType: fetchAppType || undefined,
       });
-      setTenantConfigJson(JSON.stringify(config, null, 2));
+      const json = JSON.stringify(config, null, 2);
+      setTenantConfigJson(json);
+      // Immediately parse so draft resets without waiting for the 800ms debounce
+      setTcParsed(safeParse<TenantConfig>(json));
     } catch (err: unknown) {
       setFetchError((err as Error).message || "Failed to fetch");
     } finally {
@@ -515,6 +643,15 @@ export default function TestHarness() {
                           <option value="sfa">sfa</option>
                         </select>
                       </div>
+                      <div style={{ borderTop: "1px solid #e5e7eb", paddingTop: 6, marginTop: 2 }}>
+                        <div style={{ fontSize: 10, color: "#9ca3af", marginBottom: 4 }}>PWA Preview</div>
+                        <div style={S.fetchRow}>
+                          <label style={S.label}>URL</label>
+                          <input style={S.input} value={pwaBaseUrl} onChange={(e) => setPwaBaseUrl(e.target.value)} placeholder="http://localhost:8080" />
+                          <label style={{ ...S.label, width: 40 }}>Token</label>
+                          <input style={S.input} value={pwaToken} onChange={(e) => setPwaToken(e.target.value)} placeholder="JWT (optional)" />
+                        </div>
+                      </div>
                     </>
                   )}
                 </div>
@@ -591,6 +728,7 @@ export default function TestHarness() {
                 </div>
               </div>
             )}
+
           </div>
         </div>
 
@@ -633,7 +771,7 @@ export default function TestHarness() {
           ...S.rightPanel,
           width: rightCollapsed ? 0 : undefined,
           minWidth: rightCollapsed ? 0 : undefined,
-          overflow: rightCollapsed ? "hidden" : "auto",
+          overflow: "hidden",
           flex: rightCollapsed ? "0 0 0px" : 1,
           transition: "flex 0.25s ease, width 0.25s ease",
         }}>
@@ -666,31 +804,81 @@ export default function TestHarness() {
 
                 console.warn(`[TestHarness] No save handler for configKey: "${configKey}"`);
               }}
-              onAdvancedSettings={(activityId, currentConfig) => {
-                // TODO: Open FormBuilder modal here (see TODO at top of file)
-                console.log('[TestHarness] onAdvancedSettings', { activityId, currentConfig })
-              }}
               onDraftChange={setDraftForDebug}
+              pwaUrl={pwaUrl || undefined}
+              pwaToken={pwaToken || undefined}
             >
               <div style={S.rightContent}>
-                <TopToggleList />
-                <MiddleContent
-                  renderNode={(node: NodeMeta) => {
-                    if (node.node_id === "reports") {
-                      return (
-                        <div style={{ padding: 24, textAlign: "center", color: "#6b7280" }}>
-                          <p style={{ fontSize: 14, fontWeight: 500 }}>Reports Setup</p>
-                          <p style={{ fontSize: 12, marginTop: 4 }}>
-                            TODO: Render ManageReports from @aditya-sharma-salescode/reports-setup here.
-                            This component receives full draftMap via useViewRenderer().
-                          </p>
-                        </div>
-                      );
-                    }
-                    return null;
-                  }}
-                />
-                <BottomActionBar />
+                <div style={S.rightContentLeft}>
+                  <TopToggleList />
+                  <MiddleContent />
+                  <BottomActionBar />
+                </div>
+                {pwaUrl && (
+                  <div ref={phoneContainerRef} style={S.rightContentRight}>
+                    {/* Live Preview toggle */}
+                    <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: '#4b5563', cursor: 'pointer', userSelect: 'none', flexShrink: 0 }}>
+                      <span style={{ fontWeight: 500, letterSpacing: '0.02em' }}>Live Preview</span>
+                      <div
+                        onClick={() => setLivePreview((v) => !v)}
+                        style={{
+                          width: 32,
+                          height: 18,
+                          borderRadius: 9,
+                          background: livePreview ? '#0d9488' : '#d1d5db',
+                          position: 'relative',
+                          transition: 'background 0.2s',
+                          cursor: 'pointer',
+                          flexShrink: 0,
+                        }}
+                      >
+                        <div style={{
+                          width: 14,
+                          height: 14,
+                          borderRadius: '50%',
+                          background: '#fff',
+                          position: 'absolute',
+                          top: 2,
+                          left: livePreview ? 16 : 2,
+                          transition: 'left 0.2s',
+                          boxShadow: '0 1px 2px rgba(0,0,0,0.18)',
+                        }} />
+                      </div>
+                    </label>
+                    <PhoneMockup width={phoneDims.w} height={phoneDims.h}>
+                      <AppPwaPreview
+                        ref={previewRef}
+                        pwaUrl={pwaUrl}
+                        token={pwaToken || undefined}
+                        manualMode={!livePreview}
+                        onStatusChange={setPreviewStatus}
+                        onError={(msg) => setPreviewError(msg)}
+                        style={{ width: '100%', height: '100%' }}
+                      />
+                    </PhoneMockup>
+                    {!livePreview && (
+                      <button
+                        style={{ ...S.previewBtn(previewStatus), padding: '6px 24px', fontSize: 12 }}
+                        disabled={previewStatus === 'loading' || previewStatus === 'applying'}
+                        onClick={() => {
+                          setPreviewError(null);
+                          previewRef.current?.sendConfig();
+                        }}
+                      >
+                        {previewStatus === 'applying' && (
+                          <span style={S.spinner} />
+                        )}
+                        {previewStatus === 'applying' ? 'Applying…' : 'Preview'}
+                      </button>
+                    )}
+                    {previewError && (
+                      <div style={S.previewErrorBanner}>
+                        {previewError}
+                        <span style={{ cursor: 'pointer', marginLeft: 8, fontWeight: 600 }} onClick={() => setPreviewError(null)}>×</span>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             </ViewRendererProvider>
           ) : (

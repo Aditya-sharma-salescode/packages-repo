@@ -18,6 +18,24 @@ export interface ViewMeta {
   nodes: NodeMeta[]
 }
 
+// ── Preview config (per-node) ──
+
+export interface PreviewConfig {
+  type: 'pwa' | 'desktop' | 'web'
+  url?: string
+  /** Simple GoRouter path for stateless screens (e.g. "/home") */
+  route?: string
+  /** Playground action name for stateful screens (e.g. "preview_screen") */
+  action?: string
+  /** Target screen identifier used by the Flutter PlaygroundNavigator */
+  screen?: string
+  /** Optional params passed to the action handler (e.g. { outlet_code: "..." }) */
+  params?: Record<string, unknown>
+  width?: number
+  height?: number
+  label?: string
+}
+
 // ── Base node shape ──
 
 export interface NodeMetaBase {
@@ -27,6 +45,8 @@ export interface NodeMetaBase {
   node_type: string
   node_logo: string
   target_config_keys?: AppTypeKey[]
+  data?: Record<string, unknown>
+  preview?: PreviewConfig
 }
 
 // ── feature_selection node ──

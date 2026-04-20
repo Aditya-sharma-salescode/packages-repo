@@ -88,3 +88,8 @@ export function useVoiceAgentContext(): VoiceAgentContextValue {
   }
   return ctx;
 }
+
+/** Returns null when no VoiceAgentProvider is in the tree (instead of throwing). */
+export function useVoiceAgentContextOptional(): VoiceAgentContextValue | null {
+  return useContext(VoiceAgentContext);
+}

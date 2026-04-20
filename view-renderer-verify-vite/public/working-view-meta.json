@@ -8,7 +8,10 @@
       "node_logo": "",
       "node_description": "Toggle and configure app features",
       "node_type": "feature_selection",
-      "target_config_keys": ["app"],
+      "target_config_keys": [
+        "app"
+      ],
+      "preview": { "type": "pwa", "screen": "home", "action": "preview_screen" },
       "children": [
         {
           "feature_id": "recommendations",
@@ -48,7 +51,10 @@
       "node_logo": "",
       "node_description": "Configure task cards for field reps — toggle on/off, reorder, and edit labels and data points",
       "node_type": "config_editor",
-      "target_config_keys": ["app"],
+      "target_config_keys": [
+        "app"
+      ],
+      "preview": { "type": "pwa", "screen": "home", "action": "preview_screen" },
       "config": [
         {
           "field_id": "home_tasks",
@@ -111,7 +117,6 @@
             }
           ],
           "item_fields": [
-            
             {
               "field_id": "task_label",
               "target_path": "features.home.config.tasks.*.label",
@@ -130,14 +135,16 @@
         }
       ]
     },
-
     {
       "node_id": "kpi_config",
       "node_label": "KPIs",
       "node_logo": "",
       "node_description": "Select and configure KPI scorecards — toggle on/off, reorder, edit labels and data points",
       "node_type": "config_editor",
-      "target_config_keys": ["app"],
+      "target_config_keys": [
+        "app"
+      ],
+      "preview": { "type": "pwa", "screen": "home", "action": "preview_screen" },
       "config": [
         {
           "field_id": "kpi_list",
@@ -992,7 +999,10 @@
       "node_logo": "",
       "node_description": "Select store-level activities and configure the data capture form for each. Use advanced settings to customize fields.",
       "node_type": "store_activity",
-      "target_config_keys": ["app"],
+      "target_config_keys": [
+        "app"
+      ],
+      "preview": { "type": "pwa", "screen": "outlet_detail", "action": "preview_screen" },
       "children": [
         {
           "activity_id": "merchandising",
@@ -1155,16 +1165,155 @@
       "node_logo": "",
       "node_description": "Select reports to include in your app. Click on a report to configure its filters.",
       "node_type": "feature_selection",
-      "target_config_keys": ["app"],
-      "children": []
+      "target_config_keys": [
+        "portal"
+      ],
+      "children": [],
+      "data": {
+        "reports_catalog": [
+          {
+            "id": "brand_visibility_report",
+            "name": "Brand Visibility Report",
+            "type": "New Reports",
+            "description": "Brand Visibility Report",
+            "getAPI": "https://datastream-saleshub-qa.salescodeai.com",
+            "disableValidation": true,
+            "reportName": "brand_visibility_report",
+            "isDistributorView": true,
+            "dateRangeFilter": true,
+            "isLiveReport": true,
+            "shouldShowCustomFilters": true
+          },
+          {
+            "id": "attendance_report",
+            "name": "Attendance Report",
+            "type": "New Reports",
+            "description": "Attendance Report",
+            "getAPI": "https://datastream-saleshub-qa.salescodeai.com",
+            "disableValidation": true,
+            "reportName": "attendance_report",
+            "isDistributorView": true,
+            "dateRangeFilter": true,
+            "isLiveReport": true,
+            "shouldShowCustomFilters": true
+          },
+          {
+            "id": "customer_facing_time_cft_report",
+            "name": "Customer Facing Time (CFT) Report",
+            "type": "New Reports",
+            "description": "Customer Facing Time (CFT) Report",
+            "getAPI": "https://datastream-saleshub-qa.salescodeai.com",
+            "disableValidation": true,
+            "reportName": "customer_facing_time_cft_report",
+            "isDistributorView": true,
+            "dateRangeFilter": true,
+            "isLiveReport": true,
+            "shouldShowCustomFilters": true
+          },
+          {
+            "id": "dvd_display_visibility_report",
+            "name": "DVD Display Visibility Report",
+            "type": "New Reports",
+            "description": "DVD Display Visibility Report",
+            "getAPI": "https://datastream-saleshub-qa.salescodeai.com",
+            "disableValidation": true,
+            "reportName": "dvd_display_visibility_report",
+            "isDistributorView": true,
+            "dateRangeFilter": true,
+            "isLiveReport": true,
+            "shouldShowCustomFilters": true
+          },
+          {
+            "id": "employee_leave_utilization_report",
+            "name": "Employee Leave Utilization Report",
+            "type": "New Reports",
+            "description": "Employee Leave Utilization Report",
+            "getAPI": "https://datastream-saleshub-qa.salescodeai.com",
+            "disableValidation": true,
+            "reportName": "employee_leave_utilization_report",
+            "isDistributorView": true,
+            "dateRangeFilter": true,
+            "isLiveReport": true,
+            "shouldShowCustomFilters": true
+          },
+          {
+            "id": "gate_meeting_report",
+            "name": "Gate Meeting Report",
+            "type": "New Reports",
+            "description": "Gate Meeting Report",
+            "getAPI": "https://datastream-saleshub-qa.salescodeai.com",
+            "disableValidation": true,
+            "reportName": "gate_meeting_report",
+            "isDistributorView": true,
+            "dateRangeFilter": true,
+            "isLiveReport": true,
+            "shouldShowCustomFilters": true
+          },
+          {
+            "id": "market_visit_report",
+            "name": "Market Visit Report",
+            "type": "New Reports",
+            "description": "Market Visit Report",
+            "getAPI": "https://datastream-saleshub-qa.salescodeai.com",
+            "disableValidation": true,
+            "reportName": "market_visit_report",
+            "isDistributorView": true,
+            "dateRangeFilter": true,
+            "isLiveReport": true,
+            "shouldShowCustomFilters": true
+          },
+          {
+            "id": "program_identifier_stock_check_report",
+            "name": "Program Identifier Stock Check Report",
+            "type": "New Reports",
+            "description": "Program Identifier Stock Check Report",
+            "getAPI": "https://datastream-saleshub-qa.salescodeai.com",
+            "disableValidation": true,
+            "reportName": "program_identifier_stock_check_report",
+            "isDistributorView": true,
+            "dateRangeFilter": true,
+            "isLiveReport": true,
+            "shouldShowCustomFilters": true
+          },
+          {
+            "id": "rural_order_report",
+            "name": "Rural Order Report",
+            "type": "New Reports",
+            "description": "Rural Order Report",
+            "getAPI": "https://datastream-saleshub-qa.salescodeai.com",
+            "disableValidation": true,
+            "reportName": "rural_order_report",
+            "isDistributorView": true,
+            "dateRangeFilter": true,
+            "isLiveReport": true,
+            "shouldShowCustomFilters": true
+          },
+          {
+            "id": "rural_retailer_enrolment_report",
+            "name": "Rural Retailer Enrolment Report",
+            "type": "New Reports",
+            "description": "Rural Retailer Enrolment Report",
+            "getAPI": "https://datastream-saleshub-qa.salescodeai.com",
+            "disableValidation": true,
+            "reportName": "rural_retailer_enrolment_report",
+            "isDistributorView": true,
+            "dateRangeFilter": true,
+            "isLiveReport": true,
+            "shouldShowCustomFilters": true
+          }
+        ]
+      }
     },
-     {
+    {
       "node_id": "brand_settings",
       "node_label": "Brand & Theming",
       "node_logo": "",
       "node_description": "Visual branding overrides — colors, logos, fonts",
       "node_type": "config_editor",
-      "target_config_keys": ["app"],
+      "target_config_keys": [
+        "app"
+      ],
+      "preview": { "type": "pwa", "screen": "home", "action": "preview_screen" },
       "config": [
         {
           "field_id": "primary_color",
