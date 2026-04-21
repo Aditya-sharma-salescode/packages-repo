@@ -2,6 +2,7 @@ import { useState, useRef, type CSSProperties } from 'react'
 import type { ConfigEditorField } from '../types'
 import { reorderItem, updateItemField, toggleItem } from '../utils/arrayOps'
 import { FieldRenderer } from './FieldRenderer'
+import { t } from '../theme'
 
 type AnyObj = Record<string, unknown>
 
@@ -53,7 +54,7 @@ const S = {
   } as CSSProperties,
   heading: {
     fontSize: 13,
-    color: '#6b7280',
+    color: t.fgMuted,
     marginBottom: 12,
   } as CSSProperties,
   list: {
@@ -66,17 +67,17 @@ const S = {
     overflow: 'hidden',
     transition: isDragging ? 'none' : 'all 0.15s ease',
     border: expanded
-      ? '1.5px solid rgba(13,148,136,0.35)'
+      ? `1.5px solid ${t.p35}`
       : isDragOver
-        ? '1.5px dashed rgba(13,148,136,0.4)'
+        ? `1.5px dashed ${t.p40}`
         : enabled
-          ? '1px solid rgba(13,148,136,0.2)'
-          : '1px solid #e5e7eb',
+          ? `1px solid ${t.p20}`
+          : `1px solid ${t.border}`,
     background: isDragging
-      ? 'rgba(13,148,136,0.04)'
+      ? t.p04
       : enabled
-        ? 'rgba(13,148,136,0.03)'
-        : '#fafafa',
+        ? t.p03
+        : t.card,
     opacity: enabled ? 1 : 0.65,
     boxShadow: isDragging ? '0 8px 24px rgba(0,0,0,0.12)' : 'none',
   }),
@@ -90,7 +91,7 @@ const S = {
     cursor: enabled ? 'grab' : 'default',
     padding: 4,
     borderRadius: 4,
-    color: '#9ca3af',
+    color: t.fgMuted,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -102,7 +103,7 @@ const S = {
     width: 38,
     height: 22,
     borderRadius: 11,
-    background: on ? '#0d9488' : '#d1d5db',
+    background: on ? t.primary : t.border,
     position: 'relative',
     cursor: 'pointer',
     transition: 'background 0.15s ease',
@@ -112,7 +113,7 @@ const S = {
     width: 18,
     height: 18,
     borderRadius: '50%',
-    background: '#fff',
+    background: t.primaryFg,
     position: 'absolute',
     top: 2,
     left: on ? 18 : 2,
@@ -128,8 +129,8 @@ const S = {
     justifyContent: 'center',
     fontSize: 10,
     fontWeight: 700,
-    background: 'rgba(13,148,136,0.15)',
-    color: '#0d9488',
+    background: t.p15,
+    color: t.primary,
     flexShrink: 0,
   } as CSSProperties,
   labelCol: {
@@ -139,11 +140,11 @@ const S = {
   itemLabel: {
     fontSize: 14,
     fontWeight: 500,
-    color: '#111827',
+    color: t.fg,
   } as CSSProperties,
   itemSubtitle: {
     fontSize: 12,
-    color: '#6b7280',
+    color: t.fgMuted,
     marginLeft: 8,
   } as CSSProperties,
   settingsBtn: (expanded: boolean): CSSProperties => ({
@@ -157,27 +158,27 @@ const S = {
     justifyContent: 'center',
     flexShrink: 0,
     transition: 'all 0.15s ease',
-    background: expanded ? 'rgba(13,148,136,0.15)' : '#f3f4f6',
-    color: expanded ? '#0d9488' : '#9ca3af',
+    background: expanded ? t.p15 : t.muted,
+    color: expanded ? t.primary : t.fgMuted,
   }),
   activeBadge: {
     fontSize: 10,
     fontWeight: 500,
     padding: '3px 10px',
     borderRadius: 10,
-    color: '#0d9488',
-    background: 'rgba(13,148,136,0.1)',
+    color: t.primary,
+    background: t.p10,
     flexShrink: 0,
     whiteSpace: 'nowrap' as const,
   } as CSSProperties,
   expandedBody: {
-    borderTop: '1px solid #e5e7eb',
+    borderTop: `1px solid ${t.border}`,
     padding: '16px 16px',
   } as CSSProperties,
   sectionLabel: {
     fontSize: 10,
     fontWeight: 600,
-    color: '#9ca3af',
+    color: t.fgMuted,
     textTransform: 'uppercase' as const,
     letterSpacing: '0.06em',
     marginBottom: 8,
@@ -185,7 +186,7 @@ const S = {
   empty: {
     padding: 24,
     textAlign: 'center' as const,
-    color: '#9ca3af',
+    color: t.fgMuted,
     fontSize: 13,
   } as CSSProperties,
 }
@@ -211,24 +212,16 @@ export function ArrayListEditor({
     return <div style={S.empty}>No items configured.</div>
   }
 
-  // ── Drag handlers ──
-
-  const handleDragStart = (idx: number) => {
-    setDraggedIdx(idx)
-  }
+  const handleDragStart = (idx: number) => { setDraggedIdx(idx) }
 
   const handleDragEnter = (idx: number) => {
     dragCounterRef.current++
-    if (draggedIdx !== null && draggedIdx !== idx) {
-      setDragOverIdx(idx)
-    }
+    if (draggedIdx !== null && draggedIdx !== idx) setDragOverIdx(idx)
   }
 
   const handleDragLeave = () => {
     dragCounterRef.current--
-    if (dragCounterRef.current === 0) {
-      setDragOverIdx(null)
-    }
+    if (dragCounterRef.current === 0) setDragOverIdx(null)
   }
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -250,8 +243,6 @@ export function ArrayListEditor({
     setDragOverIdx(null)
     dragCounterRef.current = 0
   }
-
-  // ── Other handlers ──
 
   const handleToggle = (identityValue: unknown) => {
     if (!toggleKey) return
@@ -287,16 +278,12 @@ export function ArrayListEditor({
               onDrop={() => sortable && handleDrop(idx)}
               onDragEnd={handleDragEnd}
             >
-              {/* ── Header ── */}
               <div style={S.header}>
-                {/* Drag handle */}
                 {sortable && (
                   <div style={S.dragHandle(isOn)}>
                     <GripIcon />
                   </div>
                 )}
-
-                {/* Toggle */}
                 {toggleKey && (
                   <div
                     style={S.toggle(isOn)}
@@ -305,19 +292,13 @@ export function ArrayListEditor({
                     <div style={S.toggleKnob(isOn)} />
                   </div>
                 )}
-
-                {/* Index badge */}
                 <div style={S.indexBadge}>{idx + 1}</div>
-
-                {/* Content */}
                 <div style={S.labelCol}>
                   <div style={{ display: 'flex', alignItems: 'center' }}>
                     <span style={S.itemLabel}>{label}</span>
                     {subtitle && <span style={S.itemSubtitle}>— {subtitle}</span>}
                   </div>
                 </div>
-
-                {/* Settings button */}
                 <button
                   style={S.settingsBtn(isExpanded)}
                   onClick={(e) => { e.stopPropagation(); setExpandedId(isExpanded ? null : id) }}
@@ -325,14 +306,11 @@ export function ArrayListEditor({
                 >
                   {isExpanded ? <ChevronUpIcon /> : <SettingsIcon />}
                 </button>
-
-                {/* Active badge */}
                 {isOn && !isExpanded && (
                   <span style={S.activeBadge}>Active</span>
                 )}
               </div>
 
-              {/* ── Expanded Settings ── */}
               {isExpanded && (
                 <div style={S.expandedBody}>
                   <div style={S.sectionLabel}>Advanced Settings</div>

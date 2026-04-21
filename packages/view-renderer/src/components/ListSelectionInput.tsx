@@ -2,6 +2,7 @@ import { useState, useRef, useMemo, type CSSProperties } from 'react'
 import type { ConfigEditorField, ListSelectionOption } from '../types'
 import { reorderItem, updateItemField } from '../utils/arrayOps'
 import { FieldRenderer } from './FieldRenderer'
+import { t } from '../theme'
 
 type AnyObj = Record<string, unknown>
 
@@ -67,7 +68,7 @@ const S = {
   } as CSSProperties,
   description: {
     fontSize: 13,
-    color: '#6b7280',
+    color: t.fgMuted,
     marginBottom: 8,
   } as CSSProperties,
   card: (enabled: boolean, expanded: boolean, isDragging: boolean, isDragOver: boolean): CSSProperties => ({
@@ -75,17 +76,17 @@ const S = {
     overflow: 'hidden',
     transition: isDragging ? 'none' : 'all 0.15s ease',
     border: expanded
-      ? '1.5px solid rgba(13,148,136,0.35)'
+      ? `1.5px solid ${t.p35}`
       : isDragOver
-        ? '1.5px dashed rgba(13,148,136,0.4)'
+        ? `1.5px dashed ${t.p40}`
         : enabled
-          ? '1px solid rgba(13,148,136,0.2)'
-          : '1px solid #e5e7eb',
+          ? `1px solid ${t.p20}`
+          : `1px solid ${t.border}`,
     background: isDragging
-      ? 'rgba(13,148,136,0.04)'
+      ? t.p04
       : enabled
-        ? 'rgba(13,148,136,0.03)'
-        : '#fafafa',
+        ? t.p03
+        : t.card,
     opacity: enabled ? 1 : 0.65,
     boxShadow: isDragging ? '0 8px 24px rgba(0,0,0,0.12)' : 'none',
   }),
@@ -99,7 +100,7 @@ const S = {
     cursor: enabled ? 'grab' : 'default',
     padding: 4,
     borderRadius: 4,
-    color: '#9ca3af',
+    color: t.fgMuted,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -111,7 +112,7 @@ const S = {
     width: 38,
     height: 22,
     borderRadius: 11,
-    background: on ? '#0d9488' : '#d1d5db',
+    background: on ? t.primary : t.border,
     position: 'relative',
     cursor: 'pointer',
     transition: 'background 0.15s ease',
@@ -121,7 +122,7 @@ const S = {
     width: 18,
     height: 18,
     borderRadius: '50%',
-    background: '#fff',
+    background: t.primaryFg,
     position: 'absolute',
     top: 2,
     left: on ? 18 : 2,
@@ -140,8 +141,8 @@ const S = {
   idBadge: {
     fontSize: 10,
     fontFamily: 'monospace',
-    color: '#9ca3af',
-    background: '#f3f4f6',
+    color: t.fgMuted,
+    background: t.muted,
     padding: '2px 6px',
     borderRadius: 4,
     flexShrink: 0,
@@ -150,11 +151,11 @@ const S = {
   itemLabel: {
     fontSize: 14,
     fontWeight: 500,
-    color: '#111827',
+    color: t.fg,
   } as CSSProperties,
   itemDesc: {
     fontSize: 11,
-    color: '#9ca3af',
+    color: t.fgMuted,
     marginTop: 2,
   } as CSSProperties,
   pillRow: {
@@ -167,16 +168,16 @@ const S = {
   pillLabel: {
     fontSize: 10,
     fontWeight: 500,
-    color: '#9ca3af',
+    color: t.fgMuted,
     marginRight: 2,
   } as CSSProperties,
   pill: {
     fontSize: 10,
-    color: '#6b7280',
-    background: '#f3f4f6',
+    color: t.fgMuted,
+    background: t.muted,
     padding: '2px 8px',
     borderRadius: 10,
-    border: '1px solid #e5e7eb',
+    border: `1px solid ${t.border}`,
     whiteSpace: 'nowrap' as const,
   } as CSSProperties,
   settingsBtn: (expanded: boolean): CSSProperties => ({
@@ -190,34 +191,34 @@ const S = {
     justifyContent: 'center',
     flexShrink: 0,
     transition: 'all 0.15s ease',
-    background: expanded ? 'rgba(13,148,136,0.15)' : '#f3f4f6',
-    color: expanded ? '#0d9488' : '#9ca3af',
+    background: expanded ? t.p15 : t.muted,
+    color: expanded ? t.primary : t.fgMuted,
   }),
   activeBadge: {
     fontSize: 10,
     fontWeight: 500,
     padding: '3px 10px',
     borderRadius: 10,
-    color: '#0d9488',
-    background: 'rgba(13,148,136,0.1)',
+    color: t.primary,
+    background: t.p10,
     flexShrink: 0,
     whiteSpace: 'nowrap' as const,
   } as CSSProperties,
   expandedBody: {
-    borderTop: '1px solid #e5e7eb',
+    borderTop: `1px solid ${t.border}`,
     padding: '16px 16px',
   } as CSSProperties,
   sectionLabel: {
     fontSize: 10,
     fontWeight: 600,
-    color: '#9ca3af',
+    color: t.fgMuted,
     textTransform: 'uppercase' as const,
     letterSpacing: '0.06em',
     marginBottom: 8,
   } as CSSProperties,
   labelInputLabel: {
     fontSize: 12,
-    color: '#6b7280',
+    color: t.fgMuted,
     marginBottom: 4,
     display: 'block' as const,
   } as CSSProperties,
@@ -226,11 +227,11 @@ const S = {
     width: '100%',
     padding: '7px 12px',
     fontSize: 13,
-    border: '1px solid #e5e7eb',
+    border: `1px solid ${t.border}`,
     borderRadius: 8,
     outline: 'none',
-    background: '#f3f4f6',
-    color: '#111827',
+    background: t.muted,
+    color: t.fg,
     boxSizing: 'border-box' as const,
   } as CSSProperties,
   chipRow: {
@@ -248,14 +249,14 @@ const S = {
     borderRadius: 8,
     cursor: 'pointer',
     transition: 'all 0.15s ease',
-    border: active ? '1px solid rgba(13,148,136,0.3)' : '1px solid #e5e7eb',
-    background: active ? 'rgba(13,148,136,0.1)' : '#f3f4f6',
-    color: active ? '#0d9488' : '#9ca3af',
+    border: active ? `1px solid ${t.p30}` : `1px solid ${t.border}`,
+    background: active ? t.p10 : t.muted,
+    color: active ? t.primary : t.fgMuted,
   }),
   empty: {
     padding: 24,
     textAlign: 'center' as const,
-    color: '#9ca3af',
+    color: t.fgMuted,
     fontSize: 13,
   } as CSSProperties,
 }
@@ -292,7 +293,6 @@ export function ListSelectionInput({ field, items, onChange }: ListSelectionInpu
   const identityKey = field.identity_key ?? 'id'
   const options = field.list_options ?? []
 
-  // Build display list: enabled items in tenant order, then available items
   const displayList = useMemo<DisplayItem[]>(() => {
     const enabledIds = new Set(items.map((it) => String(it[identityKey])))
     const optionMap = new Map(options.map((o) => [o.id, o]))
@@ -324,24 +324,16 @@ export function ListSelectionInput({ field, items, onChange }: ListSelectionInpu
     return [...enabled, ...available]
   }, [items, options, identityKey])
 
-  // ── Drag handlers ──
-
-  const handleDragStart = (enabledIdx: number) => {
-    setDraggedIdx(enabledIdx)
-  }
+  const handleDragStart = (enabledIdx: number) => { setDraggedIdx(enabledIdx) }
 
   const handleDragEnter = (enabledIdx: number) => {
     dragCounterRef.current++
-    if (draggedIdx !== null && draggedIdx !== enabledIdx) {
-      setDragOverIdx(enabledIdx)
-    }
+    if (draggedIdx !== null && draggedIdx !== enabledIdx) setDragOverIdx(enabledIdx)
   }
 
   const handleDragLeave = () => {
     dragCounterRef.current--
-    if (dragCounterRef.current === 0) {
-      setDragOverIdx(null)
-    }
+    if (dragCounterRef.current === 0) setDragOverIdx(null)
   }
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -363,8 +355,6 @@ export function ListSelectionInput({ field, items, onChange }: ListSelectionInpu
     setDragOverIdx(null)
     dragCounterRef.current = 0
   }
-
-  // ── Other handlers ──
 
   const handleToggle = (id: string, currentlyEnabled: boolean) => {
     if (currentlyEnabled) {
@@ -432,7 +422,6 @@ export function ListSelectionInput({ field, items, onChange }: ListSelectionInpu
           const isDragging = draggedIdx === enabledIdx && di.enabled
           const isDragOver = dragOverIdx === enabledIdx && di.enabled
 
-          // Datapoints
           const activeDps = di.item ? getDatapoints(di.item) : []
           const allMainDps = di.option
             ? getMainDatapoints(di.option.default_config)
@@ -455,22 +444,16 @@ export function ListSelectionInput({ field, items, onChange }: ListSelectionInpu
               onDrop={() => di.enabled && handleDrop(enabledIdx)}
               onDragEnd={handleDragEnd}
             >
-              {/* ── Header ── */}
               <div style={S.header}>
-                {/* Drag handle */}
                 <div style={S.dragHandle(di.enabled)}>
                   <GripIcon />
                 </div>
-
-                {/* Toggle */}
                 <div
                   style={S.toggle(di.enabled)}
                   onClick={() => handleToggle(di.id, di.enabled)}
                 >
                   <div style={S.toggleKnob(di.enabled)} />
                 </div>
-
-                {/* Content */}
                 <div style={S.labelCol}>
                   <div style={S.nameRow}>
                     <span style={S.idBadge}>{di.id}</span>
@@ -486,8 +469,6 @@ export function ListSelectionInput({ field, items, onChange }: ListSelectionInpu
                     </div>
                   )}
                 </div>
-
-                {/* Settings button (enabled only) */}
                 {di.enabled && (
                   <button
                     style={S.settingsBtn(isExpanded)}
@@ -497,19 +478,14 @@ export function ListSelectionInput({ field, items, onChange }: ListSelectionInpu
                     {isExpanded ? <ChevronUpIcon /> : <SettingsIcon />}
                   </button>
                 )}
-
-                {/* Active badge (when not expanded) */}
                 {di.enabled && !isExpanded && (
                   <span style={S.activeBadge}>Active</span>
                 )}
               </div>
 
-              {/* ── Advanced Settings ── */}
               {isExpanded && di.enabled && di.item && (
                 <div style={S.expandedBody}>
                   <div style={S.sectionLabel}>Advanced Settings</div>
-
-                  {/* Dynamic fields from item_fields (tasks, etc.) */}
                   {field.item_fields && field.item_fields.length > 0 ? (
                     field.item_fields.map((subField) => {
                       const leafKey = subField.target_path.split('.').pop() ?? subField.field_id
@@ -532,7 +508,6 @@ export function ListSelectionInput({ field, items, onChange }: ListSelectionInpu
                           onChange={(e) => handleLabelChange(di.id, e.target.value)}
                         />
                       </div>
-
                       {(allMainDps.length > 0 || allFooterDps.length > 0) && (
                         <div>
                           <label style={S.labelInputLabel}>Data Points / Metrics</label>

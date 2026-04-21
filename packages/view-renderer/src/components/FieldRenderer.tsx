@@ -4,6 +4,7 @@ import { ColorPickerInput } from './ColorPickerInput'
 import { ImageUploadInput } from './ImageUploadInput'
 import { ListSelectionInput } from './ListSelectionInput'
 import { ArrayListEditor } from './ArrayListEditor'
+import { t } from '../theme'
 
 export interface FieldRendererProps {
   field: ConfigEditorField
@@ -16,14 +17,14 @@ const styles = {
     marginBottom: 16,
   } as CSSProperties,
   card: {
-    background: '#f3f4f6',
+    background: t.muted,
     borderRadius: 12,
     padding: 16,
   } as CSSProperties,
   label: {
     fontSize: 11,
     fontWeight: 600,
-    color: '#374151',
+    color: t.fg,
     marginBottom: 4,
     display: 'block',
     textTransform: 'uppercase' as const,
@@ -31,7 +32,7 @@ const styles = {
   } as CSSProperties,
   description: {
     fontSize: 11,
-    color: '#9ca3af',
+    color: t.fgMuted,
     marginBottom: 6,
     lineHeight: '1.4',
   } as CSSProperties,
@@ -39,11 +40,11 @@ const styles = {
     width: '100%',
     padding: '8px 10px',
     fontSize: 13,
-    border: '1px solid #e5e7eb',
+    border: `1px solid ${t.border}`,
     borderRadius: 8,
     outline: 'none',
-    background: readonly ? '#f3f4f6' : '#fff',
-    color: readonly ? '#6b7280' : '#111827',
+    background: readonly ? t.muted : t.card,
+    color: readonly ? t.fgMuted : t.fg,
     boxSizing: 'border-box',
     cursor: readonly ? 'not-allowed' : undefined,
   }),
@@ -56,7 +57,7 @@ const styles = {
     width: 40,
     height: 22,
     borderRadius: 11,
-    background: on ? '#0d9488' : '#d1d5db',
+    background: on ? t.primary : t.border,
     position: 'relative',
     cursor: 'pointer',
     transition: 'background 0.15s ease',
@@ -66,7 +67,7 @@ const styles = {
     width: 18,
     height: 18,
     borderRadius: '50%',
-    background: '#fff',
+    background: t.primaryFg,
     position: 'absolute',
     top: 2,
     left: on ? 20 : 2,
@@ -75,18 +76,18 @@ const styles = {
   }),
   toggleLabel: {
     fontSize: 14,
-    color: '#374151',
+    color: t.fg,
     fontWeight: 500,
   } as CSSProperties,
   select: {
     width: '100%',
     padding: '8px 10px',
     fontSize: 13,
-    border: '1px solid #e5e7eb',
+    border: `1px solid ${t.border}`,
     borderRadius: 8,
     outline: 'none',
-    background: '#fff',
-    color: '#111827',
+    background: t.card,
+    color: t.fg,
     boxSizing: 'border-box' as const,
   } as CSSProperties,
 }

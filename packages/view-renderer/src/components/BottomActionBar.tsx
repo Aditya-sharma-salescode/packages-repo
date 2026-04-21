@@ -1,5 +1,6 @@
 import type { CSSProperties } from 'react'
 import { useViewRenderer } from '../context/ViewRendererContext'
+import { t } from '../theme'
 
 export interface Action {
   id: string
@@ -20,7 +21,7 @@ const styles = {
     alignItems: 'center',
     gap: 8,
     padding: '12px 0',
-    borderTop: '1px solid #e5e7eb',
+    borderTop: `1px solid ${t.border}`,
     marginTop: 'auto',
     flexShrink: 0,
   } as CSSProperties,
@@ -36,13 +37,12 @@ const styles = {
       transition: 'all 0.15s ease',
     }
     if (variant === 'primary') {
-      return { ...base, background: '#0d9488', color: '#fff' }
+      return { ...base, background: t.primary, color: t.primaryFg }
     }
     if (variant === 'danger') {
-      return { ...base, background: '#ef4444', color: '#fff' }
+      return { ...base, background: t.destructive, color: t.primaryFg }
     }
-    // secondary
-    return { ...base, background: '#f3f4f6', color: '#374151', border: '1px solid #d1d5db' }
+    return { ...base, background: t.muted, color: t.fg, border: `1px solid ${t.border}` }
   },
 }
 

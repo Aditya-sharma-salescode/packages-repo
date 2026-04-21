@@ -1,4 +1,5 @@
 import type { CSSProperties } from 'react'
+import { t } from '../theme'
 
 export interface ColorPickerInputProps {
   label: string
@@ -14,7 +15,7 @@ const PRESET_COLORS = [
 
 const styles = {
   card: {
-    background: '#f3f4f6',
+    background: t.muted,
     borderRadius: 12,
     padding: 16,
   } as CSSProperties,
@@ -30,7 +31,7 @@ const styles = {
   title: {
     fontSize: 15,
     fontWeight: 600,
-    color: '#111827',
+    color: t.fg,
   } as CSSProperties,
   grid: {
     display: 'grid',
@@ -54,17 +55,17 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     gap: 10,
-    background: '#fff',
+    background: t.card,
     borderRadius: 8,
     padding: '6px 10px',
-    border: '1px solid #e5e7eb',
+    border: `1px solid ${t.border}`,
   } as CSSProperties,
   miniSwatch: (color: string): CSSProperties => ({
     width: 28,
     height: 28,
     borderRadius: 6,
-    background: color || '#fff',
-    border: '1px solid #d1d5db',
+    background: color || t.card,
+    border: `1px solid ${t.border}`,
     flexShrink: 0,
     cursor: 'pointer',
     position: 'relative',
@@ -81,7 +82,7 @@ const styles = {
     border: 'none',
     outline: 'none',
     fontSize: 14,
-    color: '#374151',
+    color: t.fg,
     fontFamily: 'monospace',
     flex: 1,
     background: 'transparent',

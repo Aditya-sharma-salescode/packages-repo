@@ -6,6 +6,7 @@ import { StoreActivityRenderer } from './StoreActivityRenderer'
 import { ReportsNodeRenderer } from './ReportsNodeRenderer'
 import { FormBuilderModal } from './FormBuilderModal'
 import { ReportsEditModal } from './ReportsEditModal'
+import { t } from '../theme'
 
 export interface FeatureCardItem {
   id: string
@@ -29,7 +30,7 @@ const styles = {
   } as CSSProperties,
   description: {
     fontSize: 13,
-    color: '#6b7280',
+    color: t.fgMuted,
     marginBottom: 12,
   } as CSSProperties,
   grid: {
@@ -45,8 +46,8 @@ const styles = {
     alignItems: 'flex-start',
     gap: 10,
     transition: 'all 0.15s ease',
-    border: enabled ? '1px solid rgba(13, 148, 136, 0.3)' : '1px solid #e5e7eb',
-    background: enabled ? 'rgba(13, 148, 136, 0.08)' : '#f9fafb',
+    border: enabled ? `1px solid ${t.p30}` : `1px solid ${t.border}`,
+    background: enabled ? t.p08 : t.card,
   }),
   checkbox: (enabled: boolean): CSSProperties => ({
     width: 16,
@@ -57,23 +58,23 @@ const styles = {
     justifyContent: 'center',
     flexShrink: 0,
     marginTop: 1,
-    background: enabled ? '#0d9488' : 'transparent',
-    border: enabled ? 'none' : '2px solid #9ca3af',
+    background: enabled ? t.primary : 'transparent',
+    border: enabled ? 'none' : `2px solid ${t.fgMuted}`,
     transition: 'all 0.15s ease',
   }),
   checkIcon: {
     width: 10,
     height: 10,
-    color: '#fff',
+    color: t.primaryFg,
   } as CSSProperties,
   label: {
     fontSize: 12,
     fontWeight: 500,
-    color: '#111827',
+    color: t.fg,
   } as CSSProperties,
   desc: {
     fontSize: 11,
-    color: '#6b7280',
+    color: t.fgMuted,
     marginTop: 2,
     lineHeight: '1.4',
   } as CSSProperties,
@@ -82,7 +83,7 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    color: '#9ca3af',
+    color: t.fgMuted,
     fontSize: 13,
   } as CSSProperties,
 }
@@ -196,7 +197,6 @@ function NodeContent({ nodeType, features, onToggleFeature, ctx }: {
 export function MiddleContent({ nodeType, features, onToggleFeature, renderNode }: MiddleContentProps) {
   const ctx = useViewRenderer()
 
-  // Custom renderer override — checked before node_type switch
   if (renderNode && ctx.currentNodeMeta) {
     const custom = renderNode(ctx.currentNodeMeta)
     if (custom !== null) {

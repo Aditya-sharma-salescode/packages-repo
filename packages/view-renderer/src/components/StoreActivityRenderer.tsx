@@ -1,6 +1,7 @@
 import type { CSSProperties } from 'react'
 import type { ActivityCardItem } from '../derivations/deriveActivityCards'
 import type { ActivityFieldTag } from '../types'
+import { t } from '../theme'
 
 export interface StoreActivityRendererProps {
   activities: ActivityCardItem[]
@@ -24,7 +25,7 @@ const FIELD_ICONS: Record<string, string> = {
 const styles = {
   description: {
     fontSize: 13,
-    color: '#6b7280',
+    color: t.fgMuted,
     marginBottom: 16,
   } as CSSProperties,
   list: {
@@ -38,8 +39,8 @@ const styles = {
     gap: 14,
     padding: '18px 20px',
     borderRadius: 12,
-    border: enabled ? '1px solid rgba(13, 148, 136, 0.2)' : '1px solid #e5e7eb',
-    background: enabled ? 'rgba(13, 148, 136, 0.04)' : '#f9fafb',
+    border: enabled ? `1px solid ${t.p20}` : `1px solid ${t.border}`,
+    background: enabled ? t.p04 : t.card,
     transition: 'all 0.15s ease',
   }),
   toggleCol: {
@@ -60,7 +61,7 @@ const styles = {
     width: 44,
     height: 24,
     borderRadius: 12,
-    background: enabled ? '#0d9488' : '#d1d5db',
+    background: enabled ? t.primary : t.border,
     transition: 'background 0.15s ease',
   }),
   toggleThumb: (enabled: boolean): CSSProperties => ({
@@ -70,7 +71,7 @@ const styles = {
     width: 18,
     height: 18,
     borderRadius: '50%',
-    background: '#fff',
+    background: t.primaryFg,
     boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
     transition: 'left 0.15s ease',
   }),
@@ -81,12 +82,12 @@ const styles = {
   label: {
     fontSize: 15,
     fontWeight: 600,
-    color: '#111827',
+    color: t.fg,
     marginBottom: 4,
   } as CSSProperties,
   desc: {
     fontSize: 13,
-    color: '#9ca3af',
+    color: t.fgMuted,
     lineHeight: '1.4',
     marginBottom: 8,
   } as CSSProperties,
@@ -98,7 +99,7 @@ const styles = {
   } as CSSProperties,
   fieldCount: {
     fontSize: 12,
-    color: '#9ca3af',
+    color: t.fgMuted,
     marginRight: 2,
   } as CSSProperties,
   fieldChip: {
@@ -106,9 +107,9 @@ const styles = {
     alignItems: 'center',
     gap: 4,
     fontSize: 12,
-    color: '#6b7280',
-    background: '#f3f4f6',
-    border: '1px solid #e5e7eb',
+    color: t.fgMuted,
+    background: t.muted,
+    border: `1px solid ${t.border}`,
     borderRadius: 6,
     padding: '2px 8px',
     whiteSpace: 'nowrap',
@@ -116,15 +117,15 @@ const styles = {
   fieldIcon: {
     width: 12,
     height: 12,
-    color: '#9ca3af',
+    color: t.fgMuted,
     flexShrink: 0,
   } as CSSProperties,
   gearBtn: {
     width: 40,
     height: 40,
     borderRadius: 10,
-    border: '1px solid #e5e7eb',
-    background: '#f9fafb',
+    border: `1px solid ${t.border}`,
+    background: t.card,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -146,7 +147,7 @@ function FieldTypeIcon({ type }: { type: string }) {
 
 function GearIcon() {
   return (
-    <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+    <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke={t.fgMuted} strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
       <circle cx={12} cy={12} r={3} />
       <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
     </svg>

@@ -1,6 +1,7 @@
 import type { CSSProperties } from 'react'
 import type { ConfigEditorNodeMeta } from '../types'
 import { useViewRenderer } from '../context/ViewRendererContext'
+import { t } from '../theme'
 import { getByPath } from '../utils/pathUtils'
 import { resolveTargetKeys } from '../utils/resolveTargetKeys'
 import { FieldRenderer } from './FieldRenderer'
@@ -19,7 +20,7 @@ const styles = {
   empty: {
     padding: 24,
     textAlign: 'center' as const,
-    color: '#9ca3af',
+    color: t.fgMuted,
     fontSize: 13,
   } as CSSProperties,
 }

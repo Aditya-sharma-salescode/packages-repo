@@ -6,6 +6,7 @@ import type {
   FeatureSelectionState,
   ConfigEditorField,
 } from '../types'
+import { t } from '../theme'
 
 // ── Types ──
 
@@ -36,12 +37,12 @@ const S = {
   heading: {
     fontSize: 15,
     fontWeight: 600,
-    color: '#111827',
+    color: t.fg,
     marginBottom: 4,
   } as CSSProperties,
   subheading: {
     fontSize: 12,
-    color: '#6b7280',
+    color: t.fgMuted,
     marginBottom: 16,
   } as CSSProperties,
   stepIndicator: {
@@ -59,15 +60,15 @@ const S = {
     justifyContent: 'center',
     fontSize: 11,
     fontWeight: 600,
-    background: active ? '#0d9488' : done ? '#0d9488' : '#e5e7eb',
-    color: active || done ? '#fff' : '#6b7280',
+    background: active ? t.primary : done ? t.primary : t.border,
+    color: active || done ? t.primaryFg : t.fgMuted,
     opacity: done && !active ? 0.6 : 1,
     transition: 'all 0.15s ease',
   }),
   stepLine: {
     width: 32,
     height: 2,
-    background: '#e5e7eb',
+    background: t.border,
     borderRadius: 1,
   } as CSSProperties,
   fieldGroup: {
@@ -79,22 +80,24 @@ const S = {
   label: {
     fontSize: 12,
     fontWeight: 500,
-    color: '#374151',
+    color: t.fg,
     marginBottom: 4,
   } as CSSProperties,
   input: {
     fontSize: 13,
-    border: '1px solid #d1d5db',
+    border: `1px solid ${t.border}`,
     borderRadius: 6,
     padding: '8px 12px',
     outline: 'none',
     width: '100%',
     boxSizing: 'border-box',
+    background: t.card,
+    color: t.fg,
   } as CSSProperties,
   textarea: {
     fontSize: 12,
     fontFamily: 'monospace',
-    border: '1px solid #d1d5db',
+    border: `1px solid ${t.border}`,
     borderRadius: 6,
     padding: '8px 12px',
     outline: 'none',
@@ -102,6 +105,8 @@ const S = {
     boxSizing: 'border-box',
     minHeight: 60,
     resize: 'vertical',
+    background: t.card,
+    color: t.fg,
   } as CSSProperties,
   grid: {
     display: 'grid',
@@ -114,8 +119,8 @@ const S = {
     padding: 12,
     cursor: 'pointer',
     transition: 'all 0.15s ease',
-    border: selected ? '1px solid rgba(13, 148, 136, 0.3)' : '1px solid #e5e7eb',
-    background: selected ? 'rgba(13, 148, 136, 0.08)' : '#f9fafb',
+    border: selected ? `1px solid ${t.p30}` : `1px solid ${t.border}`,
+    background: selected ? t.p08 : t.muted,
   }),
   cardHeader: {
     display: 'flex',
@@ -131,42 +136,42 @@ const S = {
     justifyContent: 'center',
     flexShrink: 0,
     marginTop: 1,
-    background: checked ? '#0d9488' : 'transparent',
-    border: checked ? 'none' : '2px solid #9ca3af',
+    background: checked ? t.primary : 'transparent',
+    border: checked ? 'none' : `2px solid ${t.fgMuted}`,
     transition: 'all 0.15s ease',
   }),
   checkIcon: {
     width: 10,
     height: 10,
-    color: '#fff',
+    color: t.primaryFg,
   } as CSSProperties,
   featureId: {
     fontSize: 11,
     fontWeight: 600,
-    color: '#0f766e',
+    color: t.primary,
     fontFamily: 'monospace',
   } as CSSProperties,
   featureName: {
     fontSize: 12,
     fontWeight: 500,
-    color: '#111827',
+    color: t.fg,
     marginTop: 2,
   } as CSSProperties,
   featureDesc: {
     fontSize: 11,
-    color: '#6b7280',
+    color: t.fgMuted,
     marginTop: 2,
     lineHeight: '1.4',
   } as CSSProperties,
   stats: {
     fontSize: 10,
-    color: '#9ca3af',
+    color: t.fgMuted,
     marginTop: 4,
   } as CSSProperties,
   editSection: {
     marginTop: 10,
     paddingTop: 10,
-    borderTop: '1px solid #e5e7eb',
+    borderTop: `1px solid ${t.border}`,
     display: 'flex',
     flexDirection: 'column',
     gap: 8,
@@ -174,22 +179,24 @@ const S = {
   editLabel: {
     fontSize: 11,
     fontWeight: 500,
-    color: '#6b7280',
+    color: t.fgMuted,
     marginBottom: 2,
   } as CSSProperties,
   editInput: {
     fontSize: 12,
-    border: '1px solid #d1d5db',
+    border: `1px solid ${t.border}`,
     borderRadius: 4,
     padding: '6px 8px',
     outline: 'none',
     width: '100%',
     boxSizing: 'border-box',
+    background: t.card,
+    color: t.fg,
   } as CSSProperties,
   editTextarea: {
     fontSize: 11,
     fontFamily: 'monospace',
-    border: '1px solid #d1d5db',
+    border: `1px solid ${t.border}`,
     borderRadius: 4,
     padding: '6px 8px',
     outline: 'none',
@@ -197,10 +204,12 @@ const S = {
     boxSizing: 'border-box',
     minHeight: 48,
     resize: 'vertical',
+    background: t.card,
+    color: t.fg,
   } as CSSProperties,
   jsonError: {
     fontSize: 10,
-    color: '#ef4444',
+    color: t.destructive,
     marginTop: 2,
   } as CSSProperties,
   btnRow: {
@@ -209,7 +218,7 @@ const S = {
     gap: 8,
     marginTop: 'auto',
     paddingTop: 16,
-    borderTop: '1px solid #e5e7eb',
+    borderTop: `1px solid ${t.border}`,
     flexShrink: 0,
   } as CSSProperties,
   btnPrimary: (disabled: boolean): CSSProperties => ({
@@ -220,8 +229,8 @@ const S = {
     border: 'none',
     cursor: disabled ? 'not-allowed' : 'pointer',
     opacity: disabled ? 0.5 : 1,
-    background: '#0d9488',
-    color: '#fff',
+    background: t.primary,
+    color: t.primaryFg,
     transition: 'all 0.15s ease',
   }),
   btnSecondary: {
@@ -229,10 +238,10 @@ const S = {
     fontWeight: 500,
     padding: '8px 20px',
     borderRadius: 6,
-    border: '1px solid #d1d5db',
+    border: `1px solid ${t.border}`,
     cursor: 'pointer',
-    background: '#f3f4f6',
-    color: '#374151',
+    background: t.muted,
+    color: t.fg,
     transition: 'all 0.15s ease',
   } as CSSProperties,
   empty: {
@@ -240,14 +249,14 @@ const S = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    color: '#9ca3af',
+    color: t.fgMuted,
     fontSize: 13,
   } as CSSProperties,
   // Step 3 styles
   nodeCard: {
     borderRadius: 10,
-    border: '1px solid #e5e7eb',
-    background: '#fff',
+    border: `1px solid ${t.border}`,
+    background: t.card,
     marginBottom: 12,
     overflow: 'hidden',
   } as CSSProperties,
@@ -256,27 +265,27 @@ const S = {
     display: 'flex',
     alignItems: 'center',
     gap: 10,
-    background: '#f9fafb',
-    borderBottom: '1px solid #e5e7eb',
+    background: t.muted,
+    borderBottom: `1px solid ${t.border}`,
     cursor: 'pointer',
   } as CSSProperties,
   nodeTitle: {
     flex: 1,
     fontSize: 13,
     fontWeight: 600,
-    color: '#111827',
+    color: t.fg,
   } as CSSProperties,
   nodeBadge: {
     fontSize: 10,
-    color: '#6b7280',
-    background: '#f3f4f6',
+    color: t.fgMuted,
+    background: t.muted,
     padding: '2px 8px',
     borderRadius: 10,
-    border: '1px solid #e5e7eb',
+    border: `1px solid ${t.border}`,
   } as CSSProperties,
   removeBtn: {
     fontSize: 11,
-    color: '#ef4444',
+    color: t.destructive,
     background: 'none',
     border: 'none',
     cursor: 'pointer',
@@ -292,23 +301,23 @@ const S = {
     gap: 8,
     padding: '6px 10px',
     borderRadius: 6,
-    background: '#f9fafb',
-    border: '1px solid #f3f4f6',
+    background: t.muted,
+    border: `1px solid ${t.border}`,
     marginBottom: 6,
     fontSize: 12,
   } as CSSProperties,
   fieldId: {
     fontSize: 11,
     fontFamily: 'monospace',
-    color: '#0f766e',
+    color: t.primary,
     fontWeight: 500,
     minWidth: 100,
     flexShrink: 0,
   } as CSSProperties,
   fieldType: {
     fontSize: 10,
-    color: '#6b7280',
-    background: '#e5e7eb',
+    color: t.fgMuted,
+    background: t.border,
     padding: '1px 6px',
     borderRadius: 4,
     flexShrink: 0,
@@ -316,7 +325,7 @@ const S = {
   fieldPath: {
     fontSize: 10,
     fontFamily: 'monospace',
-    color: '#9ca3af',
+    color: t.fgMuted,
     flex: 1,
     overflow: 'hidden',
     textOverflow: 'ellipsis',
@@ -324,7 +333,7 @@ const S = {
   } as CSSProperties,
   fieldRemove: {
     fontSize: 14,
-    color: '#d1d5db',
+    color: t.border,
     background: 'none',
     border: 'none',
     cursor: 'pointer',
@@ -340,12 +349,12 @@ const S = {
   } as CSSProperties,
   select: {
     fontSize: 12,
-    border: '1px solid #d1d5db',
+    border: `1px solid ${t.border}`,
     borderRadius: 6,
     padding: '6px 10px',
     outline: 'none',
-    background: '#fff',
-    color: '#374151',
+    background: t.card,
+    color: t.fg,
     minWidth: 120,
   } as CSSProperties,
   addBtn: {
@@ -353,10 +362,10 @@ const S = {
     fontWeight: 500,
     padding: '6px 14px',
     borderRadius: 6,
-    border: '1px dashed #d1d5db',
+    border: `1px dashed ${t.border}`,
     cursor: 'pointer',
-    background: '#fafafa',
-    color: '#6b7280',
+    background: t.muted,
+    color: t.fgMuted,
     transition: 'all 0.15s ease',
   } as CSSProperties,
   addNodeBtn: {
@@ -364,10 +373,10 @@ const S = {
     fontWeight: 500,
     padding: '10px 20px',
     borderRadius: 8,
-    border: '1.5px dashed #d1d5db',
+    border: `1.5px dashed ${t.border}`,
     cursor: 'pointer',
-    background: '#fafafa',
-    color: '#6b7280',
+    background: t.muted,
+    color: t.fgMuted,
     transition: 'all 0.15s ease',
     width: '100%',
     marginBottom: 16,
@@ -375,7 +384,7 @@ const S = {
   jsonFieldArea: {
     fontSize: 11,
     fontFamily: 'monospace',
-    border: '1px solid #d1d5db',
+    border: `1px solid ${t.border}`,
     borderRadius: 6,
     padding: '8px 10px',
     outline: 'none',
@@ -384,6 +393,8 @@ const S = {
     minHeight: 80,
     resize: 'vertical' as const,
     marginTop: 6,
+    background: t.card,
+    color: t.fg,
   } as CSSProperties,
   orDivider: {
     display: 'flex',
@@ -391,12 +402,12 @@ const S = {
     gap: 8,
     margin: '8px 0',
     fontSize: 10,
-    color: '#9ca3af',
+    color: t.fgMuted,
   } as CSSProperties,
   dividerLine: {
     flex: 1,
     height: 1,
-    background: '#e5e7eb',
+    background: t.border,
   } as CSSProperties,
 }
 
@@ -926,7 +937,7 @@ export function CreateViewMeta({
                   >
                     &times;
                   </button>
-                  <span style={{ fontSize: 12, color: '#9ca3af', transition: 'transform 0.15s', transform: isExpanded ? 'rotate(180deg)' : '' }}>▼</span>
+                  <span style={{ fontSize: 12, color: t.fgMuted, transition: 'transform 0.15s', transform: isExpanded ? 'rotate(180deg)' : '' }}>▼</span>
                 </div>
 
                 {/* Node body */}
@@ -973,11 +984,11 @@ export function CreateViewMeta({
 
                     {/* Add Field from Global Config */}
                     {fieldPicker?.nodeIndex === nodeIdx ? (
-                      <div style={{ background: '#f9fafb', borderRadius: 8, padding: 10, border: '1px solid #e5e7eb', marginBottom: 8 }}>
+                      <div style={{ background: t.muted, borderRadius: 8, padding: 10, border: `1px solid ${t.border}`, marginBottom: 8 }}>
                         <div style={{ ...S.editLabel, marginBottom: 6 }}>Pick from Global Config</div>
                         <div style={S.pickerRow}>
                           <div>
-                            <div style={{ fontSize: 10, color: '#9ca3af', marginBottom: 2 }}>Feature</div>
+                            <div style={{ fontSize: 10, color: t.fgMuted, marginBottom: 2 }}>Feature</div>
                             <select
                               style={S.select}
                               value={fieldPicker.featureId}
@@ -990,7 +1001,7 @@ export function CreateViewMeta({
                             </select>
                           </div>
                           <div>
-                            <div style={{ fontSize: 10, color: '#9ca3af', marginBottom: 2 }}>Field</div>
+                            <div style={{ fontSize: 10, color: t.fgMuted, marginBottom: 2 }}>Field</div>
                             <select
                               style={S.select}
                               value={fieldPicker.fieldKey}
@@ -1033,7 +1044,7 @@ export function CreateViewMeta({
 
                     {/* Add Field from JSON */}
                     {jsonFieldInput?.nodeIndex === nodeIdx ? (
-                      <div style={{ background: '#f9fafb', borderRadius: 8, padding: 10, border: '1px solid #e5e7eb' }}>
+                      <div style={{ background: t.muted, borderRadius: 8, padding: 10, border: `1px solid ${t.border}` }}>
                         <div style={{ ...S.editLabel, marginBottom: 4 }}>Paste field JSON (for list_selection, etc.)</div>
                         <textarea
                           style={S.jsonFieldArea}

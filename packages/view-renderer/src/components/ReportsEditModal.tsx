@@ -12,6 +12,7 @@ import {
   viewMetaToReportCards,
   reportCardsToViewMeta,
 } from '../utils/reportsConfigUtils'
+import { t } from '../theme'
 
 export interface ReportsEditModalProps {
   reportId: string
@@ -29,7 +30,7 @@ const styles = {
     zIndex: 1000,
   } as CSSProperties,
   panel: {
-    background: '#fff',
+    background: t.card,
     width: '100vw',
     height: '100vh',
     overflow: 'hidden',
@@ -56,13 +57,11 @@ export function ReportsEditModal({ reportId, onClose }: ReportsEditModalProps) {
     [setDraftMap],
   )
 
-  // Convert enabled report_list → ReportCard[] for ReportConfigPage
   const initialCards = useMemo(() => {
     const reportList = appConfig.features?.reports?.config?.report_list ?? []
     return viewMetaToReportCards(reportList)
   }, [appConfig])
 
-  // When ReportConfigPage mutates cards, convert back and push into draftMap
   const handleCardsUpdate = useCallback(
     (cards: ReportCard[]) => {
       const updatedReportList = reportCardsToViewMeta(cards)

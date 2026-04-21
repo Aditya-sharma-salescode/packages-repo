@@ -1,5 +1,6 @@
 import { useRef, useState, type CSSProperties, type DragEvent } from 'react'
 import type { ConfigFieldValidation } from '../types'
+import { t } from '../theme'
 
 export interface ImageUploadInputProps {
   label: string
@@ -12,7 +13,7 @@ export interface ImageUploadInputProps {
 
 const styles = {
   card: {
-    background: '#f3f4f6',
+    background: t.muted,
     borderRadius: 12,
     padding: 16,
   } as CSSProperties,
@@ -24,15 +25,15 @@ const styles = {
   } as CSSProperties,
   icon: {
     fontSize: 18,
-    color: '#0d9488',
+    color: t.primary,
   } as CSSProperties,
   title: {
     fontSize: 15,
     fontWeight: 600,
-    color: '#111827',
+    color: t.fg,
   } as CSSProperties,
   dropzone: (dragging: boolean): CSSProperties => ({
-    border: `2px dashed ${dragging ? '#0d9488' : '#d1d5db'}`,
+    border: `2px dashed ${dragging ? t.primary : t.border}`,
     borderRadius: 12,
     padding: '32px 16px',
     display: 'flex',
@@ -41,20 +42,16 @@ const styles = {
     justifyContent: 'center',
     gap: 8,
     cursor: 'pointer',
-    background: dragging ? 'rgba(13, 148, 136, 0.04)' : '#fff',
+    background: dragging ? t.p04 : t.card,
     transition: 'all 0.15s ease',
   }),
-  uploadIcon: {
-    color: '#9ca3af',
-    fontSize: 24,
-  } as CSSProperties,
   uploadText: {
     fontSize: 14,
-    color: '#6b7280',
+    color: t.fgMuted,
   } as CSSProperties,
   hintText: {
     fontSize: 12,
-    color: '#9ca3af',
+    color: t.fgMuted,
   } as CSSProperties,
   preview: {
     width: '100%',
@@ -62,8 +59,8 @@ const styles = {
     marginBottom: 10,
     maxHeight: 120,
     objectFit: 'contain' as const,
-    background: '#fff',
-    border: '1px solid #e5e7eb',
+    background: t.card,
+    border: `1px solid ${t.border}`,
   } as CSSProperties,
   urlRow: {
     display: 'flex',
@@ -73,33 +70,34 @@ const styles = {
   } as CSSProperties,
   urlLabel: {
     fontSize: 11,
-    color: '#6b7280',
+    color: t.fgMuted,
     flexShrink: 0,
   } as CSSProperties,
   urlInput: {
     flex: 1,
     fontSize: 12,
-    border: '1px solid #e5e7eb',
+    border: `1px solid ${t.border}`,
     borderRadius: 6,
     padding: '4px 8px',
     outline: 'none',
-    color: '#374151',
+    color: t.fg,
+    background: t.card,
     fontFamily: 'monospace',
   } as CSSProperties,
   clearBtn: {
     fontSize: 11,
     background: 'none',
-    border: '1px solid #e5e7eb',
+    border: `1px solid ${t.border}`,
     borderRadius: 4,
     padding: '3px 8px',
     cursor: 'pointer',
-    color: '#ef4444',
+    color: t.destructive,
   } as CSSProperties,
 }
 
 function UploadArrowIcon() {
   return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={t.fgMuted} strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
       <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
       <polyline points="17 8 12 3 7 8" />
       <line x1="12" y1="3" x2="12" y2="15" />
@@ -118,13 +116,10 @@ export function ImageUploadInput({ label, description, value, onChange, validati
 
   const handleFile = (file: File) => {
     if (readonly) return
-    // Validate type
     const ext = file.name.split('.').pop()?.toLowerCase() ?? ''
     if (!acceptedTypes.includes(ext)) return
-    // Validate size
     if (file.size > maxSizeMb * 1024 * 1024) return
 
-    // Convert to data URL for preview. In production this would upload to blob storage.
     const reader = new FileReader()
     reader.onload = () => {
       onChange(reader.result as string)

@@ -1,5 +1,6 @@
 import type { CSSProperties } from 'react'
 import { useViewRenderer } from '../context/ViewRendererContext'
+import { t } from '../theme'
 
 export interface NodeTab {
   id: string
@@ -19,7 +20,7 @@ const styles = {
     alignItems: 'center',
     gap: 6,
     padding: '12px 0',
-    borderBottom: '1px solid #e5e7eb',
+    borderBottom: `1px solid ${t.border}`,
     overflowX: 'auto',
     flexShrink: 0,
   } as CSSProperties,
@@ -36,8 +37,8 @@ const styles = {
     border: 'none',
     transition: 'all 0.15s ease',
     flexShrink: 0,
-    background: isActive ? '#0d9488' : 'transparent',
-    color: isActive ? '#fff' : '#6b7280',
+    background: isActive ? t.primary : 'transparent',
+    color: isActive ? t.primaryFg : t.fgMuted,
   }),
   logo: {
     width: 16,
