@@ -2,48 +2,136 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Theme overrides — outside @layer so they beat shared-ui's unlayered variables ── */
+:root {
+  --background: 210 20% 98%;
+  --foreground: 200 25% 20%;
+
+  --card: 0 0% 100%;
+  --card-foreground: 200 25% 20%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 200 25% 20%;
+
+  --primary: 174 72% 38%;
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 200 15% 95%;
+  --secondary-foreground: 200 25% 20%;
+
+  --muted: 200 12% 93%;
+  --muted-foreground: 200 10% 50%;
+
+  --accent: 174 50% 92%;
+  --accent-foreground: 174 72% 28%;
+
+  --destructive: 0 72% 51%;
+  --destructive-foreground: 0 0% 100%;
+
+  --border: 200 15% 88%;
+  --input: 200 15% 88%;
+  --ring: 174 72% 38%;
+
+  --radius: 0.625rem;
+
+  --navy: 210 20% 98%;
+  --navy-light: 210 20% 95%;
+  --teal: 174 72% 38%;
+  --teal-light: 174 55% 48%;
+  --teal-glow: 174 72% 52%;
+  --surface-glass: 0 0% 100%;
+  --agent-bg: 0 0% 100%;
+  --agent-surface: 200 15% 96%;
+  --agent-bubble: 200 12% 93%;
+
+  --dash-bg: 210 20% 97%;
+  --dash-sidebar: 0 0% 100%;
+  --dash-text: 200 25% 15%;
+  --dash-text-muted: 200 15% 45%;
+  --dash-text-faint: 200 10% 60%;
+  --dash-surface: 0 0% 100%;
+  --dash-surface-hover: 200 15% 96%;
+  --dash-border: 200 15% 90%;
+  --dash-card: 200 15% 97%;
+  --dash-active-bg: 174 72% 95%;
+  --dash-active-text: 174 72% 28%;
+
+  --sidebar-background: 0 0% 98%;
+  --sidebar-foreground: 240 5.3% 26.1%;
+  --sidebar-primary: 240 5.9% 10%;
+  --sidebar-primary-foreground: 0 0% 98%;
+  --sidebar-accent: 240 4.8% 95.9%;
+  --sidebar-accent-foreground: 240 5.9% 10%;
+  --sidebar-border: 220 13% 91%;
+  --sidebar-ring: 217.2 91.2% 59.8%;
+}
+
+.dark {
+  --background: 220 8% 7%;
+  --foreground: 0 0% 93%;
+
+  --card: 220 7% 11%;
+  --card-foreground: 0 0% 93%;
+
+  --popover: 220 7% 11%;
+  --popover-foreground: 0 0% 93%;
+
+  --primary: 174 72% 42%;
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 220 6% 15%;
+  --secondary-foreground: 0 0% 85%;
+
+  --muted: 220 6% 15%;
+  --muted-foreground: 220 5% 55%;
+
+  --accent: 174 40% 16%;
+  --accent-foreground: 174 65% 58%;
+
+  --destructive: 0 72% 51%;
+  --destructive-foreground: 0 0% 100%;
+
+  --border: 0 0% 100% / 0.07;
+  --input: 0 0% 100% / 0.07;
+  --ring: 174 72% 42%;
+
+  --navy: 220 8% 7%;
+  --navy-light: 220 7% 11%;
+  --teal: 174 72% 42%;
+  --teal-light: 174 65% 50%;
+  --teal-glow: 174 72% 55%;
+  --surface-glass: 220 7% 11%;
+  --agent-bg: 220 8% 7%;
+  --agent-surface: 220 6% 15%;
+  --agent-bubble: 220 6% 17%;
+
+  --dash-bg: 220 8% 7%;
+  --dash-sidebar: 220 7% 11%;
+  --dash-text: 0 0% 93%;
+  --dash-text-muted: 220 5% 55%;
+  --dash-text-faint: 220 5% 38%;
+  --dash-surface: 0 0% 100% / 0.05;
+  --dash-surface-hover: 0 0% 100% / 0.04;
+  --dash-border: 0 0% 100% / 0.07;
+  --dash-card: 0 0% 100% / 0.04;
+  --dash-active-bg: 174 72% 42%;
+  --dash-active-text: 0 0% 100%;
+
+  --sidebar-background: 220 8% 7%;
+  --sidebar-foreground: 0 0% 90%;
+  --sidebar-primary: 0 0% 98%;
+  --sidebar-primary-foreground: 220 8% 7%;
+  --sidebar-accent: 220 6% 15%;
+  --sidebar-accent-foreground: 0 0% 90%;
+  --sidebar-border: 0 0% 100% / 0.07;
+  --sidebar-ring: 174 72% 42%;
+}
+
 @layer base {
-  :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-    --radius: 0.5rem;
+  * {
+    @apply border-border;
   }
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+  body {
+    @apply bg-background text-foreground;
   }
 }

@@ -4,6 +4,12 @@ export default {
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
+    // Source paths — packages are aliased to src for HMR; scan source for all Tailwind classes
+    "../packages/shared-ui/src/**/*.{js,ts,jsx,tsx}",
+    "../packages/view-renderer/src/**/*.{js,ts,jsx,tsx}",
+    "../packages/reports-setup/src/**/*.{js,ts,jsx,tsx}",
+    "../packages/form-builder/src/**/*.{js,ts,jsx,tsx}",
+    // Fallback: compiled dist in case anything resolves from there
     "./node_modules/@aditya-sharma-salescode/shared-ui/dist/**/*.{js,mjs,cjs}",
     "./node_modules/view-renderer/dist/**/*.{js,mjs,cjs}",
   ],
@@ -42,6 +48,25 @@ export default {
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
+        },
+        navy: {
+          DEFAULT: "hsl(var(--navy))",
+          light: "hsl(var(--navy-light))",
+        },
+        teal: {
+          DEFAULT: "hsl(var(--teal))",
+          light: "hsl(var(--teal-light))",
+          glow: "hsl(var(--teal-glow))",
+        },
+        sidebar: {
+          DEFAULT: "hsl(var(--sidebar-background))",
+          foreground: "hsl(var(--sidebar-foreground))",
+          primary: "hsl(var(--sidebar-primary))",
+          "primary-foreground": "hsl(var(--sidebar-primary-foreground))",
+          accent: "hsl(var(--sidebar-accent))",
+          "accent-foreground": "hsl(var(--sidebar-accent-foreground))",
+          border: "hsl(var(--sidebar-border))",
+          ring: "hsl(var(--sidebar-ring))",
         },
       },
       borderRadius: {

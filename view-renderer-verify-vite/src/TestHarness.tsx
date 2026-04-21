@@ -48,6 +48,44 @@ const emptyTenantConfig: TenantConfig = {
   extra: {},
 };
 
+// ── Theme ──
+const THEMES = {
+  light: {
+    "--th-bg": "#ffffff",
+    "--th-panel": "#f9fafb",
+    "--th-border": "#e5e7eb",
+    "--th-text-muted": "#6b7280",
+    "--th-text-subtle": "#9ca3af",
+    "--th-text-label": "#4b5563",
+    "--th-input-border": "#d1d5db",
+    "--th-input-bg": "#ffffff",
+    "--th-input-text": "#111827",
+    "--th-collapse-bg": "#f3f4f6",
+    "--th-primary": "#0d9488",
+    "--th-primary-text": "#0f766e",
+    "--th-error-bg": "#fef2f2",
+    "--th-error-border": "#fecaca",
+    "--th-error-text": "#dc2626",
+  },
+  dark: {
+    "--th-bg": "#0f172a",
+    "--th-panel": "#1e293b",
+    "--th-border": "#334155",
+    "--th-text-muted": "#94a3b8",
+    "--th-text-subtle": "#64748b",
+    "--th-text-label": "#cbd5e1",
+    "--th-input-border": "#475569",
+    "--th-input-bg": "#1e293b",
+    "--th-input-text": "#f1f5f9",
+    "--th-collapse-bg": "#0f172a",
+    "--th-primary": "#14b8a6",
+    "--th-primary-text": "#2dd4bf",
+    "--th-error-bg": "#450a0a",
+    "--th-error-border": "#7f1d1d",
+    "--th-error-text": "#fca5a5",
+  },
+} as const;
+
 // ── Styles ──
 const S = {
   root: {
@@ -56,6 +94,19 @@ const S = {
     flexDirection: "column",
     fontFamily: "Inter, system-ui, sans-serif",
     overflow: "hidden",
+    background: "var(--th-bg)",
+    color: "var(--th-input-text)",
+  } as CSSProperties,
+  header: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "flex-end",
+    padding: "0 12px",
+    height: 36,
+    borderBottom: "1px solid var(--th-border)",
+    background: "var(--th-panel)",
+    flexShrink: 0,
+    gap: 8,
   } as CSSProperties,
   main: {
     display: "flex",
@@ -68,14 +119,15 @@ const S = {
     flex: collapsed ? "0 0 0px" : otherCollapsed ? 1 : undefined,
     display: "flex",
     flexDirection: "column",
-    borderRight: collapsed ? "none" : "1px solid #e5e7eb",
+    borderRight: collapsed ? "none" : "1px solid var(--th-border)",
     overflow: "hidden",
     transition: "width 0.25s ease, min-width 0.25s ease, flex 0.25s ease",
+    background: "var(--th-bg)",
   }),
   tabStrip: {
     display: "flex",
-    borderBottom: "1px solid #e5e7eb",
-    background: "#f9fafb",
+    borderBottom: "1px solid var(--th-border)",
+    background: "var(--th-panel)",
     flexShrink: 0,
     overflowX: "auto",
     overflowY: "hidden",
@@ -84,9 +136,9 @@ const S = {
     padding: "10px 16px",
     fontSize: 13,
     border: "none",
-    borderBottom: active ? "2px solid #0d9488" : "2px solid transparent",
+    borderBottom: active ? "2px solid var(--th-primary)" : "2px solid transparent",
     background: "transparent",
-    color: active ? "#0f766e" : "#6b7280",
+    color: active ? "var(--th-primary-text)" : "var(--th-text-muted)",
     fontWeight: active ? 500 : 400,
     cursor: "pointer",
     display: "flex",
@@ -106,11 +158,12 @@ const S = {
     flexDirection: "column",
     flex: 1,
     minHeight: 0,
+    background: "var(--th-bg)",
   } as CSSProperties,
   fetchControls: {
     padding: 12,
-    borderBottom: "1px solid #e5e7eb",
-    background: "#f9fafb",
+    borderBottom: "1px solid var(--th-border)",
+    background: "var(--th-panel)",
     display: "flex",
     flexDirection: "column",
     gap: 8,
@@ -124,39 +177,45 @@ const S = {
   } as CSSProperties,
   label: {
     fontSize: 11,
-    color: "#6b7280",
+    color: "var(--th-text-muted)",
     width: 50,
     flexShrink: 0,
   } as CSSProperties,
   input: {
     fontSize: 13,
-    border: "1px solid #d1d5db",
+    border: "1px solid var(--th-input-border)",
     borderRadius: 4,
     padding: "4px 8px",
     flex: 1,
     minWidth: 100,
     outline: "none",
+    background: "var(--th-input-bg)",
+    color: "var(--th-input-text)",
   } as CSSProperties,
   inputShort: {
     fontSize: 13,
-    border: "1px solid #d1d5db",
+    border: "1px solid var(--th-input-border)",
     borderRadius: 4,
     padding: "4px 8px",
     width: 80,
     outline: "none",
+    background: "var(--th-input-bg)",
+    color: "var(--th-input-text)",
   } as CSSProperties,
   select: {
     fontSize: 13,
-    border: "1px solid #d1d5db",
+    border: "1px solid var(--th-input-border)",
     borderRadius: 4,
     padding: "4px 8px",
     width: 90,
     outline: "none",
+    background: "var(--th-input-bg)",
+    color: "var(--th-input-text)",
   } as CSSProperties,
   fetchBtn: (disabled: boolean): CSSProperties => ({
     fontSize: 13,
     padding: "5px 16px",
-    background: disabled ? "#9ca3af" : "#0d9488",
+    background: disabled ? "var(--th-text-subtle)" : "var(--th-primary)",
     color: "#fff",
     border: "none",
     borderRadius: 4,
@@ -169,11 +228,12 @@ const S = {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    background: "#f3f4f6",
+    background: "var(--th-collapse-bg)",
     border: "none",
-    borderRight: "1px solid #e5e7eb",
+    borderRight: "1px solid var(--th-border)",
     cursor: "pointer",
     padding: 0,
+    color: "var(--th-text-muted)",
   } as CSSProperties,
   rightPanel: {
     flex: 1,
@@ -181,7 +241,7 @@ const S = {
     flexDirection: "column",
     minHeight: 0,
     overflow: "hidden",
-    background: "#fff",
+    background: "var(--th-bg)",
   } as CSSProperties,
   rightContent: {
     display: "flex",
@@ -219,7 +279,7 @@ const S = {
     fontSize: 13,
     fontWeight: 600,
     color: "#fff",
-    background: status === "applying" ? "#6b7280" : "#0d9488",
+    background: status === "applying" ? "var(--th-text-subtle)" : "var(--th-primary)",
     border: "none",
     borderRadius: 8,
     cursor: status === "loading" || status === "applying" ? "not-allowed" : "pointer",
@@ -237,9 +297,9 @@ const S = {
     animation: "spin 0.6s linear infinite",
   } as CSSProperties,
   previewErrorBanner: {
-    background: "#fef2f2",
-    border: "1px solid #fecaca",
-    color: "#dc2626",
+    background: "var(--th-error-bg)",
+    border: "1px solid var(--th-error-border)",
+    color: "var(--th-error-text)",
     fontSize: 12,
     padding: "6px 12px",
     borderRadius: 6,
@@ -253,7 +313,7 @@ const S = {
     alignItems: "center",
     justifyContent: "center",
     height: "100%",
-    color: "#9ca3af",
+    color: "var(--th-text-subtle)",
     fontSize: 14,
   } as CSSProperties,
   errorText: {
@@ -261,6 +321,27 @@ const S = {
     fontWeight: 500,
     textAlign: "center",
   } as CSSProperties,
+  toggleTrack: (active: boolean): CSSProperties => ({
+    width: 32,
+    height: 18,
+    borderRadius: 9,
+    background: active ? "var(--th-primary)" : "var(--th-input-border)",
+    position: "relative",
+    transition: "background 0.2s",
+    cursor: "pointer",
+    flexShrink: 0,
+  }),
+  toggleThumb: (active: boolean): CSSProperties => ({
+    width: 14,
+    height: 14,
+    borderRadius: "50%",
+    background: "#fff",
+    position: "absolute",
+    top: 2,
+    left: active ? 16 : 2,
+    transition: "left 0.2s",
+    boxShadow: "0 1px 2px rgba(0,0,0,0.18)",
+  }),
 } as const;
 
 // ── PWA URL builder ──
@@ -344,6 +425,21 @@ export default function TestHarness() {
   const [leftCollapsed, setLeftCollapsed] = useState(false);
   const [rightCollapsed, setRightCollapsed] = useState(false);
   const [draftViewMode, setDraftViewMode] = useState<"edit" | "diff">("edit");
+
+  // Dark mode — persisted to localStorage, synced to html.class for CSS vars + Tailwind
+  const [darkMode, setDarkMode] = useState(() => {
+    try { return localStorage.getItem("th-dark") === "1"; } catch { return false; }
+  });
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", darkMode);
+  }, [darkMode]);
+  const toggleDark = useCallback(() => {
+    setDarkMode((v) => {
+      const next = !v;
+      try { localStorage.setItem("th-dark", next ? "1" : "0"); } catch {}
+      return next;
+    });
+  }, []);
 
   // JSON state
   const [viewMetaJson, setViewMetaJson] = useState(JSON.stringify(emptyViewMeta, null, 2));
@@ -552,8 +648,21 @@ export default function TestHarness() {
     { key: "createView", label: "Create View", status: null },
   ];
 
+  const themeVars = THEMES[darkMode ? "dark" : "light"] as Record<string, string>;
+
   return (
-    <div style={S.root}>
+    <div style={{ ...S.root, ...themeVars } as CSSProperties}>
+
+      {/* ── Header ── */}
+      <div style={S.header}>
+        <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: "var(--th-text-muted)", cursor: "pointer", userSelect: "none" }}>
+          <span>{darkMode ? "Light" : "Dark"}</span>
+          <div style={S.toggleTrack(darkMode)} onClick={toggleDark}>
+            <div style={S.toggleThumb(darkMode)} />
+          </div>
+        </label>
+      </div>
+
       <div style={S.main}>
         {/* ── Left Panel ── */}
         <div style={S.leftPanel(leftCollapsed, rightCollapsed)}>
@@ -579,7 +688,7 @@ export default function TestHarness() {
               <div style={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0 }}>
                 <div style={{ ...S.fetchControls, gap: 6 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                    <label style={{ fontSize: 11, color: "#6b7280", flexShrink: 0 }}>Saved Views</label>
+                    <label style={{ fontSize: 11, color: "var(--th-text-muted)", flexShrink: 0 }}>Saved Views</label>
                     <select
                       style={{ ...S.select, flex: 1, width: "auto" }}
                       value={viewMongoId}
@@ -608,12 +717,12 @@ export default function TestHarness() {
               <div style={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0 }}>
                 <div style={S.fetchControls}>
                   <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    <span style={{ fontSize: 11, color: "#6b7280", flex: 1 }}>
+                    <span style={{ fontSize: 11, color: "var(--th-text-muted)", flex: 1 }}>
                       {fetchTenant}/{fetchEnv} v{fetchAppVersion} ({fetchAppType || "any"})
                     </span>
                     <button
                       onClick={() => setShowFetchParams((v) => !v)}
-                      style={{ fontSize: 11, background: "none", border: "1px solid #d1d5db", borderRadius: 4, padding: "2px 8px", cursor: "pointer", color: "#6b7280" }}
+                      style={{ fontSize: 11, background: "none", border: "1px solid var(--th-input-border)", borderRadius: 4, padding: "2px 8px", cursor: "pointer", color: "var(--th-text-muted)" }}
                     >
                       {showFetchParams ? "Hide" : "Edit"}
                     </button>
@@ -643,8 +752,8 @@ export default function TestHarness() {
                           <option value="sfa">sfa</option>
                         </select>
                       </div>
-                      <div style={{ borderTop: "1px solid #e5e7eb", paddingTop: 6, marginTop: 2 }}>
-                        <div style={{ fontSize: 10, color: "#9ca3af", marginBottom: 4 }}>PWA Preview</div>
+                      <div style={{ borderTop: "1px solid var(--th-border)", paddingTop: 6, marginTop: 2 }}>
+                        <div style={{ fontSize: 10, color: "var(--th-text-subtle)", marginBottom: 4 }}>PWA Preview</div>
                         <div style={S.fetchRow}>
                           <label style={S.label}>URL</label>
                           <input style={S.input} value={pwaBaseUrl} onChange={(e) => setPwaBaseUrl(e.target.value)} placeholder="http://localhost:8080" />
@@ -665,12 +774,12 @@ export default function TestHarness() {
               <div style={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0 }}>
                 <div style={S.fetchControls}>
                   <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    <span style={{ fontSize: 11, color: "#6b7280", flex: 1 }}>
+                    <span style={{ fontSize: 11, color: "var(--th-text-muted)", flex: 1 }}>
                       Draft state (read-only) — {fetchTenant}/{fetchEnv}
                     </span>
                     <button
                       onClick={() => setDraftViewMode((m) => m === "edit" ? "diff" : "edit")}
-                      style={{ fontSize: 11, background: "none", border: "1px solid #d1d5db", borderRadius: 4, padding: "2px 8px", cursor: "pointer", color: "#6b7280" }}
+                      style={{ fontSize: 11, background: "none", border: "1px solid var(--th-input-border)", borderRadius: 4, padding: "2px 8px", cursor: "pointer", color: "var(--th-text-muted)" }}
                     >
                       {draftViewMode === "edit" ? "Diff" : "JSON"}
                     </button>
@@ -695,7 +804,7 @@ export default function TestHarness() {
             {activeTab === "globalSchema" && (
               <div style={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0 }}>
                 <div style={{ ...S.fetchControls, flexDirection: "row", alignItems: "center" }}>
-                  <span style={{ fontSize: 11, color: "#6b7280", flex: 1 }}>GET /app/resolved_config</span>
+                  <span style={{ fontSize: 11, color: "var(--th-text-muted)", flex: 1 }}>GET /app/resolved_config</span>
                   <button onClick={handleFetchResolvedConfig} style={S.fetchBtn(false)}>Fetch</button>
                 </div>
                 <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
@@ -711,11 +820,11 @@ export default function TestHarness() {
             {activeTab === "createView" && (
               <div style={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0 }}>
                 <div style={{ ...S.fetchControls, flexDirection: "row", alignItems: "center", gap: 8 }}>
-                  <span style={{ fontSize: 11, color: "#6b7280", flex: 1 }}>Paste view JSON → Save to DB</span>
+                  <span style={{ fontSize: 11, color: "var(--th-text-muted)", flex: 1 }}>Paste view JSON → Save to DB</span>
                   <button onClick={handleSaveView} style={S.fetchBtn(false)}>Save View</button>
                 </div>
                 {createViewStatus && (
-                  <div style={{ padding: "6px 12px", fontSize: 12, color: createViewStatus.startsWith("Error") ? "#ef4444" : "#22c55e", background: "#f9fafb", borderBottom: "1px solid #e5e7eb" }}>
+                  <div style={{ padding: "6px 12px", fontSize: 12, color: createViewStatus.startsWith("Error") ? "#ef4444" : "#22c55e", background: "var(--th-panel)", borderBottom: "1px solid var(--th-border)" }}>
                     {createViewStatus}
                   </div>
                 )}
@@ -739,7 +848,7 @@ export default function TestHarness() {
             height="10"
             viewBox="0 0 24 24"
             fill="none"
-            stroke="#6b7280"
+            stroke="currentColor"
             strokeWidth={2.5}
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -756,7 +865,7 @@ export default function TestHarness() {
             height="10"
             viewBox="0 0 24 24"
             fill="none"
-            stroke="#6b7280"
+            stroke="currentColor"
             strokeWidth={2.5}
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -817,32 +926,13 @@ export default function TestHarness() {
                 {pwaUrl && (
                   <div ref={phoneContainerRef} style={S.rightContentRight}>
                     {/* Live Preview toggle */}
-                    <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: '#4b5563', cursor: 'pointer', userSelect: 'none', flexShrink: 0 }}>
-                      <span style={{ fontWeight: 500, letterSpacing: '0.02em' }}>Live Preview</span>
+                    <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: "var(--th-text-label)", cursor: "pointer", userSelect: "none", flexShrink: 0 }}>
+                      <span style={{ fontWeight: 500, letterSpacing: "0.02em" }}>Live Preview</span>
                       <div
                         onClick={() => setLivePreview((v) => !v)}
-                        style={{
-                          width: 32,
-                          height: 18,
-                          borderRadius: 9,
-                          background: livePreview ? '#0d9488' : '#d1d5db',
-                          position: 'relative',
-                          transition: 'background 0.2s',
-                          cursor: 'pointer',
-                          flexShrink: 0,
-                        }}
+                        style={S.toggleTrack(livePreview)}
                       >
-                        <div style={{
-                          width: 14,
-                          height: 14,
-                          borderRadius: '50%',
-                          background: '#fff',
-                          position: 'absolute',
-                          top: 2,
-                          left: livePreview ? 16 : 2,
-                          transition: 'left 0.2s',
-                          boxShadow: '0 1px 2px rgba(0,0,0,0.18)',
-                        }} />
+                        <div style={S.toggleThumb(livePreview)} />
                       </div>
                     </label>
                     <PhoneMockup width={phoneDims.w} height={phoneDims.h}>
@@ -853,28 +943,28 @@ export default function TestHarness() {
                         manualMode={!livePreview}
                         onStatusChange={setPreviewStatus}
                         onError={(msg) => setPreviewError(msg)}
-                        style={{ width: '100%', height: '100%' }}
+                        style={{ width: "100%", height: "100%" }}
                       />
                     </PhoneMockup>
                     {!livePreview && (
                       <button
-                        style={{ ...S.previewBtn(previewStatus), padding: '6px 24px', fontSize: 12 }}
-                        disabled={previewStatus === 'loading' || previewStatus === 'applying'}
+                        style={{ ...S.previewBtn(previewStatus), padding: "6px 24px", fontSize: 12 }}
+                        disabled={previewStatus === "loading" || previewStatus === "applying"}
                         onClick={() => {
                           setPreviewError(null);
                           previewRef.current?.sendConfig();
                         }}
                       >
-                        {previewStatus === 'applying' && (
+                        {previewStatus === "applying" && (
                           <span style={S.spinner} />
                         )}
-                        {previewStatus === 'applying' ? 'Applying…' : 'Preview'}
+                        {previewStatus === "applying" ? "Applying…" : "Preview"}
                       </button>
                     )}
                     {previewError && (
                       <div style={S.previewErrorBanner}>
                         {previewError}
-                        <span style={{ cursor: 'pointer', marginLeft: 8, fontWeight: 600 }} onClick={() => setPreviewError(null)}>×</span>
+                        <span style={{ cursor: "pointer", marginLeft: 8, fontWeight: 600 }} onClick={() => setPreviewError(null)}>×</span>
                       </div>
                     )}
                   </div>

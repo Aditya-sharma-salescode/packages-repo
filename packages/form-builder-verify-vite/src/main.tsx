@@ -2,13 +2,10 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { FormBuilderPlugIn } from "@aditya-sharma-salescode/form-builder";
+import { ThemeProvider } from "@aditya-sharma-salescode/shared-ui";
 import "@aditya-sharma-salescode/shared-ui/index.css";
 import "./index.css";
 
-/**
- * Mirrors consumer wiring: mount workspace under /form-workspace/* with matching routePrefix.
- * Dev proxy in vite.config.ts forwards /api/convai → local stub (optional).
- */
 function App() {
   return (
     <BrowserRouter>
@@ -25,6 +22,8 @@ function App() {
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <App />
+    <ThemeProvider defaultTheme="light" attribute="class" storageKey="fb-theme">
+      <App />
+    </ThemeProvider>
   </StrictMode>
 );

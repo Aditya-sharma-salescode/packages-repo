@@ -5,11 +5,18 @@ import path from "path";
 export default defineConfig({
   plugins: [react()],
   resolve: {
-    alias: {
-      // Bundled deps (reports-setup, form-builder) include uuid's Node rng
-      // which imports crypto.randomFillSync. Redirect to a browser-safe shim.
-      crypto: path.resolve(__dirname, "src/crypto-shim.ts"),
-    },
+    alias: [
+      // Resolve workspace packages from source so HMR works without rebuilding dist
+      { find: "view-renderer", replacement: path.resolve(__dirname, "../packages/view-renderer/src/index.ts") },
+      { find: "@aditya-sharma-salescode/shared-ui", replacement: path.resolve(__dirname, "../packages/shared-ui/src/index.ts") },
+      { find: "@aditya-sharma-salescode/reports-setup", replacement: path.resolve(__dirname, "../packages/reports-setup/src/index.ts") },
+      { find: "@aditya-sharma-salescode/form-builder", replacement: path.resolve(__dirname, "../packages/form-builder/src/index.ts") },
+      // Mirror tsconfig path aliases used inside form-builder and reports-setup source files
+      { find: "@/features/form-builder", replacement: path.resolve(__dirname, "../packages/form-builder/src") },
+      { find: "@", replacement: path.resolve(__dirname, "../packages/shared-ui/src") },
+      // Bundled deps include uuid's Node rng — redirect to browser-safe shim
+      { find: "crypto", replacement: path.resolve(__dirname, "src/crypto-shim.ts") },
+    ],
   },
   server: {
     proxy: {
