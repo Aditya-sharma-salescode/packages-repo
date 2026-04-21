@@ -4,6 +4,10 @@ import "./theme.css";
 // ─── Utility ─────────────────────────────────────────────
 export { cn } from "./lib/utils";
 
+// ─── Theme components ─────────────────────────────────────
+export { ThemeProvider } from "./components/ThemeProvider";
+export { ThemeToggle } from "./components/ThemeToggle";
+
 // ─── UI Components ───────────────────────────────────────
 export * from "./components/ui/accordion";
 export * from "./components/ui/alert";
