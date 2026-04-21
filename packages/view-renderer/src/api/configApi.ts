@@ -6,6 +6,7 @@ export interface FetchTenantConfigParams {
   appType?: string
   appVersion?: string
   role?: string
+  platform?: string
 }
 
 /**
@@ -21,6 +22,7 @@ export async function fetchTenantConfig(
   if (params.appType) query.set('appType', params.appType)
   if (params.appVersion) query.set('appVersion', params.appVersion)
   if (params.role) query.set('role', params.role)
+  if (params.platform) query.set('platform', params.platform)
 
   const res = await fetch(`${baseUrl}/tenant-config?${query.toString()}`)
   if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`)
