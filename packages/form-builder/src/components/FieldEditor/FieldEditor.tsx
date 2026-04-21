@@ -73,7 +73,7 @@ export function FieldEditor() {
   return (
     <div className="w-[300px] border-l bg-card/50 flex flex-col shrink-0">
       <div className="flex items-center justify-between p-3 border-b">
-        <h3 className="text-sm font-semibold">Field Properties</h3>
+        <h3 className="text-sm font-semibold text-foreground">Field Properties</h3>
         <Button variant="ghost" size="icon" className="h-7 w-7" onClick={clearSelection}>
           <X className="h-4 w-4" />
         </Button>

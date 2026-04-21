@@ -106,7 +106,7 @@ export function SectionBlock({ section, index }: SectionBlockProps) {
           </form>
         ) : (
           <h3
-            className="text-sm font-semibold flex-1 cursor-pointer hover:text-primary transition-colors"
+            className="text-sm font-semibold text-foreground flex-1 cursor-pointer hover:text-primary transition-colors"
             onDoubleClick={() => {
               setEditTitle(section.title);
               setIsEditing(true);
