@@ -170,7 +170,7 @@ export function ManageReports({
               <div key={section || "__uncategorised__"}>
                 {/* Section header */}
                 <div className="flex items-center gap-2 mb-3">
-                  <p className="text-xs font-semibold tracking-widest uppercase text-emerald-700/70">
+                  <p className="text-xs font-semibold tracking-widest uppercase text-emerald-700/70 dark:text-emerald-400/70">
                     {section || "Reports"}
                   </p>
                   <div className="flex-1 h-px bg-border" />

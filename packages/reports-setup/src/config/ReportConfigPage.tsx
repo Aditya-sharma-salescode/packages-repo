@@ -1029,7 +1029,7 @@ function EmptyEditor() {
 function SectionCard({ title, children, className }: { title: string; children: React.ReactNode; className?: string }) {
   return (
     <div className={`bg-card border rounded-xl p-5 ${className ?? ""}`}>
-      <h3 className="text-sm font-semibold mb-4">{title}</h3>
+      <h3 className="text-sm font-semibold text-foreground mb-4">{title}</h3>
       {children}
     </div>
   );

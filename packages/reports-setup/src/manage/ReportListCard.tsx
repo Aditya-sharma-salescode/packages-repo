@@ -31,7 +31,7 @@ export function ReportListCard({
         "transition-all duration-200",
         "hover:shadow-sm",
         enabled
-          ? "border-l-[3px] border-l-emerald-500 border-emerald-200/60 bg-emerald-50/30"
+          ? "border-l-[3px] border-l-emerald-500 border-emerald-200/60 bg-emerald-50/30 dark:border-emerald-700/40 dark:bg-emerald-900/20"
           : "border-muted-foreground/15 text-muted-foreground",
       )}
     >
@@ -61,7 +61,7 @@ export function ReportListCard({
         className={cn(
           "h-7 w-7 shrink-0",
           enabled
-            ? "text-muted-foreground hover:text-emerald-700 hover:bg-emerald-100/50"
+            ? "text-muted-foreground hover:text-emerald-700 hover:bg-emerald-100/50 dark:hover:text-emerald-400 dark:hover:bg-emerald-900/30"
             : "text-muted-foreground/50 hover:text-foreground",
         )}
         onClick={(e) => {
