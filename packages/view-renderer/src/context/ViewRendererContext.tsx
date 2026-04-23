@@ -242,33 +242,38 @@ export function ViewRendererProvider({
 
             const updatedFeatures = { ...draft.features }
 
-            if (!enabled) {
-              delete updatedFeatures[activityId]
-            } else {
-              const originalFeature = original.features[activityId]
-              if (originalFeature) {
-                updatedFeatures[activityId] = { ...structuredClone(originalFeature), enabled: true }
-              } else if (child.activity_default) {
-                updatedFeatures[activityId] = structuredClone(child.activity_default) as unknown as TenantFeatureConfig
-                updatedFeatures[activityId].enabled = true
+            // Only touch features[activityId] if this child has its own feature config
+            if (child.activity_default !== undefined || original.features[activityId]) {
+              if (!enabled) {
+                delete updatedFeatures[activityId]
               } else {
-                updatedFeatures[activityId] = { enabled: true, strategies: {}, config: {}, services: {} }
+                const originalFeature = original.features[activityId]
+                if (originalFeature) {
+                  updatedFeatures[activityId] = { ...structuredClone(originalFeature), enabled: true }
+                } else if (child.activity_default) {
+                  updatedFeatures[activityId] = structuredClone(child.activity_default) as unknown as TenantFeatureConfig
+                  updatedFeatures[activityId].enabled = true
+                }
               }
             }
 
             // Sync outletActivityTabs array
-            const outletActivity = updatedFeatures.outlet_activity ?? draft.features.outlet_activity
+            // Bootstrap outlet_activity if absent — required for tab-only activities that have no feature entry
+            let outletActivity = updatedFeatures.outlet_activity ?? draft.features.outlet_activity
+            if (!outletActivity && enabled && child.outlet_activity_tab_default) {
+              outletActivity = { enabled: true, strategies: {}, config: { outletActivityTabs: [] }, services: {} } as TenantFeatureConfig
+            }
             if (outletActivity) {
               const config = outletActivity.config as Record<string, unknown>
               const currentTabs = Array.isArray(config.outletActivityTabs)
                 ? [...(config.outletActivityTabs as Record<string, unknown>[])]
                 : []
 
-              if (enabled && child.tab_default) {
+              if (enabled && child.outlet_activity_tab_default) {
                 if (!currentTabs.some((t) => t.id === child.activity_id)) {
-                  currentTabs.push({ ...child.tab_default })
+                  currentTabs.push({ ...child.outlet_activity_tab_default })
                 }
-              } else {
+              } else if (!enabled) {
                 const idx = currentTabs.findIndex((t) => t.id === child.activity_id)
                 if (idx !== -1) currentTabs.splice(idx, 1)
               }
@@ -276,6 +281,32 @@ export function ViewRendererProvider({
               updatedFeatures.outlet_activity = {
                 ...outletActivity,
                 config: { ...config, outletActivityTabs: currentTabs },
+              }
+            }
+
+            // Sync activity_forms.config.activity_types array
+            let activityForms = updatedFeatures.activity_forms ?? draft.features.activity_forms
+            if (!activityForms && enabled && child.activity_form_activity_type_default) {
+              activityForms = { enabled: true, strategies: {}, config: { activity_types: [] }, services: {} } as TenantFeatureConfig
+            }
+            if (activityForms) {
+              const afConfig = (activityForms.config ?? {}) as Record<string, unknown>
+              const currentTypes = Array.isArray(afConfig.activity_types)
+                ? [...(afConfig.activity_types as Record<string, unknown>[])]
+                : []
+
+              if (enabled && child.activity_form_activity_type_default) {
+                if (!currentTypes.some((t) => t.type === child.activity_id)) {
+                  currentTypes.push({ ...child.activity_form_activity_type_default })
+                }
+              } else if (!enabled) {
+                const idx = currentTypes.findIndex((t) => t.type === child.activity_id)
+                if (idx !== -1) currentTypes.splice(idx, 1)
+              }
+
+              updatedFeatures.activity_forms = {
+                ...activityForms,
+                config: { ...afConfig, activity_types: currentTypes },
               }
             }
 

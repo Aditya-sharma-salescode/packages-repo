@@ -192,7 +192,7 @@ export function StoreActivityRenderer({ activities, onToggleActivity, onAdvanced
               <div style={styles.desc}>{activity.description}</div>
               <FieldTags fields={activity.fields} />
             </div>
-            {onAdvancedSettings && (
+            {onAdvancedSettings && activity.advanceSettingsHandler && (
               <div
                 style={styles.gearBtn}
                 onClick={() => {
