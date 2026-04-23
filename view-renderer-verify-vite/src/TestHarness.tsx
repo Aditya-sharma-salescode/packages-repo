@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback, useMemo, useRef, type CSSProperties } from "react";
 
+const CONFIG_BASE_URL = "http://localhost:1337/config-service";
+
 /** Hook: measure an element's size via ResizeObserver */
 function useElementSize<T extends HTMLElement>() {
   const ref = useRef<T>(null);
@@ -398,6 +400,8 @@ function getGlobalConfigMap(appGlobals: GlobalFeatureConfig[] | null): GlobalCon
 async function saveAppConfig(
   draft: TenantConfig,
   params: { tenant: string; env: string; appVersion?: string; role?: string },
+  baseUrl: string,
+  token: string,
 ): Promise<void> {
   const body: Record<string, unknown> = {
     tenant: params.tenant,
@@ -408,16 +412,32 @@ async function saveAppConfig(
   if (params.appVersion) body.appVersion = params.appVersion;
   if (params.role) body.role = params.role;
 
-  const res = await fetch("http://localhost:3000/tenant-config/update", {
+  const res = await fetch(`${baseUrl}/tenant-config/update`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
     body: JSON.stringify(body),
   });
   if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
 }
 
-function savePortalConfig(_draft: TenantConfig): void {
-  alert("Portal save pressed");
+async function savePortalConfig(
+  draft: TenantConfig,
+  params: { tenant: string; env: string },
+  baseUrl: string,
+  token: string,
+): Promise<void> {
+  const res = await fetch(`${baseUrl}/tenant-config/update`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ tenant: params.tenant, env: params.env, config: draft, platform: "portal" }),
+  });
+  if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
 }
 
 
@@ -521,7 +541,6 @@ export default function TestHarness() {
     return { w: Math.max(screenW, 180), h: Math.max(screenH, 340) };
   }, [phoneContainerSize.height]);
 
-  const CONFIG_BASE_URL = "http://localhost:3000";
 
   // GET /tenant-config
   const handleFetchConfig = useCallback(async () => {
@@ -564,7 +583,7 @@ export default function TestHarness() {
   const handleFetchViewMeta = useCallback(async () => {
     try {
       if (viewMongoId) {
-        const res = await fetch(`${CONFIG_BASE_URL}/view/public/${viewMongoId}`);
+        const res = await fetch(`${CONFIG_BASE_URL}/view?view_id=${viewMongoId}`);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         setViewMetaJson(JSON.stringify(data, null, 2));
@@ -579,43 +598,38 @@ export default function TestHarness() {
     }
   }, [viewMongoId]);
 
-  // Fetch list of all views from API
   const handleFetchViewList = useCallback(async () => {
-    try {
-      const res = await fetch(`${CONFIG_BASE_URL}/view/public`);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
-      setViewList(data);
-    } catch {
-      setViewList([]);
-    }
+    // view list not supported by config-service — no-op
+    setViewList([]);
   }, []);
 
-  // Save view JSON to backend via POST /view/public
+  // Save view JSON to backend via POST /view
   const handleSaveView = useCallback(async () => {
     setCreateViewStatus(null);
     try {
       const body = JSON.parse(createViewJson);
-      const res = await fetch(`${CONFIG_BASE_URL}/view/public`, {
+      const token = localStorage.getItem("accessToken") || "";
+      const res = await fetch(`${CONFIG_BASE_URL}/view`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify(body),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
       setCreateViewStatus(`Saved! _id: ${data._id}`);
-      handleFetchViewList();
     } catch (err: unknown) {
       setCreateViewStatus(`Error: ${(err as Error).message}`);
     }
-  }, [createViewJson, handleFetchViewList]);
+  }, [createViewJson]);
 
   // Auto-fetch on mount
   useEffect(() => {
     handleFetchViewMeta();
     handleFetchConfig();
     handleFetchResolvedConfig();
-    handleFetchViewList();
   }, []);
 
   // Re-parse JSON whenever editors change
@@ -890,8 +904,9 @@ export default function TestHarness() {
               initialGlobalConfigMap={memoGlobalConfigMap}
               initialViewMeta={vmParsed.data}
               onSave={async (configKey: AppTypeKey, draft: TenantConfig) => {
+                const token = localStorage.getItem("accessToken") || "";
                 if (configKey === "portal") {
-                  savePortalConfig(draft);
+                  await savePortalConfig(draft, { tenant: fetchTenant, env: fetchEnv }, CONFIG_BASE_URL, token);
                   return;
                 }
 
@@ -901,7 +916,7 @@ export default function TestHarness() {
                     env: fetchEnv,
                     appVersion: fetchAppVersion || undefined,
                     role: fetchRole || undefined,
-                  });
+                  }, CONFIG_BASE_URL, token);
                   setUpdateError(null);
                   setUpdateSuccess(`Saved ${configKey} at ${new Date().toLocaleTimeString()}`);
                   setSaveOutput({
