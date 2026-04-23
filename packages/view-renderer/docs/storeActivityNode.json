@@ -14,90 +14,149 @@
   },
   "children": [
     {
-      "activity_id": "stock_inventory",
-      "activity_label": "Stock Inventory",
-      "activity_description": "Record and track product stock levels and availability at each outlet",
+      "activity_id": "asset_tracking",
+      "activity_label": "Asset Tracking",
+      "activity_description": "Asset Tracking",
+      "advance_settings_handler": "form-package",
       "activity_default": {
         "enabled": true,
+        "strategies": {},
         "config": {
+          "formHeaderLabel": "Capture asset details accurately. Required fields are marked with *.",
+          "formHeaderVariant": "info",
           "schema": {
-            "formName": "Stock Inventory",
-            "sections": [],
+            "formName": "Asset Tracking",
+            "sections": [
+              {
+                "id": "at-new-asset",
+                "title": "New Asset",
+                "fields": [
+                  {
+                    "id": "assetImage",
+                    "type": "camera",
+                    "label": "Asset Image",
+                    "required": true,
+                    "columnName": "imageUrl",
+                    "apiKey": "",
+                    "allowCamera": true,
+                    "allowGallery": false,
+                    "hintText": "Capture the asset on-site — GPS is recorded automatically.",
+                    "captureLocationWithImage": true,
+                    "showLiveLocationTag": true,
+                    "linkedLatFieldId": "latitude",
+                    "linkedLngFieldId": "longitude"
+                  },
+                  {
+                    "id": "latitude",
+                    "type": "text",
+                    "label": "Latitude",
+                    "required": false,
+                    "columnName": "latitude",
+                    "apiKey": "lat",
+                    "apiType": "double",
+                    "condition": {
+                      "fieldId": "latitude",
+                      "operator": "equals",
+                      "value": "__never__"
+                    }
+                  },
+                  {
+                    "id": "longitude",
+                    "type": "text",
+                    "label": "Longitude",
+                    "required": false,
+                    "columnName": "longitude",
+                    "apiKey": "lng",
+                    "apiType": "double",
+                    "condition": {
+                      "fieldId": "longitude",
+                      "operator": "equals",
+                      "value": "__never__"
+                    }
+                  },
+                  {
+                    "id": "at-brand",
+                    "type": "text",
+                    "label": "Equipment Brand",
+                    "required": true,
+                    "columnName": "equipment_brand",
+                    "placeholder": "Enter equipment brand"
+                  },
+                  {
+                    "id": "at-equipment-number",
+                    "type": "text",
+                    "label": "Equipment Number",
+                    "required": true,
+                    "columnName": "equipment_number",
+                    "placeholder": "Enter equipment number"
+                  },
+                  {
+                    "id": "at-serial-number",
+                    "type": "text",
+                    "label": "Serial Number",
+                    "required": true,
+                    "columnName": "serial_number",
+                    "placeholder": "Enter serial number"
+                  },
+                  {
+                    "id": "at-cooler-category",
+                    "type": "dropdown",
+                    "label": "Cooler Category",
+                    "required": true,
+                    "columnName": "cooler_category",
+                    "options": [
+                      "Single Door Visi Cooler",
+                      "Double Door Visi Cooler",
+                      "Chest Freezer",
+                      "Deep Freezer",
+                      "Bottle Cooler"
+                    ]
+                  },
+                  {
+                    "id": "at-remarks",
+                    "type": "textarea",
+                    "label": "Remarks",
+                    "required": false,
+                    "columnName": "remarks",
+                    "placeholder": "Add any remarks"
+                  }
+                ]
+              }
+            ],
             "meta": {
               "submitLabel": "Submit",
               "submitEndpoint": "/outlet-activities"
             }
           }
-        }
+        },
+        "services": {}
       },
-      "tab_default": {
-        "id": "stock_inventory",
-        "label": "STOCK INVENTORY",
-        "iconPath": "assets/svg/stock_inventory.svg",
+      "outlet_activity_tab_default": {
+        "id": "asset_tracking",
+        "label": "ASSET TRACKING",
+        "iconPath": "assets/svg/asset_tracking.svg",
         "isDefault": false,
-        "themeColor": "#4CAF50",
+        "themeColor": "#7B61FF",
         "storeInRequired": ""
-      }
-    },
-    {
-      "activity_id": "stock_return",
-      "activity_label": "Stock Return",
-      "activity_description": "Capture returned or damaged stock details and quantities from outlets",
-      "activity_default": {
+      },
+      "activity_form_activity_type_default": {
+        "type": "asset_tracking",
+        "display_name": "Asset Tracking",
         "enabled": true,
-        "config": {
-          "schema": {
-            "formName": "Stock Return",
-            "sections": [],
-            "meta": {
-              "submitLabel": "Submit",
-              "submitEndpoint": "/outlet-activities"
-            }
-          }
-        }
-      },
-      "tab_default": {
-        "id": "stock_return",
-        "label": "STOCK RETURN",
-        "iconPath": "assets/svg/stock_return.svg",
-        "isDefault": false,
-        "themeColor": "#FF5722",
-        "storeInRequired": ""
-      }
-    },
-    {
-      "activity_id": "collection",
-      "activity_label": "Collection",
-      "activity_description": "Record payment collections and outstanding dues from retail outlets",
-      "activity_default": {
-        "enabled": true,
-        "config": {
-          "schema": {
-            "formName": "Collection",
-            "sections": [],
-            "meta": {
-              "submitLabel": "Submit",
-              "submitEndpoint": "/outlet-activities"
-            }
-          }
-        }
-      },
-      "tab_default": {
-        "id": "collection",
-        "label": "COLLECTION",
-        "iconPath": "assets/svg/collection.svg",
-        "isDefault": false,
-        "themeColor": "#2196F3",
-        "storeInRequired": ""
+        "context_type": "outlet_activity"
       }
     },
     {
       "activity_id": "merchandising",
       "activity_label": "Merchandising",
-      "activity_description": "Capture shelf displays, planogram compliance, and product visibility at outlets",
+      "activity_description": "Merchandising",
+      "advance_settings_handler": "form-package",
       "activity_default": {
         "enabled": true,
+        "strategies": {},
         "config": {
+          "formHeaderLabel": "Complete minimum one task.",
+          "formHeaderVariant": "warning",
           "schema": {
             "formName": "Merchandising",
             "sections": [
@@ -106,7 +165,7 @@
                 "title": "Store Details",
                 "fields": [
                   {
-                    "id": "3b2ba9e7-1ef7-463b-8f13-60415e7b7298",
+                    "id": "mr-task",
                     "type": "dropdown",
                     "label": "Select Merchandising Task",
                     "required": false,
@@ -118,7 +177,7 @@
                     ]
                   },
                   {
-                    "id": "c4ad0c81-3b50-492c-91ea-abacf0a68d71",
+                    "id": "mr-image",
                     "type": "camera",
                     "label": "Upload Image",
                     "required": false,
@@ -127,7 +186,7 @@
                     "allowGallery": true
                   },
                   {
-                    "id": "merch-remarks",
+                    "id": "mr-remarks",
                     "type": "textarea",
                     "label": "Remarks",
                     "required": false,
@@ -142,24 +201,35 @@
               "submitEndpoint": "/outlet-activities"
             }
           }
-        }
+        },
+        "services": {}
       },
-      "tab_default": {
+      "outlet_activity_tab_default": {
         "id": "merchandising",
         "label": "MERCHANDISING",
-        "iconPath": "assets/svg/merchandising.svg",
+        "iconPath": "assets/svg/competition_tracking.svg",
         "isDefault": false,
         "themeColor": "#2bbbad",
         "storeInRequired": ""
+      },
+      "activity_form_activity_type_default": {
+        "type": "merchandising",
+        "display_name": "Merchandising",
+        "enabled": true,
+        "context_type": "outlet_activity"
       }
     },
     {
       "activity_id": "competition_tracking",
-      "activity_label": "Competition Activity",
-      "activity_description": "Track competitor product presence, pricing, and promotions at retail outlets",
+      "activity_label": "Competition Tracking",
+      "activity_description": "Competition Tracking",
+      "advance_settings_handler": "form-package",
       "activity_default": {
         "enabled": true,
+        "strategies": {},
         "config": {
+          "formHeaderLabel": "Minimum one image capture is mandatory.",
+          "formHeaderVariant": "warning",
           "schema": {
             "formName": "Competition Tracking",
             "sections": [
@@ -168,7 +238,7 @@
                 "title": "Details",
                 "fields": [
                   {
-                    "id": "6c5d103c-ed33-4cff-b959-566671e6ad0b",
+                    "id": "ct-activity",
                     "type": "dropdown",
                     "label": "Select Activity",
                     "required": false,
@@ -180,19 +250,19 @@
                     ]
                   },
                   {
-                    "id": "0a9f072b-1715-4a28-a7e4-336528838ada",
+                    "id": "ct-competitor",
                     "type": "dropdown",
                     "label": "Select Competitor",
                     "required": true,
                     "columnName": "competitor",
                     "options": [
-                      "Mondelez International",
-                      "Hershey",
-                      "Mars Wrigley Confectionery"
+                      "Competitor A",
+                      "Competitor B",
+                      "Competitor C"
                     ]
                   },
                   {
-                    "id": "2defde4c-a891-49b5-8f16-3bc178142398",
+                    "id": "ct-duration",
                     "type": "dateRange",
                     "label": "Activity Duration",
                     "required": true,
@@ -200,7 +270,7 @@
                     "showDifference": true
                   },
                   {
-                    "id": "62a30571-402b-47cf-92ab-7d43fcaba179",
+                    "id": "ct-image",
                     "type": "camera",
                     "label": "Upload Image",
                     "required": false,
@@ -209,19 +279,10 @@
                     "allowCamera": true
                   },
                   {
-                    "id": "809e6b7e-28a5-4f68-816f-c2c52ebb644b",
-                    "type": "camera",
-                    "label": "Additional Image",
-                    "required": true,
-                    "columnName": "blobKey1",
-                    "allowCamera": true,
-                    "allowGallery": true
-                  },
-                  {
-                    "id": "b6984a34-af24-4c89-9d7e-329d5fdd7b4c",
+                    "id": "ct-remarks",
                     "type": "textarea",
                     "label": "Remarks",
-                    "required": true,
+                    "required": false,
                     "columnName": "remarks",
                     "placeholder": "Enter remarks..."
                   }
@@ -233,66 +294,60 @@
               "submitEndpoint": "/outlet-activities"
             }
           }
-        }
+        },
+        "services": {}
       },
-      "tab_default": {
+      "outlet_activity_tab_default": {
         "id": "competition_tracking",
         "label": "COMPETITION TRACKING",
         "iconPath": "assets/svg/competition_tracking.svg",
         "isDefault": false,
         "themeColor": "#e1ad01",
         "storeInRequired": ""
+      },
+      "activity_form_activity_type_default": {
+        "type": "competition_tracking",
+        "display_name": "Competition Tracking",
+        "enabled": true,
+        "context_type": "outlet_activity"
       }
     },
     {
-      "activity_id": "asset_tracking",
-      "activity_label": "Asset Tracking",
-      "activity_description": "Monitor and manage company-owned assets placed at retail outlets",
-      "activity_default": {
-        "enabled": true,
-        "config": {
-          "schema": {
-            "formName": "Asset Tracking",
-            "sections": [],
-            "meta": {
-              "submitLabel": "Submit",
-              "submitEndpoint": "/outlet-activities"
-            }
-          }
-        }
-      },
-      "tab_default": {
-        "id": "asset_tracking",
-        "label": "ASSET TRACKING",
-        "iconPath": "assets/svg/asset_tracking.svg",
+      "activity_id": "storeInventory",
+      "activity_label": "Stock Inventory",
+      "activity_description": "Stock Inventory",
+      "outlet_activity_tab_default": {
+        "id": "storeInventory",
+        "label": "STOCK INVENTORY",
+        "iconPath": "assets/svg/store_inventory.svg",
         "isDefault": false,
-        "themeColor": "#9C27B0",
+        "themeColor": "#32a785",
         "storeInRequired": ""
       }
     },
     {
-      "activity_id": "npd",
-      "activity_label": "New Product Distribution",
-      "activity_description": "Track the distribution and availability of newly launched products across outlets",
-      "activity_default": {
-        "enabled": true,
-        "config": {
-          "schema": {
-            "formName": "New Product Distribution",
-            "sections": [],
-            "meta": {
-              "submitLabel": "Submit",
-              "submitEndpoint": "/outlet-activities"
-            }
-          }
-        }
-      },
-      "tab_default": {
-        "id": "npd",
-        "label": "NEW PRODUCT DISTRIBUTION",
-        "iconPath": "assets/svg/npd.svg",
+      "activity_id": "invoiceCollection",
+      "activity_label": "Collection",
+      "activity_description": "Collection",
+      "outlet_activity_tab_default": {
+        "id": "invoiceCollection",
+        "label": "COLLECTION",
+        "iconPath": "assets/svg/competition_tracking.svg",
         "isDefault": false,
-        "themeColor": "#FF9800",
+        "themeColor": "#DE715B",
+        "storeInRequired": ""
+      }
+    },
+    {
+      "activity_id": "stockReturn",
+      "activity_label": "Stock Return",
+      "activity_description": "Stock Return",
+      "outlet_activity_tab_default": {
+        "id": "stockReturn",
+        "label": "STOCK RETURN",
+        "iconPath": "assets/svg/stock_return.svg",
+        "isDefault": false,
+        "themeColor": "#FF5722",
         "storeInRequired": ""
       }
     }
