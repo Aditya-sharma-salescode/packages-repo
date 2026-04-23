@@ -1,6 +1,6 @@
 import type { CSSProperties } from 'react'
 import type { ConfigEditorNodeMeta } from '../types'
-import { useViewRenderer } from '../context/ViewRendererContext'
+import { useViewRenderer } from '../context/useViewRenderer'
 import { t } from '../theme'
 import { getByPath } from '../utils/pathUtils'
 import { resolveTargetKeys } from '../utils/resolveTargetKeys'

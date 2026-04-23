@@ -1,7 +1,7 @@
 import { useMemo, useCallback } from 'react'
 import { ReportsProvider, ManageReports } from '@aditya-sharma-salescode/reports-setup'
 import type { AppConfig, ViewMetaReport } from '@aditya-sharma-salescode/reports-setup'
-import { useViewRenderer } from '../context/ViewRendererContext'
+import { useViewRenderer } from '../context/useViewRenderer'
 import { buildReportsConfig, applyReportsConfigUpdate } from '../utils/reportsConfigUtils'
 
 export function ReportsNodeRenderer() {

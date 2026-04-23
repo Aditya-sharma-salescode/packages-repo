@@ -1,5 +1,5 @@
 import type { CSSProperties } from 'react'
-import { useViewRenderer } from '../context/ViewRendererContext'
+import { useViewRenderer } from '../context/useViewRenderer'
 import { t } from '../theme'
 
 export interface NodeTab {

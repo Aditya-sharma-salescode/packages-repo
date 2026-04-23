@@ -1,6 +1,6 @@
 import type { CSSProperties, ReactNode } from 'react'
 import type { ConfigEditorNodeMeta, NodeMeta } from '../types'
-import { useViewRenderer } from '../context/ViewRendererContext'
+import { useViewRenderer } from '../context/useViewRenderer'
 import { ConfigEditorRenderer } from './ConfigEditorRenderer'
 import { StoreActivityRenderer } from './StoreActivityRenderer'
 import { ReportsNodeRenderer } from './ReportsNodeRenderer'
@@ -13,6 +13,7 @@ export interface FeatureCardItem {
   label: string
   description: string
   enabled: boolean
+  status?: 'live' | 'upcoming'
 }
 
 export interface MiddleContentProps {
@@ -38,18 +39,21 @@ const styles = {
     gridTemplateColumns: 'repeat(2, 1fr)',
     gap: 8,
   } as CSSProperties,
-  card: (enabled: boolean): CSSProperties => ({
-    cursor: 'pointer',
+  card: (enabled: boolean, upcoming?: boolean): CSSProperties => ({
+    cursor: upcoming ? 'not-allowed' : 'pointer',
     borderRadius: 8,
     padding: 12,
     display: 'flex',
     alignItems: 'flex-start',
     gap: 10,
     transition: 'all 0.15s ease',
-    border: enabled ? `1px solid ${t.p30}` : `1px solid ${t.border}`,
-    background: enabled ? t.p08 : t.card,
+    border: upcoming
+      ? `1px dashed ${t.border}`
+      : enabled ? `1px solid ${t.p30}` : `1px solid ${t.border}`,
+    background: upcoming ? t.card : enabled ? t.p08 : t.card,
+    opacity: upcoming ? 0.55 : 1,
   }),
-  checkbox: (enabled: boolean): CSSProperties => ({
+  checkbox: (enabled: boolean, upcoming?: boolean): CSSProperties => ({
     width: 16,
     height: 16,
     borderRadius: 4,
@@ -58,9 +62,24 @@ const styles = {
     justifyContent: 'center',
     flexShrink: 0,
     marginTop: 1,
-    background: enabled ? t.primary : 'transparent',
-    border: enabled ? 'none' : `2px solid ${t.fgMuted}`,
+    background: (!upcoming && enabled) ? t.primary : 'transparent',
+    border: (!upcoming && enabled) ? 'none' : `2px solid ${t.fgMuted}`,
     transition: 'all 0.15s ease',
+  }),
+  badge: (status: 'live' | 'upcoming'): CSSProperties => ({
+    display: 'inline-flex',
+    alignItems: 'center',
+    fontSize: 9,
+    fontWeight: 600,
+    letterSpacing: '0.04em',
+    textTransform: 'uppercase',
+    borderRadius: 4,
+    padding: '1px 5px',
+    marginLeft: 5,
+    verticalAlign: 'middle',
+    background: status === 'live' ? 'rgba(34,197,94,0.15)' : 'rgba(251,146,60,0.15)',
+    color: status === 'live' ? '#16a34a' : '#c2410c',
+    border: `1px solid ${status === 'live' ? 'rgba(34,197,94,0.35)' : 'rgba(251,146,60,0.35)'}`,
   }),
   checkIcon: {
     width: 10,
@@ -114,21 +133,31 @@ function FeatureSelectionRenderer({ features = [], onToggleFeature }: {
         Toggle features on/off for your application.
       </p>
       <div style={styles.grid}>
-        {features.map((feature) => (
-          <div
-            key={feature.id}
-            onClick={() => onToggleFeature?.(feature.id, !feature.enabled)}
-            style={styles.card(feature.enabled)}
-          >
-            <div style={styles.checkbox(feature.enabled)}>
-              {feature.enabled && <CheckIcon />}
+        {features.map((feature) => {
+          const upcoming = feature.status === 'upcoming'
+          return (
+            <div
+              key={feature.id}
+              onClick={() => !upcoming && onToggleFeature?.(feature.id, !feature.enabled)}
+              style={styles.card(feature.enabled, upcoming)}
+            >
+              <div style={styles.checkbox(feature.enabled, upcoming)}>
+                {!upcoming && feature.enabled && <CheckIcon />}
+              </div>
+              <div>
+                <div style={styles.label}>
+                  {feature.label}
+                  {feature.status && (
+                    <span style={styles.badge(feature.status)}>
+                      {feature.status === 'live' ? 'Live' : 'Upcoming'}
+                    </span>
+                  )}
+                </div>
+                <div style={styles.desc}>{feature.description}</div>
+              </div>
             </div>
-            <div>
-              <div style={styles.label}>{feature.label}</div>
-              <div style={styles.desc}>{feature.description}</div>
-            </div>
-          </div>
-        ))}
+          )
+        })}
       </div>
     </div>
   )

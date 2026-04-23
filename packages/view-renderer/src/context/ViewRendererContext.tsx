@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useMemo, useCallback, useEffect, type ReactNode } from 'react'
+import { createContext, useState, useMemo, useCallback, useEffect, type ReactNode } from 'react'
 import type {
   ViewMeta,
   TenantConfig,
@@ -65,7 +65,7 @@ export interface ViewRendererContextValue {
   setDraftMap: (map: DraftMap | null | ((prev: DraftMap | null) => DraftMap | null)) => void
 }
 
-const ViewRendererContext = createContext<ViewRendererContextValue | null>(null)
+export const ViewRendererContext = createContext<ViewRendererContextValue | null>(null)
 
 export interface ViewRendererProviderProps {
   children: ReactNode
@@ -422,8 +422,3 @@ export function ViewRendererProvider({
   )
 }
 
-export function useViewRenderer(): ViewRendererContextValue {
-  const ctx = useContext(ViewRendererContext)
-  if (!ctx) throw new Error('useViewRenderer must be used within ViewRendererProvider')
-  return ctx
-}

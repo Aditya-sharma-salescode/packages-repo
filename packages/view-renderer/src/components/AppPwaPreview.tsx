@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback, useMemo, useImperativeHandle, forwardRef, type CSSProperties } from 'react'
-import { useViewRenderer } from '../context/ViewRendererContext'
+import { useViewRenderer } from '../context/useViewRenderer'
 import type { AppTypeKey, TenantConfig, PreviewConfig } from '../types'
 
 // ── Playground message protocol ──
@@ -10,18 +10,18 @@ interface PlaygroundConfigPatch {
   payload: TenantConfig
 }
 
-interface PlaygroundNavigate {
+export interface PlaygroundNavigate {
   type: 'playground:navigate'
   route: string
 }
 
-interface PlaygroundAction {
+export interface PlaygroundAction {
   type: 'playground:action'
   action: string
   payload: Record<string, unknown>
 }
 
-interface PlaygroundPing {
+export interface PlaygroundPing {
   type: 'playground:ping'
 }
 
@@ -275,39 +275,6 @@ export const AppPwaPreview = forwardRef<AppPwaPreviewHandle, AppPwaPreviewProps>
     </div>
   )
 })
-
-// ── Public imperative API via ref (optional) ──
-
-export function useAppPwaPreviewActions(iframeRef: React.RefObject<HTMLIFrameElement | null>, pwaUrl: string) {
-  const navigate = useCallback(
-    (route: string) => {
-      const iframe = iframeRef.current
-      if (!iframe?.contentWindow) return
-      const msg: PlaygroundNavigate = { type: 'playground:navigate', route }
-      iframe.contentWindow.postMessage(JSON.stringify(msg), new URL(pwaUrl).origin)
-    },
-    [iframeRef, pwaUrl],
-  )
-
-  const action = useCallback(
-    (actionName: string, payload: Record<string, unknown> = {}) => {
-      const iframe = iframeRef.current
-      if (!iframe?.contentWindow) return
-      const msg: PlaygroundAction = { type: 'playground:action', action: actionName, payload }
-      iframe.contentWindow.postMessage(JSON.stringify(msg), new URL(pwaUrl).origin)
-    },
-    [iframeRef, pwaUrl],
-  )
-
-  const ping = useCallback(() => {
-    const iframe = iframeRef.current
-    if (!iframe?.contentWindow) return
-    const msg: PlaygroundPing = { type: 'playground:ping' }
-    iframe.contentWindow.postMessage(JSON.stringify(msg), new URL(pwaUrl).origin)
-  }, [iframeRef, pwaUrl])
-
-  return { navigate, action, ping }
-}
 
 // ── Helpers ──
 
