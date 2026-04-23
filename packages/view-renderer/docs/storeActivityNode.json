@@ -1,0 +1,300 @@
+{
+  "node_id": "store_activity",
+  "node_label": "Store Activity",
+  "node_logo": "",
+  "node_description": "Select store-level activities and configure the data capture form for each. Use advanced settings to customize fields.",
+  "node_type": "store_activity",
+  "target_config_keys": [
+    "app"
+  ],
+  "preview": {
+    "type": "pwa",
+    "screen": "outlet_detail",
+    "action": "preview_screen"
+  },
+  "children": [
+    {
+      "activity_id": "stock_inventory",
+      "activity_label": "Stock Inventory",
+      "activity_description": "Record and track product stock levels and availability at each outlet",
+      "activity_default": {
+        "enabled": true,
+        "config": {
+          "schema": {
+            "formName": "Stock Inventory",
+            "sections": [],
+            "meta": {
+              "submitLabel": "Submit",
+              "submitEndpoint": "/outlet-activities"
+            }
+          }
+        }
+      },
+      "tab_default": {
+        "id": "stock_inventory",
+        "label": "STOCK INVENTORY",
+        "iconPath": "assets/svg/stock_inventory.svg",
+        "isDefault": false,
+        "themeColor": "#4CAF50",
+        "storeInRequired": ""
+      }
+    },
+    {
+      "activity_id": "stock_return",
+      "activity_label": "Stock Return",
+      "activity_description": "Capture returned or damaged stock details and quantities from outlets",
+      "activity_default": {
+        "enabled": true,
+        "config": {
+          "schema": {
+            "formName": "Stock Return",
+            "sections": [],
+            "meta": {
+              "submitLabel": "Submit",
+              "submitEndpoint": "/outlet-activities"
+            }
+          }
+        }
+      },
+      "tab_default": {
+        "id": "stock_return",
+        "label": "STOCK RETURN",
+        "iconPath": "assets/svg/stock_return.svg",
+        "isDefault": false,
+        "themeColor": "#FF5722",
+        "storeInRequired": ""
+      }
+    },
+    {
+      "activity_id": "collection",
+      "activity_label": "Collection",
+      "activity_description": "Record payment collections and outstanding dues from retail outlets",
+      "activity_default": {
+        "enabled": true,
+        "config": {
+          "schema": {
+            "formName": "Collection",
+            "sections": [],
+            "meta": {
+              "submitLabel": "Submit",
+              "submitEndpoint": "/outlet-activities"
+            }
+          }
+        }
+      },
+      "tab_default": {
+        "id": "collection",
+        "label": "COLLECTION",
+        "iconPath": "assets/svg/collection.svg",
+        "isDefault": false,
+        "themeColor": "#2196F3",
+        "storeInRequired": ""
+      }
+    },
+    {
+      "activity_id": "merchandising",
+      "activity_label": "Merchandising",
+      "activity_description": "Capture shelf displays, planogram compliance, and product visibility at outlets",
+      "activity_default": {
+        "enabled": true,
+        "config": {
+          "schema": {
+            "formName": "Merchandising",
+            "sections": [
+              {
+                "id": "6fb4ab91-83d4-487f-8ff5-b95a5c5d0b82",
+                "title": "Store Details",
+                "fields": [
+                  {
+                    "id": "3b2ba9e7-1ef7-463b-8f13-60415e7b7298",
+                    "type": "dropdown",
+                    "label": "Select Merchandising Task",
+                    "required": false,
+                    "columnName": "type",
+                    "options": [
+                      "JAR MANAGEMENT",
+                      "HANGING MANAGEMENT",
+                      "SHELF MANAGEMENT"
+                    ]
+                  },
+                  {
+                    "id": "c4ad0c81-3b50-492c-91ea-abacf0a68d71",
+                    "type": "camera",
+                    "label": "Upload Image",
+                    "required": false,
+                    "columnName": "blobKey",
+                    "allowCamera": true,
+                    "allowGallery": true
+                  },
+                  {
+                    "id": "merch-remarks",
+                    "type": "textarea",
+                    "label": "Remarks",
+                    "required": false,
+                    "columnName": "remarks",
+                    "placeholder": "Enter remarks..."
+                  }
+                ]
+              }
+            ],
+            "meta": {
+              "submitLabel": "Submit",
+              "submitEndpoint": "/outlet-activities"
+            }
+          }
+        }
+      },
+      "tab_default": {
+        "id": "merchandising",
+        "label": "MERCHANDISING",
+        "iconPath": "assets/svg/merchandising.svg",
+        "isDefault": false,
+        "themeColor": "#2bbbad",
+        "storeInRequired": ""
+      }
+    },
+    {
+      "activity_id": "competition_tracking",
+      "activity_label": "Competition Activity",
+      "activity_description": "Track competitor product presence, pricing, and promotions at retail outlets",
+      "activity_default": {
+        "enabled": true,
+        "config": {
+          "schema": {
+            "formName": "Competition Tracking",
+            "sections": [
+              {
+                "id": "6c12416b-86d9-4532-a85b-a698290be1a6",
+                "title": "Details",
+                "fields": [
+                  {
+                    "id": "6c5d103c-ed33-4cff-b959-566671e6ad0b",
+                    "type": "dropdown",
+                    "label": "Select Activity",
+                    "required": false,
+                    "columnName": "activity",
+                    "options": [
+                      "Promos & Offer",
+                      "New product launch",
+                      "New branding visibility"
+                    ]
+                  },
+                  {
+                    "id": "0a9f072b-1715-4a28-a7e4-336528838ada",
+                    "type": "dropdown",
+                    "label": "Select Competitor",
+                    "required": true,
+                    "columnName": "competitor",
+                    "options": [
+                      "Mondelez International",
+                      "Hershey",
+                      "Mars Wrigley Confectionery"
+                    ]
+                  },
+                  {
+                    "id": "2defde4c-a891-49b5-8f16-3bc178142398",
+                    "type": "dateRange",
+                    "label": "Activity Duration",
+                    "required": true,
+                    "columnName": "date_range",
+                    "showDifference": true
+                  },
+                  {
+                    "id": "62a30571-402b-47cf-92ab-7d43fcaba179",
+                    "type": "camera",
+                    "label": "Upload Image",
+                    "required": false,
+                    "columnName": "blobKey",
+                    "allowGallery": true,
+                    "allowCamera": true
+                  },
+                  {
+                    "id": "809e6b7e-28a5-4f68-816f-c2c52ebb644b",
+                    "type": "camera",
+                    "label": "Additional Image",
+                    "required": true,
+                    "columnName": "blobKey1",
+                    "allowCamera": true,
+                    "allowGallery": true
+                  },
+                  {
+                    "id": "b6984a34-af24-4c89-9d7e-329d5fdd7b4c",
+                    "type": "textarea",
+                    "label": "Remarks",
+                    "required": true,
+                    "columnName": "remarks",
+                    "placeholder": "Enter remarks..."
+                  }
+                ]
+              }
+            ],
+            "meta": {
+              "submitLabel": "Submit",
+              "submitEndpoint": "/outlet-activities"
+            }
+          }
+        }
+      },
+      "tab_default": {
+        "id": "competition_tracking",
+        "label": "COMPETITION TRACKING",
+        "iconPath": "assets/svg/competition_tracking.svg",
+        "isDefault": false,
+        "themeColor": "#e1ad01",
+        "storeInRequired": ""
+      }
+    },
+    {
+      "activity_id": "asset_tracking",
+      "activity_label": "Asset Tracking",
+      "activity_description": "Monitor and manage company-owned assets placed at retail outlets",
+      "activity_default": {
+        "enabled": true,
+        "config": {
+          "schema": {
+            "formName": "Asset Tracking",
+            "sections": [],
+            "meta": {
+              "submitLabel": "Submit",
+              "submitEndpoint": "/outlet-activities"
+            }
+          }
+        }
+      },
+      "tab_default": {
+        "id": "asset_tracking",
+        "label": "ASSET TRACKING",
+        "iconPath": "assets/svg/asset_tracking.svg",
+        "isDefault": false,
+        "themeColor": "#9C27B0",
+        "storeInRequired": ""
+      }
+    },
+    {
+      "activity_id": "npd",
+      "activity_label": "New Product Distribution",
+      "activity_description": "Track the distribution and availability of newly launched products across outlets",
+      "activity_default": {
+        "enabled": true,
+        "config": {
+          "schema": {
+            "formName": "New Product Distribution",
+            "sections": [],
+            "meta": {
+              "submitLabel": "Submit",
+              "submitEndpoint": "/outlet-activities"
+            }
+          }
+        }
+      },
+      "tab_default": {
+        "id": "npd",
+        "label": "NEW PRODUCT DISTRIBUTION",
+        "iconPath": "assets/svg/npd.svg",
+        "isDefault": false,
+        "themeColor": "#FF9800",
+        "storeInRequired": ""
+      }
+    }
+  ]
+}

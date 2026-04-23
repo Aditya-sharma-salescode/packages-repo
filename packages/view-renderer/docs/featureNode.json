@@ -1,0 +1,144 @@
+{
+  "node_id": "feature_selection",
+  "node_label": "Features",
+  "node_logo": "",
+  "node_description": "Toggle and configure app features",
+  "node_type": "feature_selection",
+  "target_config_keys": ["app"],
+  "preview": {
+    "type": "pwa",
+    "screen": "home",
+    "action": "preview_screen"
+  },
+  "children": [
+    {
+      "feature_id": "outlet_mapping",
+      "feature_label": "Outlet Mapping",
+      "feature_description": "Map and manage outlet locations for sales reps — assigns outlets to reps and defines visit territories.",
+      "feature_status": "live"
+    },
+    {
+      "feature_id": "recommendations",
+      "feature_label": "Recommendations",
+      "feature_description": "Product recommendations for sales reps — syncs recommendation data from the backend at startup.",
+      "feature_status": "live"
+    },
+    {
+      "feature_id": "pjp",
+      "feature_label": "Visit PJP",
+      "feature_description": "Outlet visit plan for sales reps — syncs PJP data from the backend and stores locally for offline access.",
+      "feature_status": "live",
+      "feature_default": {
+        "enabled": true,
+        "strategies": {},
+        "config": {},
+        "service": {
+          "pjp_sync": {
+            "enabled": true,
+            "sync_mode": "startup",
+            "sync_ttl_hours": 24,
+            "local_cache_ttl_minutes": 30,
+            "strategies": {},
+            "extra": {}
+          }
+        }
+      }
+    },
+    {
+      "feature_id": "attendance",
+      "feature_label": "Attendance",
+      "feature_description": "Employee attendance marking and monthly dashboard. Tab 1: form-driven attendance submission (Working/Leave/Meeting). Tab 2: calendar view with monthly stats and status counts.",
+      "feature_status": "live"
+    },
+    {
+      "feature_id": "store_in",
+      "feature_label": "Store-In",
+      "feature_description": "Record store check-in events for sales reps — tracks entry time, location, and outlet details.",
+      "feature_status": "live"
+    },
+    {
+      "feature_id": "geofencing",
+      "feature_label": "Geofencing",
+      "feature_description": "Location-based boundary enforcement for outlet visits — validates that reps are physically present at the outlet.",
+      "feature_status": "live"
+    },
+    {
+      "feature_id": "scheme",
+      "feature_label": "Scheme",
+      "feature_description": "Trade scheme visibility for sales reps — displays active promotional schemes applicable to outlets.",
+      "feature_status": "live"
+    },
+    {
+      "feature_id": "stock",
+      "feature_label": "Stock",
+      "feature_description": "Inventory and stock management for outlets — track stock levels, returns, and replenishment requests.",
+      "feature_status": "upcoming"
+    },
+    {
+      "feature_id": "credit",
+      "feature_label": "Credit",
+      "feature_description": "Outlet credit limit and outstanding balance management — view credit status and payment history.",
+      "feature_status": "upcoming"
+    },
+    {
+      "feature_id": "incentive",
+      "feature_label": "Incentive",
+      "feature_description": "Sales incentive tracking for reps — displays earned incentives based on target achievement.",
+      "feature_status": "upcoming"
+    },
+    {
+      "feature_id": "invoices",
+      "feature_label": "Invoices",
+      "feature_description": "Invoice generation and history for outlet orders — view, share, and track invoice status.",
+      "feature_status": "upcoming"
+    },
+    {
+      "feature_id": "survey",
+      "feature_label": "Survey",
+      "feature_description": "Configurable survey forms for sales reps — collect outlet feedback and market intelligence data.",
+      "feature_status": "upcoming"
+    },
+    {
+      "feature_id": "skill_will",
+      "feature_label": "Skill & Will",
+      "feature_description": "Rep competency and motivation assessment — managers can rate and track skill and will scores per rep.",
+      "feature_status": "upcoming"
+    },
+    {
+      "feature_id": "travel_expense",
+      "feature_label": "Travel Expense",
+      "feature_description": "Travel expense submission and approval workflow — reps log trips and claims for reimbursement.",
+      "feature_status": "upcoming"
+    },
+    {
+      "feature_id": "day_end",
+      "feature_label": "Day End",
+      "feature_description": "End-of-day summary submission for reps — captures daily activity recap, visit count, and orders placed.",
+      "feature_status": "upcoming"
+    },
+    {
+      "feature_id": "pjp_plan",
+      "feature_label": "PJP Plan",
+      "feature_description": "Journey plan creation and scheduling — reps or managers define outlet visit plans for upcoming days.",
+      "feature_status": "upcoming"
+    },
+    {
+      "feature_id": "pjp_deviation",
+      "feature_label": "PJP Deviation",
+      "feature_description": "Track and report deviations from the planned journey — flags unplanned visits or missed outlets.",
+      "feature_status": "upcoming"
+    },
+    {
+      "feature_id": "support",
+      "feature_label": "Support",
+      "feature_description": "In-app support ticket creation and tracking — reps can raise issues and view resolution status.",
+      "feature_status": "upcoming"
+    },
+    {
+      "feature_id": "faq",
+      "feature_label": "FAQ",
+      "feature_description": "Frequently asked questions and help content — searchable knowledge base for reps within the app.",
+      "feature_status": "upcoming"
+    }
+  ]
+}
