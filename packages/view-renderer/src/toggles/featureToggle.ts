@@ -7,7 +7,6 @@ import { globalToTenantFeature } from '../transformers'
 
 export interface ToggleFeatureResult {
   updatedFeatures: Record<string, TenantFeatureConfig>
-  error?: string
 }
 
 /**
@@ -42,13 +41,14 @@ export function toggleFeature(
     return { updatedFeatures }
   }
 
-  // Feature was never enabled — generate from global config
-  const globalFeature = globalConfigs.find((g) => g.feature_id === feature_id)
-  if (!globalFeature) {
-    return {
-      updatedFeatures,
-      error: `Global config not found for feature_id: "${feature_id}"`,
-    }
+  // Feature was never enabled — generate from global config, feature_default, or bare scaffold
+  const globalFeature = globalConfigs.find((g) => g.feature_id === feature_id) ?? {
+    feature_id,
+    display_name: '',
+    description: '',
+    fields: [],
+    strategies: [],
+    services: [],
   }
 
   updatedFeatures[feature_id] = globalToTenantFeature(globalFeature, featureChild)
