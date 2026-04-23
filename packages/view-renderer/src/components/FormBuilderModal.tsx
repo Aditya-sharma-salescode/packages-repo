@@ -1,5 +1,23 @@
-import { type CSSProperties, useCallback, useMemo } from 'react'
-import { MemoryRouter, Routes, Route } from 'react-router-dom'
+import { type CSSProperties, type ReactNode, useCallback, useMemo } from 'react'
+import {
+  MemoryRouter,
+  Routes,
+  Route,
+  UNSAFE_NavigationContext,
+  UNSAFE_LocationContext,
+} from 'react-router-dom'
+
+// Nulls both LocationContext (checked by useInRouterContext in v6.30+) and
+// NavigationContext so MemoryRouter can mount inside an existing BrowserRouter.
+const RouterIsolator = ({ children }: { children: ReactNode }) => (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  <UNSAFE_LocationContext.Provider value={null as any}>
+    {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+    <UNSAFE_NavigationContext.Provider value={null as any}>
+      {children}
+    </UNSAFE_NavigationContext.Provider>
+  </UNSAFE_LocationContext.Provider>
+)
 import {
   FormBuilderProvider,
   FormBuilder,
@@ -8,7 +26,7 @@ import {
   useActivityStore,
 } from '@aditya-sharma-salescode/form-builder'
 import type { ViewMetaReport } from '@aditya-sharma-salescode/reports-setup'
-import { useViewRenderer } from '../context/ViewRendererContext'
+import { useViewRenderer } from '../context/useViewRenderer'
 import {
   tenantFeatureToActivity,
   buildFormBuilderConfig,
@@ -66,6 +84,7 @@ export function FormBuilderModal({ activityId, onClose }: FormBuilderModalProps)
   return (
     <div style={styles.root}>
       <div style={styles.body}>
+        <RouterIsolator>
         <MemoryRouter initialEntries={[`/form-builder/${activityId}`]}>
           <FormBuilderProvider
             config={{
@@ -89,6 +108,7 @@ export function FormBuilderModal({ activityId, onClose }: FormBuilderModalProps)
             </VoiceActionFeedProvider>
           </FormBuilderProvider>
         </MemoryRouter>
+        </RouterIsolator>
       </div>
     </div>
   )

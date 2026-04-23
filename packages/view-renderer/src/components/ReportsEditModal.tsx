@@ -1,11 +1,17 @@
-import { type CSSProperties, useCallback, useMemo } from 'react'
-import { MemoryRouter, Routes, Route } from 'react-router-dom'
+import { type CSSProperties, type ReactNode, useCallback, useMemo } from 'react'
+import {
+  MemoryRouter,
+  Routes,
+  Route,
+  UNSAFE_NavigationContext,
+  UNSAFE_LocationContext,
+} from 'react-router-dom'
 import {
   ReportsProvider,
   ReportConfigPage,
 } from '@aditya-sharma-salescode/reports-setup'
 import type { AppConfig, ViewMetaReport, ReportCard } from '@aditya-sharma-salescode/reports-setup'
-import { useViewRenderer } from '../context/ViewRendererContext'
+import { useViewRenderer } from '../context/useViewRenderer'
 import {
   buildReportsConfig,
   applyReportsConfigUpdate,
@@ -13,6 +19,18 @@ import {
   reportCardsToViewMeta,
 } from '../utils/reportsConfigUtils'
 import { t } from '../theme'
+
+// Nulls LocationContext (checked by useInRouterContext in v6.30+) and
+// NavigationContext so MemoryRouter can render inside an existing BrowserRouter.
+const RouterIsolator = ({ children }: { children: ReactNode }) => (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  <UNSAFE_LocationContext.Provider value={null as any}>
+    {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+    <UNSAFE_NavigationContext.Provider value={null as any}>
+      {children}
+    </UNSAFE_NavigationContext.Provider>
+  </UNSAFE_LocationContext.Provider>
+)
 
 export interface ReportsEditModalProps {
   reportId: string
@@ -92,6 +110,7 @@ export function ReportsEditModal({ reportId, onClose }: ReportsEditModalProps) {
     <div style={styles.overlay} onClick={handleClose}>
       <div style={styles.panel} onClick={(e) => e.stopPropagation()}>
         <div style={styles.body}>
+          <RouterIsolator>
           <MemoryRouter initialEntries={['/report-config']}>
             <ReportsProvider
               config={{
@@ -117,6 +136,7 @@ export function ReportsEditModal({ reportId, onClose }: ReportsEditModalProps) {
               </Routes>
             </ReportsProvider>
           </MemoryRouter>
+          </RouterIsolator>
         </div>
       </div>
     </div>
