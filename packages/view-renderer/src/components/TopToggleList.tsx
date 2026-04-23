@@ -19,7 +19,7 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     gap: 6,
-    padding: '12px 0',
+    padding: '12px 24px',
     borderBottom: `1px solid ${t.border}`,
     overflowX: 'auto',
     flexShrink: 0,

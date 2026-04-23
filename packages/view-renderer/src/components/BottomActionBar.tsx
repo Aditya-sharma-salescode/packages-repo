@@ -20,7 +20,7 @@ const styles = {
     justifyContent: 'flex-end',
     alignItems: 'center',
     gap: 8,
-    padding: '12px 0',
+    padding: '12px 24px',
     borderTop: `1px solid ${t.border}`,
     marginTop: 'auto',
     flexShrink: 0,
