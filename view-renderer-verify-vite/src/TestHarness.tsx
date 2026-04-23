@@ -498,7 +498,7 @@ export default function TestHarness() {
   const [draftForDebug, setDraftForDebug] = useState<DraftMap | null>(null);
 
   // PWA Preview settings (passed to ViewRendererProvider)
-  const [pwaBaseUrl, setPwaBaseUrl] = useState("http://localhost:8080");
+  const [pwaBaseUrl, setPwaBaseUrl] = useState("http://localhost:8081");
   const [pwaToken, setPwaToken] = useState("");
 
   // Build full PWA URL with tenant query params
