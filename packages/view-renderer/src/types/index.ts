@@ -121,7 +121,9 @@ export interface StoreActivityChild {
   activity_label: string
   activity_description: string
   activity_default?: Record<string, unknown>
-  tab_default?: Record<string, unknown>
+  outlet_activity_tab_default?: Record<string, unknown>
+  activity_form_activity_type_default?: Record<string, unknown>
+  advance_settings_handler?: string
   fields?: ActivityFieldTag[]
   target_config_keys?: AppTypeKey[]
 }
