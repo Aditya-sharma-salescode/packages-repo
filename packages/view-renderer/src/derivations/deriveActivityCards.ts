@@ -7,6 +7,7 @@ export interface ActivityCardItem {
   description: string
   enabled: boolean
   fields: ActivityFieldTag[]
+  advanceSettingsHandler?: string
 }
 
 /**
@@ -46,15 +47,24 @@ export function deriveActivityCards(
 
   return node.children.map((child) => {
     const targetKeys = resolveTargetKeys(child.target_config_keys, node.target_config_keys, allKeys)
-    const enabled = targetKeys.every(
-      (key) => draftMap[key]?.features[child.activity_id]?.enabled === true,
-    )
+
+    const enabled = child.activity_default !== undefined
+      ? targetKeys.every(
+          (key) => draftMap[key]?.features[child.activity_id]?.enabled === true,
+        )
+      : targetKeys.every((key) => {
+          const tabs = (draftMap[key]?.features?.outlet_activity?.config as Record<string, unknown> | undefined)
+            ?.outletActivityTabs
+          return Array.isArray(tabs) && (tabs as { id: string }[]).some((t) => t.id === child.activity_id)
+        })
+
     return {
       id: child.activity_id,
       label: child.activity_label,
       description: child.activity_description,
       enabled,
       fields: extractFieldTags(child),
+      advanceSettingsHandler: child.advance_settings_handler,
     }
   })
 }
