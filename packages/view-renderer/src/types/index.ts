@@ -57,6 +57,7 @@ export interface FeatureChild {
   feature_description: string
   feature_default?: Record<string, unknown>
   target_config_keys?: AppTypeKey[]
+  feature_status?: 'live' | 'upcoming'
 }
 
 export interface FeatureSelectionNodeMeta extends NodeMetaBase {

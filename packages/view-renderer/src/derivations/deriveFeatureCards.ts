@@ -22,6 +22,7 @@ export function deriveFeatureCards(
       label: child.feature_label,
       description: child.feature_description,
       enabled,
+      status: child.feature_status,
     }
   })
 }
