@@ -8,7 +8,7 @@
     "moduleResolution": "bundler",
     "baseUrl": ".",
     "paths": {
-      "view-renderer": ["./node_modules/view-renderer/dist/index.d.ts"]
+      "view-renderer": ["../packages/view-renderer/src/index.ts"]
     },
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,

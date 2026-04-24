@@ -83,12 +83,6 @@ const outer = (w: number, h: number): CSSProperties => ({
   flexDirection: 'column',
   alignItems: 'center',
   justifyContent: 'center',
-  boxShadow: [
-    '0 0 0 1px #000',
-    '0 0 0 2px #2a2a2a',
-    '0 20px 60px rgba(0,0,0,0.5)',
-    '0 4px 16px rgba(0,0,0,0.35)',
-  ].join(', '),
 })
 
 const screen = (w: number, h: number): CSSProperties => ({
