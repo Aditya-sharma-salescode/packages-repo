@@ -65,7 +65,7 @@ const customCollision: CollisionDetection = (args) => {
 export function FormBuilder() {
   const navigate = useNavigate();
   const { activityId } = useParams<{ activityId?: string }>();
-  const { services, routes, features } = useFormBuilderConfig();
+  const { services, routes, features, onBack } = useFormBuilderConfig();
   const { getActivity, updateActivitySchema, loadFromLocalStorage: loadActivities } = useActivityStore();
   const {
     schema,
@@ -131,11 +131,14 @@ export function FormBuilder() {
   // Load: either from activity store (if editing an activity) or localStorage
   useEffect(() => {
     if (activityId) {
+      const existing = getActivity(activityId);
+      if (existing) {
+        importSchema(existing.schema);
+        return;
+      }
       loadActivities();
       const activity = getActivity(activityId);
-      if (activity) {
-        importSchema(activity.schema);
-      }
+      if (activity) importSchema(activity.schema);
     } else {
       loadFromLocalStorage();
     }
@@ -369,7 +372,10 @@ export function FormBuilder() {
             variant="ghost"
             size="icon"
             className="h-8 w-8 shrink-0"
-            onClick={() => (activityId ? navigate(routes.manageForms) : navigate(-1))}
+            onClick={() => {
+              if (onBack) { onBack(); return; }
+              activityId ? navigate(routes.manageForms) : navigate(-1);
+            }}
           >
             <ArrowLeft className="h-4 w-4" />
           </Button>
