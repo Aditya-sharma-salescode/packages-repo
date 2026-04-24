@@ -146,6 +146,10 @@ export function ViewRendererProvider({
     }
   }, [initialViewMeta])
 
+  useEffect(() => {
+    setAdvancedSettingsTarget(null)
+  }, [activeNodeId])
+
   // Derived state
   const nodeTabs = useMemo(
     () => (viewMeta ? deriveNodeTabs(viewMeta) : []),
