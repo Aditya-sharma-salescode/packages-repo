@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useMemo, useRef, type CSSProperties } from "react";
 
-const CONFIG_BASE_URL = "http://localhost:1337/config-service";
+const CONFIG_BASE_URL = "https://salescode-marketplace.salescode.ai/config-service";
 
 /** Hook: measure an element's size via ResizeObserver */
 function useElementSize<T extends HTMLElement>() {
@@ -498,8 +498,35 @@ export default function TestHarness() {
   const [draftForDebug, setDraftForDebug] = useState<DraftMap | null>(null);
 
   // PWA Preview settings (passed to ViewRendererProvider)
-  const [pwaBaseUrl, setPwaBaseUrl] = useState("http://localhost:8081");
-  const [pwaToken, setPwaToken] = useState("");
+  // const [pwaBaseUrl, setPwaBaseUrl] = useState("http://localhost:8081");
+  const [pwaBaseUrl, setPwaBaseUrl] = useState("https://d23fx2j2utgjel.cloudfront.net");
+  const [accessToken, setAccessToken] = useState(
+    () => localStorage.getItem("accessToken") ?? ""
+  );
+  const [pwaAuthToken, setPwaAuthToken] = useState(
+    () => localStorage.getItem("pwa_auth_token") ?? ""
+  );
+  const [tokenFetching, setTokenFetching] = useState(false);
+  const [tokenError, setTokenError] = useState<string | null>(null);
+
+  const handleFetchPwaToken = useCallback(async () => {
+    setTokenFetching(true);
+    setTokenError(null);
+    try {
+      const res = await fetch(`${CONFIG_BASE_URL}/auth/pwa-auth-token`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const { pwaAuthToken: token } = await res.json() as { pwaAuthToken: string };
+      setPwaAuthToken(token);
+      localStorage.setItem("pwa_auth_token", token);
+    } catch (e: unknown) {
+      setTokenError((e as Error).message);
+    } finally {
+      setTokenFetching(false);
+    }
+  }, [accessToken]);
 
   // Build full PWA URL with tenant query params
   const pwaUrl = useMemo(
@@ -508,14 +535,14 @@ export default function TestHarness() {
       try {
         return getPwaUrl(pwaBaseUrl, {
           tenant: fetchTenant,
-          token: pwaToken || undefined,
+          token: pwaAuthToken || undefined,
           playground: true,
         });
       } catch {
         return pwaBaseUrl; // fallback if URL is invalid
       }
     },
-    [pwaBaseUrl, fetchTenant, pwaToken],
+    [pwaBaseUrl, fetchTenant, pwaAuthToken],
   );
   const [livePreview, setLivePreview] = useState(false);
   const previewRef = useRef<AppPwaPreviewHandle>(null);
@@ -579,20 +606,13 @@ export default function TestHarness() {
     }
   }, []);
 
-  // Fetch view-meta from API by MongoDB _id (falls back to static JSON)
   const handleFetchViewMeta = useCallback(async () => {
+    const id = viewMongoId || "default";
     try {
-      if (viewMongoId) {
-        const res = await fetch(`${CONFIG_BASE_URL}/view?view_id=${viewMongoId}`);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data = await res.json();
-        setViewMetaJson(JSON.stringify(data, null, 2));
-      } else {
-        const res = await fetch("/working-view-meta.json");
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data = await res.json();
-        setViewMetaJson(JSON.stringify(data, null, 2));
-      }
+      const res = await fetch(`${CONFIG_BASE_URL}/view?view_id=${id}`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      setViewMetaJson(JSON.stringify(data, null, 2));
     } catch (err: unknown) {
       setViewMetaJson(JSON.stringify({ error: (err as Error).message }, null, 2));
     }
@@ -700,7 +720,7 @@ export default function TestHarness() {
           <div style={S.tabContent}>
             {activeTab === "viewMeta" && (
               <div style={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0 }}>
-                <div style={{ ...S.fetchControls, gap: 6 }}>
+                {/* <div style={{ ...S.fetchControls, gap: 6 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                     <label style={{ fontSize: 11, color: "var(--th-text-muted)", flexShrink: 0 }}>Saved Views</label>
                     <select
@@ -720,7 +740,7 @@ export default function TestHarness() {
                     <button onClick={handleFetchViewList} style={{ ...S.fetchBtn(false), padding: "5px 10px", fontSize: 11 }}>↻</button>
                     <button onClick={handleFetchViewMeta} style={S.fetchBtn(false)}>Load</button>
                   </div>
-                </div>
+                </div> */}
                 <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
                   <JsonTab value={viewMetaJson} onChange={setViewMetaJson} parseResult={vmParsed} />
                 </div>
@@ -744,6 +764,30 @@ export default function TestHarness() {
                       {isFetching ? "Fetching..." : "Fetch"}
                     </button>
                   </div>
+                  <div style={S.fetchRow}>
+                    <label style={{ ...S.label, width: 80 }}>Access Token</label>
+                    <input
+                      style={{ ...S.input, fontFamily: "monospace", fontSize: 11 }}
+                      value={accessToken}
+                      onChange={(e) => {
+                        setAccessToken(e.target.value);
+                        localStorage.setItem("accessToken", e.target.value);
+                      }}
+                      placeholder="paste accessToken here"
+                      type="password"
+                    />
+                    <button
+                      onClick={handleFetchPwaToken}
+                      disabled={tokenFetching || !accessToken}
+                      style={{ ...S.fetchBtn(tokenFetching || !accessToken), padding: "5px 10px", fontSize: 11, whiteSpace: "nowrap" }}
+                    >
+                      {tokenFetching ? "…" : "Get PWA Token"}
+                    </button>
+                  </div>
+                  {tokenError && <span style={{ fontSize: 11, color: "#ef4444" }}>{tokenError}</span>}
+                  {pwaAuthToken && !tokenError && (
+                    <span style={{ fontSize: 10, color: "#22c55e" }}>pwa_auth_token ready</span>
+                  )}
                   {fetchError && <span style={{ fontSize: 11, color: "#ef4444" }}>{fetchError}</span>}
                   {showFetchParams && (
                     <>
@@ -771,8 +815,6 @@ export default function TestHarness() {
                         <div style={S.fetchRow}>
                           <label style={S.label}>URL</label>
                           <input style={S.input} value={pwaBaseUrl} onChange={(e) => setPwaBaseUrl(e.target.value)} placeholder="http://localhost:8080" />
-                          <label style={{ ...S.label, width: 40 }}>Token</label>
-                          <input style={S.input} value={pwaToken} onChange={(e) => setPwaToken(e.target.value)} placeholder="JWT (optional)" />
                         </div>
                       </div>
                     </>
@@ -904,7 +946,7 @@ export default function TestHarness() {
               initialGlobalConfigMap={memoGlobalConfigMap}
               initialViewMeta={vmParsed.data}
               onSave={async (configKey: AppTypeKey, draft: TenantConfig) => {
-                const token = localStorage.getItem("accessToken") || "";
+                const token = pwaAuthToken || accessToken || "";
                 if (configKey === "portal") {
                   await savePortalConfig(draft, { tenant: fetchTenant, env: fetchEnv }, CONFIG_BASE_URL, token);
                   return;
@@ -930,7 +972,7 @@ export default function TestHarness() {
               }}
               onDraftChange={setDraftForDebug}
               pwaUrl={pwaUrl || undefined}
-              pwaToken={pwaToken || undefined}
+              pwaToken={pwaAuthToken || undefined}
             >
               <div style={S.rightContent}>
                 <div style={S.rightContentLeft}>
@@ -954,7 +996,7 @@ export default function TestHarness() {
                       <AppPwaPreview
                         ref={previewRef}
                         pwaUrl={pwaUrl}
-                        token={pwaToken || undefined}
+                        token={pwaAuthToken || undefined}
                         manualMode={!livePreview}
                         onStatusChange={setPreviewStatus}
                         onError={(msg) => setPreviewError(msg)}

@@ -15,11 +15,8 @@ export interface PhoneMockupProps {
   className?: string
 }
 
-const BEZEL = 12
-const NOTCH_WIDTH_RATIO = 0.32 // notch as fraction of outer width
-const NOTCH_HEIGHT = 24
-const HOME_HEIGHT = 4
-const CHROME_HEIGHT = BEZEL * 2 + NOTCH_HEIGHT + HOME_HEIGHT + 8
+const BEZEL = 6
+const CHROME_HEIGHT = BEZEL * 2
 
 /** Default modern smartphone aspect ratio (9:19.5 ≈ iPhone 14/15) */
 const DEFAULT_ASPECT = 9 / 19.5
@@ -65,18 +62,12 @@ export function PhoneMockup({
 
   const outerWidth = screenW + BEZEL * 2
   const outerHeight = screenH + CHROME_HEIGHT
-  const notchWidth = Math.round(outerWidth * NOTCH_WIDTH_RATIO)
 
   return (
     <div className={className} style={outer(outerWidth, outerHeight)}>
-      {/* Notch */}
-      <div style={notchStyle(notchWidth)} />
-      {/* Screen */}
       <div style={screen(screenW, screenH)}>
         {children}
       </div>
-      {/* Home indicator */}
-      <div style={homeIndicator} />
     </div>
   )
 }
@@ -85,39 +76,25 @@ const outer = (w: number, h: number): CSSProperties => ({
   width: w,
   height: h,
   flexShrink: 0,
-  background: '#1a1a1a',
-  borderRadius: 40,
+  background: '#111',
+  borderRadius: 44,
   padding: `${BEZEL}px`,
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
-  boxShadow: '0 8px 32px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.12)',
-})
-
-const notchStyle = (w: number): CSSProperties => ({
-  width: w,
-  height: NOTCH_HEIGHT,
-  background: '#1a1a1a',
-  borderRadius: '0 0 16px 16px',
-  marginBottom: 0,
-  zIndex: 1,
-  position: 'relative',
-  top: -1,
+  justifyContent: 'center',
+  boxShadow: [
+    '0 0 0 1px #000',
+    '0 0 0 2px #2a2a2a',
+    '0 20px 60px rgba(0,0,0,0.5)',
+    '0 4px 16px rgba(0,0,0,0.35)',
+  ].join(', '),
 })
 
 const screen = (w: number, h: number): CSSProperties => ({
   width: w,
   height: h,
-  borderRadius: 8,
+  borderRadius: 38,
   overflow: 'hidden',
   background: '#fff',
-  flex: 1,
 })
-
-const homeIndicator: CSSProperties = {
-  width: 120,
-  height: HOME_HEIGHT,
-  background: '#666',
-  borderRadius: 2,
-  marginTop: 6,
-}
