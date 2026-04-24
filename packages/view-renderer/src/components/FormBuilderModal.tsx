@@ -57,16 +57,18 @@ export function FormBuilderModal({ activityId, onClose }: FormBuilderModalProps)
   const { draftMap, setDraftMap, currentNodeMeta } = useViewRenderer()
   const catalog = (currentNodeMeta?.data?.reports_catalog ?? []) as ViewMetaReport[]
 
-  const feature = draftMap?.app?.features?.[activityId]
-  if (feature) {
+  // Seed the activity store synchronously so FormBuilder finds it on first mount
+  useMemo(() => {
+    const feature = draftMap?.app?.features?.[activityId]
+    if (!feature) return
     const activity = tenantFeatureToActivity(activityId, feature)
     const store = useActivityStore.getState()
     const existing = store.getActivity(activityId)
     if (!existing || JSON.stringify(existing.schema) !== JSON.stringify(activity.schema)) {
       store.setActivities([activity])
-      store.selectActivity(activityId)
     }
-  }
+    store.selectActivity(activityId)
+  }, [activityId, draftMap])
 
   const portalConfig = useMemo(
     () => buildFormBuilderConfig(draftMap, catalog),
@@ -90,6 +92,7 @@ export function FormBuilderModal({ activityId, onClose }: FormBuilderModalProps)
             config={{
               routePrefix: '/form-builder',
               initialConfig: portalConfig,
+              onBack: handleClose,
               features: {
                 darkModeToggle: false,
                 saveButton: false,
