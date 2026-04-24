@@ -64,19 +64,26 @@ export interface FormBuilderConfig {
    * onConfigUpdate={(cfg) => api.savePortalConfig(tenantId, cfg)}
    */
   onConfigUpdate?: (updatedConfig: PortalConfig) => void;
+
+  /**
+   * Called when the user clicks the back button in FormBuilder or ManageForms.
+   * If provided, this overrides the default navigate(-1) / navigate(manageForms) behavior.
+   */
+  onBack?: () => void;
 }
 
 export type { FormBuilderResolvedRoutes };
 
 export interface FormBuilderContextValue
   extends Required<
-    Omit<FormBuilderConfig, "routePrefix" | "initialConfig" | "onConfigUpdate">
+    Omit<FormBuilderConfig, "routePrefix" | "initialConfig" | "onConfigUpdate" | "onBack">
   > {
   /** Normalized prefix (no trailing slash), may be empty */
   routePrefix: string;
   routes: FormBuilderResolvedRoutes;
   initialConfig: PortalConfig | undefined;
   onConfigUpdate: ((updatedConfig: PortalConfig) => void) | undefined;
+  onBack: (() => void) | undefined;
 }
 
 const defaultRoutePrefix = "";
@@ -99,6 +106,7 @@ const defaultContextValue: FormBuilderContextValue = {
   routes: defaultRoutes,
   initialConfig: undefined,
   onConfigUpdate: undefined,
+  onBack: undefined,
 };
 
 const FormBuilderConfigContext = createContext<FormBuilderContextValue>(defaultContextValue);
@@ -122,8 +130,9 @@ export const FormBuilderProvider: React.FC<{
       routes,
       initialConfig: config.initialConfig,
       onConfigUpdate: config.onConfigUpdate,
+      onBack: config.onBack,
     }),
-    [config.features, config.endpoints, config.services, config.initialConfig, config.onConfigUpdate, routePrefix, routes]
+    [config.features, config.endpoints, config.services, config.initialConfig, config.onConfigUpdate, config.onBack, routePrefix, routes]
   );
 
   return (
