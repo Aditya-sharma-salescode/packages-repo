@@ -1,0 +1,469 @@
+{
+  "view_id": "catalogue_config",
+  "app_type": "sfa",
+  "nodes": [
+    {
+      "node_id": "catalogue",
+      "node_label": "Catalogue",
+      "node_logo": "",
+      "node_description": "Configure the product catalogue — visibility, card layout, search, filters, UOM, and product tags",
+      "node_type": "config_editor",
+      "target_config_keys": ["app"],
+      "preview": { "type": "pwa", "screen": "catalogue", "action": "preview_screen" },
+      "config": [
+        {
+          "field_id": "catalogue_enabled",
+          "target_path": "features.catalogue.enabled",
+          "label": "Enable Catalogue",
+          "description": "Turn the catalogue feature on or off for field reps",
+          "input_type": "toggle"
+        },
+
+        {
+          "field_id": "show_ptr",
+          "target_path": "features.catalogue.config.card_layout.show_ptr",
+          "label": "Show PTR",
+          "description": "Display Price to Retailer on the product card",
+          "input_type": "toggle"
+        },
+        {
+          "field_id": "show_mrp",
+          "target_path": "features.catalogue.config.card_layout.show_mrp",
+          "label": "Show MRP",
+          "description": "Display Maximum Retail Price on the product card",
+          "input_type": "toggle"
+        },
+        {
+          "field_id": "show_margin",
+          "target_path": "features.catalogue.config.card_layout.show_margin",
+          "label": "Show Margin %",
+          "description": "Display calculated margin percentage on the product card",
+          "input_type": "toggle"
+        },
+        {
+          "field_id": "show_stock",
+          "target_path": "features.catalogue.config.card_layout.show_stock",
+          "label": "Show Stock",
+          "description": "Display available stock quantity on the product card",
+          "input_type": "toggle"
+        },
+        {
+          "field_id": "show_sku_code",
+          "target_path": "features.catalogue.config.card_layout.show_sku_code",
+          "label": "Show SKU Code",
+          "description": "Display the SKU code on the product card",
+          "input_type": "toggle"
+        },
+        {
+          "field_id": "show_piece_size",
+          "target_path": "features.catalogue.config.card_layout.show_piece_size",
+          "label": "Show Piece Size",
+          "description": "Display pack/piece size on the product card",
+          "input_type": "toggle"
+        },
+        {
+          "field_id": "show_nudge_strip",
+          "target_path": "features.catalogue.config.card_layout.show_nudge_strip",
+          "label": "Show Nudge Strip",
+          "description": "Show recommendation strip on product cards (e.g. Hot Selling, Focus)",
+          "input_type": "toggle"
+        },
+        {
+          "field_id": "currency_symbol",
+          "target_path": "features.catalogue.config.card_layout.currency_symbol",
+          "label": "Currency Symbol",
+          "description": "Symbol shown next to prices (e.g. ₹, $, €)",
+          "input_type": "text",
+          "validation": { "required": true }
+        },
+        {
+          "field_id": "currency_position",
+          "target_path": "features.catalogue.config.card_layout.currency_position",
+          "label": "Currency Position",
+          "description": "Whether the symbol appears before or after the price",
+          "input_type": "select",
+          "options": [
+            { "id": "prefix", "label": "Prefix  (₹ 100)" },
+            { "id": "suffix", "label": "Suffix  (100 ₹)" }
+          ]
+        },
+        {
+          "field_id": "currency_decimal_places",
+          "target_path": "features.catalogue.config.card_layout.currency_decimal_places",
+          "label": "Price Decimal Places",
+          "description": "Number of decimal places shown in prices (0–4)",
+          "input_type": "number",
+          "validation": { "min": 0, "max": 4 }
+        },
+        {
+          "field_id": "fallback_image_url",
+          "target_path": "features.catalogue.config.card_layout.fallback_image_url",
+          "label": "Fallback Product Image",
+          "description": "Shown when a product has no photo — PNG, JPG up to 2 MB",
+          "input_type": "image_upload",
+          "validation": {
+            "max_size_mb": 2,
+            "accepted_types": ["png", "jpg", "jpeg"]
+          }
+        },
+
+        {
+          "field_id": "search_enabled",
+          "target_path": "features.catalogue.config.search.enabled",
+          "label": "Enable Search",
+          "description": "Allow field reps to search the product catalogue",
+          "input_type": "toggle"
+        },
+        {
+          "field_id": "search_min_query_length",
+          "target_path": "features.catalogue.config.search.min_query_length",
+          "label": "Minimum Search Characters",
+          "description": "Characters required before search triggers (1–5)",
+          "input_type": "number",
+          "validation": { "min": 1, "max": 5 }
+        },
+        {
+          "field_id": "search_debounce_ms",
+          "target_path": "features.catalogue.config.search.debounce_ms",
+          "label": "Search Delay (ms)",
+          "description": "Wait time after typing before triggering search — lower is faster",
+          "input_type": "number",
+          "validation": { "min": 100, "max": 1000 }
+        },
+        {
+          "field_id": "search_page_size",
+          "target_path": "features.catalogue.config.search.page_size",
+          "label": "Results Per Page",
+          "description": "Number of products shown per search page (5–50)",
+          "input_type": "number",
+          "validation": { "min": 5, "max": 50 }
+        },
+        {
+          "field_id": "search_fuzzy_threshold",
+          "target_path": "features.catalogue.config.search.fuzzy_threshold",
+          "label": "Fuzzy Match Threshold",
+          "description": "Search spelling tolerance — 0.1 = loose (more results), 0.9 = strict (exact matches)",
+          "input_type": "number",
+          "validation": { "min": 0.1, "max": 0.9 }
+        },
+
+        {
+          "field_id": "uom_ordering_mode",
+          "target_path": "features.catalogue.config.uom_engine.ordering_mode",
+          "label": "Ordering Mode",
+          "description": "Whether reps order in one unit at a time or piece and case together",
+          "input_type": "select",
+          "options": [
+            { "id": "single", "label": "Single (one unit at a time)" },
+            { "id": "multi", "label": "Multi (piece and case together)" }
+          ]
+        },
+        {
+          "field_id": "uom_initial_add_mode",
+          "target_path": "features.catalogue.config.uom_engine.initial_add_mode",
+          "label": "Default Add Mode",
+          "description": "Unit pre-selected when a rep first adds a product",
+          "input_type": "select",
+          "options": [
+            { "id": "suggested_or_unit", "label": "Suggested (falls back to unit)" },
+            { "id": "piece", "label": "Piece" },
+            { "id": "case", "label": "Case" }
+          ]
+        },
+        {
+          "field_id": "uom_auto_conversion",
+          "target_path": "features.catalogue.config.uom_engine.auto_conversion",
+          "label": "Auto Unit Conversion",
+          "description": "Automatically convert pieces to cases when quantity crosses the case threshold",
+          "input_type": "toggle"
+        },
+        {
+          "field_id": "uom_reset_on_unit_switch",
+          "target_path": "features.catalogue.config.uom_engine.reset_on_unit_switch",
+          "label": "Reset Quantity on Unit Switch",
+          "description": "Clear entered quantity when the rep switches between piece and case",
+          "input_type": "toggle"
+        },
+        {
+          "field_id": "uom_enabled_units",
+          "target_path": "features.catalogue.config.uom_engine.enabled_units",
+          "label": "Available Units",
+          "description": "Which unit types reps can order in",
+          "input_type": "list_selection",
+          "identity_key": "id",
+          "list_options": [
+            { "id": "piece", "label": "Piece", "description": "Individual unit ordering", "default_config": {} },
+            { "id": "case", "label": "Case", "description": "Case / carton ordering", "default_config": {} },
+            { "id": "other", "label": "Other", "description": "Custom alternate unit", "default_config": {} }
+          ]
+        },
+        {
+          "field_id": "uom_piece_label",
+          "target_path": "features.catalogue.config.uom_engine.units.piece.label",
+          "label": "Piece Unit Label",
+          "description": "Button label for piece ordering (e.g. Piece, Pcs, Unit)",
+          "input_type": "text"
+        },
+        {
+          "field_id": "uom_case_label",
+          "target_path": "features.catalogue.config.uom_engine.units.case.label",
+          "label": "Case Unit Label",
+          "description": "Button label for case ordering (e.g. Case, Ctn, Box)",
+          "input_type": "text"
+        },
+        {
+          "field_id": "uom_max_digits_piece",
+          "target_path": "features.catalogue.config.uom_engine.max_digits.piece",
+          "label": "Max Digits — Piece",
+          "description": "Maximum digits allowed when entering piece quantity (1–6)",
+          "input_type": "number",
+          "validation": { "min": 1, "max": 6 }
+        },
+        {
+          "field_id": "uom_max_digits_case",
+          "target_path": "features.catalogue.config.uom_engine.max_digits.case",
+          "label": "Max Digits — Case",
+          "description": "Maximum digits allowed when entering case quantity (1–6)",
+          "input_type": "number",
+          "validation": { "min": 1, "max": 6 }
+        },
+
+        {
+          "field_id": "filter_brand_label",
+          "target_path": "features.catalogue.config.filters.filters.brandName.title",
+          "label": "Brand Filter — Label",
+          "description": "Display name for the brand filter chip",
+          "input_type": "text"
+        },
+        {
+          "field_id": "filter_brand_sort_order",
+          "target_path": "features.catalogue.config.filters.filters.brandName.option_sort_order",
+          "label": "Brand Filter — Sort Order",
+          "input_type": "select",
+          "options": [
+            { "id": "alpha_asc", "label": "A → Z" },
+            { "id": "alpha_desc", "label": "Z → A" },
+            { "id": "count_desc", "label": "Most products first" }
+          ]
+        },
+        {
+          "field_id": "filter_subbrand_label",
+          "target_path": "features.catalogue.config.filters.filters.subBrand.title",
+          "label": "Sub-Brand Filter — Label",
+          "description": "Display name for the sub-brand filter chip",
+          "input_type": "text"
+        },
+        {
+          "field_id": "filter_subbrand_sort_order",
+          "target_path": "features.catalogue.config.filters.filters.subBrand.option_sort_order",
+          "label": "Sub-Brand Filter — Sort Order",
+          "input_type": "select",
+          "options": [
+            { "id": "alpha_asc", "label": "A → Z" },
+            { "id": "alpha_desc", "label": "Z → A" },
+            { "id": "count_desc", "label": "Most products first" }
+          ]
+        },
+        {
+          "field_id": "filter_subvariant_label",
+          "target_path": "features.catalogue.config.filters.filters.subVariant.title",
+          "label": "Sub-Variant Filter — Label",
+          "description": "Display name for the sub-variant filter chip",
+          "input_type": "text"
+        },
+        {
+          "field_id": "filter_subvariant_sort_order",
+          "target_path": "features.catalogue.config.filters.filters.subVariant.option_sort_order",
+          "label": "Sub-Variant Filter — Sort Order",
+          "input_type": "select",
+          "options": [
+            { "id": "alpha_asc", "label": "A → Z" },
+            { "id": "alpha_desc", "label": "Z → A" },
+            { "id": "count_desc", "label": "Most products first" }
+          ]
+        },
+
+        {
+          "field_id": "tag_cross_sell_label",
+          "target_path": "features.catalogue.config.product_tags.mlTags.cross_sell.label",
+          "label": "Tag: Cross Sell — Label",
+          "input_type": "text"
+        },
+        {
+          "field_id": "tag_cross_sell_bg_color",
+          "target_path": "features.catalogue.config.product_tags.mlTags.cross_sell.style.background_color",
+          "label": "Tag: Cross Sell — Background Color",
+          "input_type": "color_picker"
+        },
+        {
+          "field_id": "tag_cross_sell_text_color",
+          "target_path": "features.catalogue.config.product_tags.mlTags.cross_sell.style.text_color",
+          "label": "Tag: Cross Sell — Text Color",
+          "input_type": "color_picker"
+        },
+        {
+          "field_id": "tag_cross_sell_affects_bg",
+          "target_path": "features.catalogue.config.product_tags.mlTags.cross_sell.affects_background",
+          "label": "Tag: Cross Sell — Color Card Background",
+          "input_type": "toggle"
+        },
+        {
+          "field_id": "tag_upsell_label",
+          "target_path": "features.catalogue.config.product_tags.mlTags.upsell.label",
+          "label": "Tag: Upsell — Label",
+          "input_type": "text"
+        },
+        {
+          "field_id": "tag_upsell_bg_color",
+          "target_path": "features.catalogue.config.product_tags.mlTags.upsell.style.background_color",
+          "label": "Tag: Upsell — Background Color",
+          "input_type": "color_picker"
+        },
+        {
+          "field_id": "tag_upsell_text_color",
+          "target_path": "features.catalogue.config.product_tags.mlTags.upsell.style.text_color",
+          "label": "Tag: Upsell — Text Color",
+          "input_type": "color_picker"
+        },
+        {
+          "field_id": "tag_upsell_affects_bg",
+          "target_path": "features.catalogue.config.product_tags.mlTags.upsell.affects_background",
+          "label": "Tag: Upsell — Color Card Background",
+          "input_type": "toggle"
+        },
+        {
+          "field_id": "tag_focus_label",
+          "target_path": "features.catalogue.config.product_tags.mlTags.focus.label",
+          "label": "Tag: Focus — Label",
+          "input_type": "text"
+        },
+        {
+          "field_id": "tag_focus_bg_color",
+          "target_path": "features.catalogue.config.product_tags.mlTags.focus.style.background_color",
+          "label": "Tag: Focus — Background Color",
+          "input_type": "color_picker"
+        },
+        {
+          "field_id": "tag_focus_text_color",
+          "target_path": "features.catalogue.config.product_tags.mlTags.focus.style.text_color",
+          "label": "Tag: Focus — Text Color",
+          "input_type": "color_picker"
+        },
+        {
+          "field_id": "tag_focus_affects_bg",
+          "target_path": "features.catalogue.config.product_tags.mlTags.focus.affects_background",
+          "label": "Tag: Focus — Color Card Background",
+          "input_type": "toggle"
+        },
+        {
+          "field_id": "tag_hot_selling_label",
+          "target_path": "features.catalogue.config.product_tags.secondaryTags.hot_selling.label",
+          "label": "Badge: Hot Selling — Label",
+          "input_type": "text"
+        },
+        {
+          "field_id": "tag_hot_selling_bg_color",
+          "target_path": "features.catalogue.config.product_tags.secondaryTags.hot_selling.style.background_color",
+          "label": "Badge: Hot Selling — Background Color",
+          "input_type": "color_picker"
+        },
+        {
+          "field_id": "tag_hot_selling_text_color",
+          "target_path": "features.catalogue.config.product_tags.secondaryTags.hot_selling.style.text_color",
+          "label": "Badge: Hot Selling — Text Color",
+          "input_type": "color_picker"
+        },
+        {
+          "field_id": "tag_best_seller_label",
+          "target_path": "features.catalogue.config.product_tags.secondaryTags.best_seller.label",
+          "label": "Badge: Best Seller — Label",
+          "input_type": "text"
+        },
+        {
+          "field_id": "tag_best_seller_bg_color",
+          "target_path": "features.catalogue.config.product_tags.secondaryTags.best_seller.style.background_color",
+          "label": "Badge: Best Seller — Background Color",
+          "input_type": "color_picker"
+        },
+        {
+          "field_id": "tag_best_seller_text_color",
+          "target_path": "features.catalogue.config.product_tags.secondaryTags.best_seller.style.text_color",
+          "label": "Badge: Best Seller — Text Color",
+          "input_type": "color_picker"
+        },
+        {
+          "field_id": "tag_new_launch_label",
+          "target_path": "features.catalogue.config.product_tags.secondaryTags.new_launch.label",
+          "label": "Badge: New Launch — Label",
+          "input_type": "text"
+        },
+        {
+          "field_id": "tag_new_launch_bg_color",
+          "target_path": "features.catalogue.config.product_tags.secondaryTags.new_launch.style.background_color",
+          "label": "Badge: New Launch — Background Color",
+          "input_type": "color_picker"
+        },
+        {
+          "field_id": "tag_new_launch_text_color",
+          "target_path": "features.catalogue.config.product_tags.secondaryTags.new_launch.style.text_color",
+          "label": "Badge: New Launch — Text Color",
+          "input_type": "color_picker"
+        },
+        {
+          "field_id": "tag_trending_label",
+          "target_path": "features.catalogue.config.product_tags.secondaryTags.trending.label",
+          "label": "Badge: Trending — Label",
+          "input_type": "text"
+        },
+        {
+          "field_id": "tag_trending_bg_color",
+          "target_path": "features.catalogue.config.product_tags.secondaryTags.trending.style.background_color",
+          "label": "Badge: Trending — Background Color",
+          "input_type": "color_picker"
+        },
+        {
+          "field_id": "tag_trending_text_color",
+          "target_path": "features.catalogue.config.product_tags.secondaryTags.trending.style.text_color",
+          "label": "Badge: Trending — Text Color",
+          "input_type": "color_picker"
+        },
+        {
+          "field_id": "tag_selling_fast_label",
+          "target_path": "features.catalogue.config.product_tags.secondaryTags.selling_fast.label",
+          "label": "Badge: Selling Fast — Label",
+          "input_type": "text"
+        },
+        {
+          "field_id": "tag_selling_fast_bg_color",
+          "target_path": "features.catalogue.config.product_tags.secondaryTags.selling_fast.style.background_color",
+          "label": "Badge: Selling Fast — Background Color",
+          "input_type": "color_picker"
+        },
+        {
+          "field_id": "tag_selling_fast_text_color",
+          "target_path": "features.catalogue.config.product_tags.secondaryTags.selling_fast.style.text_color",
+          "label": "Badge: Selling Fast — Text Color",
+          "input_type": "color_picker"
+        },
+        {
+          "field_id": "tag_premium_label",
+          "target_path": "features.catalogue.config.product_tags.secondaryTags.premium.label",
+          "label": "Badge: Premium — Label",
+          "input_type": "text"
+        },
+        {
+          "field_id": "tag_premium_bg_color",
+          "target_path": "features.catalogue.config.product_tags.secondaryTags.premium.style.background_color",
+          "label": "Badge: Premium — Background Color",
+          "input_type": "color_picker"
+        },
+        {
+          "field_id": "tag_premium_text_color",
+          "target_path": "features.catalogue.config.product_tags.secondaryTags.premium.style.text_color",
+          "label": "Badge: Premium — Text Color",
+          "input_type": "color_picker"
+        }
+      ]
+    }
+  ]
+}
