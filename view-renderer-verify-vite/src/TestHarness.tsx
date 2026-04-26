@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useMemo, useRef, type CSSProperties } from "react";
 
-const CONFIG_BASE_URL = "https://salescode-marketplace.salescode.ai/config-service";
+const CONFIG_BASE_URL = "http://localhost:1337/config-service";
 
 /** Hook: measure an element's size via ResizeObserver */
 function useElementSize<T extends HTMLElement>() {
@@ -21,7 +21,7 @@ function useElementSize<T extends HTMLElement>() {
 import { JsonTab } from "./components/JsonTab";
 import { DiffTab } from "./components/DiffTab";
 import { SaveOutputTab } from "./components/SaveOutputTab";
-import { TopToggleList, MiddleContent, BottomActionBar, ViewRendererProvider, CreateViewMeta, PhoneMockup, AppPwaPreview } from "view-renderer";
+import { TopToggleList, MiddleContent, BottomActionBar, ViewRendererProvider, PhoneMockup, AppPwaPreview } from "view-renderer";
 import { fetchTenantConfig, fetchGlobalConfigs } from "view-renderer";
 import type { ViewMeta, TenantConfig, GlobalFeatureConfig, DraftMap, TenantConfigMap, GlobalConfigMap, AppTypeKey, AppPwaPreviewHandle, PwaStatus } from "view-renderer";
 
@@ -365,60 +365,34 @@ function getPwaUrl(
 
 // ── Multi-config helpers ──
 
-function getPortalTenantConfig(): TenantConfig {
-  // TODO: fetch from portal endpoint
-  return {
-    tenant_id: "",
-    tenant_name: "",
-    brand: {},
-    features: {},
-    strategies: {},
-    extra: {},
-  };
-}
-
-function getPortalGlobalConfigs(): GlobalFeatureConfig[] {
-  // TODO: fetch from portal global endpoint
-  return [];
-}
-
-function getTenantConfigMap(appConfig: TenantConfig | null): TenantConfigMap | null {
+function getTenantConfigMap(appConfig: TenantConfig | null, portalConfig: TenantConfig | null): TenantConfigMap | null {
   if (!appConfig) return null;
   return {
     app: appConfig,
-    portal: getPortalTenantConfig(),
+    portal: portalConfig ?? { tenant_id: "", tenant_name: "", brand: {}, features: {}, strategies: {}, extra: {} },
   };
 }
 
 function getGlobalConfigMap(appGlobals: GlobalFeatureConfig[] | null): GlobalConfigMap {
   return {
     app: appGlobals ?? [],
-    portal: getPortalGlobalConfigs(),
+    portal: [],
   };
 }
 
 async function saveAppConfig(
   draft: TenantConfig,
-  params: { tenant: string; env: string; appVersion?: string; role?: string },
+  params: { tenant: string; env: string },
   baseUrl: string,
   token: string,
 ): Promise<void> {
-  const body: Record<string, unknown> = {
-    tenant: params.tenant,
-    env: params.env,
-    config: draft,
-    appType: "sfa",
-  };
-  if (params.appVersion) body.appVersion = params.appVersion;
-  if (params.role) body.role = params.role;
-
   const res = await fetch(`${baseUrl}/tenant-config/update`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify(body),
+    body: JSON.stringify({ tenant: params.tenant, env: params.env, config: draft }),
   });
   if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
 }
@@ -473,24 +447,21 @@ export default function TestHarness() {
   const [tcParsed, setTcParsed] = useState(safeParse<TenantConfig>(tenantConfigJson));
   const [gsParsed, setGsParsed] = useState(safeParse<GlobalFeatureConfig[]>(globalSchemaJson));
 
+  const [portalConfig, setPortalConfig] = useState<TenantConfig | null>(null);
+
   // Memoized config maps — stable references so provider useEffect doesn't reset draft
-  const memoTenantConfigMap = useMemo(() => getTenantConfigMap(tcParsed.data), [tcParsed.data]);
+  const memoTenantConfigMap = useMemo(() => getTenantConfigMap(tcParsed.data, portalConfig), [tcParsed.data, portalConfig]);
   const memoGlobalConfigMap = useMemo(() => getGlobalConfigMap(gsParsed.data), [gsParsed.data]);
 
   // Save output
   const [saveOutput, setSaveOutput] = useState<{ timestamp: string; payload: unknown } | null>(null);
 
   // Fetch params
-  const [fetchTenant, setFetchTenant] = useState("hfcoeuat");
-  const [fetchEnv, setFetchEnv] = useState("dev");
-  const [fetchAppVersion, setFetchAppVersion] = useState("10000.1.0");
-  const [fetchRole, setFetchRole] = useState("");
-  const [fetchAppType, setFetchAppType] = useState("sfa");
+  const [fetchTenant, setFetchTenant] = useState("zydusuat");
+  const [fetchEnv, setFetchEnv] = useState("uat");
   const [isFetching, setIsFetching] = useState(false);
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [showFetchParams, setShowFetchParams] = useState(false);
-  const [viewMongoId, setViewMongoId] = useState("");
-  const [viewList, setViewList] = useState<Array<{ _id: string; viewId: string; name: string; appType: string; updatedAt: string }>>([]);
   const [createViewJson, setCreateViewJson] = useState("{\n  \"viewId\": \"\",\n  \"name\": \"\",\n  \"appType\": \"sfa\",\n  \"nodes\": []\n}");
   const [createViewStatus, setCreateViewStatus] = useState<string | null>(null);
 
@@ -498,12 +469,12 @@ export default function TestHarness() {
   const [draftForDebug, setDraftForDebug] = useState<DraftMap | null>(null);
 
   // PWA Preview settings (passed to ViewRendererProvider)
-  // const [pwaBaseUrl, setPwaBaseUrl] = useState("http://localhost:8081");
-  const [pwaBaseUrl, setPwaBaseUrl] = useState("https://d23fx2j2utgjel.cloudfront.net");
+  const [pwaBaseUrl, setPwaBaseUrl] = useState("http://localhost:8081");
+  // const [pwaBaseUrl, setPwaBaseUrl] = useState("https://d23fx2j2utgjel.cloudfront.net");
   const [accessToken, setAccessToken] = useState(
     () => localStorage.getItem("accessToken") ?? ""
   );
-  const [pwaAuthToken, setPwaAuthToken] = useState(
+  const [pwaAuthToken, setPwaAuthToken] = useState<string>(
     () => localStorage.getItem("pwa_auth_token") ?? ""
   );
   const [tokenFetching, setTokenFetching] = useState(false);
@@ -557,7 +528,6 @@ export default function TestHarness() {
   const { ref: phoneContainerRef, size: phoneContainerSize } = useElementSize<HTMLDivElement>();
   const PHONE_ASPECT = 375 / 720; // width / height (screen only)
   const BEZEL_EXTRA_H = 12 * 2 + 24 + 4 + 8; // bezel top+bottom + notch + home + gap
-  const BEZEL_EXTRA_W = 12 * 2; // bezel left+right
   const BUTTON_AREA = 64; // preview button + toggle + error banner space
   const SCALE = 0.85; // shrink phone to avoid overflow
   const phoneDims = useMemo(() => {
@@ -569,7 +539,7 @@ export default function TestHarness() {
   }, [phoneContainerSize.height]);
 
 
-  // GET /tenant-config
+  // GET /tenant-config — app + portal in parallel (matches configUtils getAppConfig/getPortalConfig)
   const handleFetchConfig = useCallback(async () => {
     if (!fetchTenant || !fetchEnv) {
       setFetchError("Tenant and Env are required");
@@ -578,14 +548,12 @@ export default function TestHarness() {
     setIsFetching(true);
     setFetchError(null);
     try {
-      const config = await fetchTenantConfig(CONFIG_BASE_URL, {
-        tenant: fetchTenant,
-        env: fetchEnv,
-        appVersion: fetchAppVersion || undefined,
-        role: fetchRole || undefined,
-        appType: fetchAppType || undefined,
-      });
-      const json = JSON.stringify(config, null, 2);
+      const [appConfig, portal] = await Promise.all([
+        fetchTenantConfig(CONFIG_BASE_URL, { tenant: fetchTenant, env: fetchEnv }),
+        fetchTenantConfig(CONFIG_BASE_URL, { tenant: fetchTenant, env: fetchEnv, platform: "portal" }),
+      ]);
+      setPortalConfig(portal);
+      const json = JSON.stringify(appConfig, null, 2);
       setTenantConfigJson(json);
       // Immediately parse so draft resets without waiting for the 800ms debounce
       setTcParsed(safeParse<TenantConfig>(json));
@@ -594,7 +562,7 @@ export default function TestHarness() {
     } finally {
       setIsFetching(false);
     }
-  }, [fetchTenant, fetchEnv, fetchAppVersion, fetchRole, fetchAppType]);
+  }, [fetchTenant, fetchEnv]);
 
   // GET /app/resolved_config
   const handleFetchResolvedConfig = useCallback(async () => {
@@ -607,20 +575,14 @@ export default function TestHarness() {
   }, []);
 
   const handleFetchViewMeta = useCallback(async () => {
-    const id = viewMongoId || "default";
     try {
-      const res = await fetch(`${CONFIG_BASE_URL}/view?view_id=${id}`);
+      const res = await fetch(`${CONFIG_BASE_URL}/view`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       setViewMetaJson(JSON.stringify(data, null, 2));
     } catch (err: unknown) {
       setViewMetaJson(JSON.stringify({ error: (err as Error).message }, null, 2));
     }
-  }, [viewMongoId]);
-
-  const handleFetchViewList = useCallback(async () => {
-    // view list not supported by config-service — no-op
-    setViewList([]);
   }, []);
 
   // Save view JSON to backend via POST /view
@@ -752,7 +714,7 @@ export default function TestHarness() {
                 <div style={S.fetchControls}>
                   <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                     <span style={{ fontSize: 11, color: "var(--th-text-muted)", flex: 1 }}>
-                      {fetchTenant}/{fetchEnv} v{fetchAppVersion} ({fetchAppType || "any"})
+                      {fetchTenant}/{fetchEnv}
                     </span>
                     <button
                       onClick={() => setShowFetchParams((v) => !v)}
@@ -763,6 +725,19 @@ export default function TestHarness() {
                     <button onClick={handleFetchConfig} disabled={isFetching} style={S.fetchBtn(isFetching)}>
                       {isFetching ? "Fetching..." : "Fetch"}
                     </button>
+                  </div>
+                  <div style={S.fetchRow}>
+                    <label style={{ ...S.label, width: 80 }}>PWA Token</label>
+                    <input
+                      style={{ ...S.input, fontFamily: "monospace", fontSize: 11 }}
+                      value={pwaAuthToken}
+                      onChange={(e) => {
+                        setPwaAuthToken(e.target.value);
+                        localStorage.setItem("pwa_auth_token", e.target.value);
+                      }}
+                      placeholder="paste pwa_auth_token directly"
+                      type="password"
+                    />
                   </div>
                   <div style={S.fetchRow}>
                     <label style={{ ...S.label, width: 80 }}>Access Token</label>
@@ -796,19 +771,6 @@ export default function TestHarness() {
                         <input style={S.input} value={fetchTenant} onChange={(e) => setFetchTenant(e.target.value)} />
                         <label style={{ ...S.label, width: 35 }}>Env</label>
                         <input style={S.inputShort} value={fetchEnv} onChange={(e) => setFetchEnv(e.target.value)} />
-                      </div>
-                      <div style={S.fetchRow}>
-                        <label style={S.label}>Version</label>
-                        <input style={S.input} value={fetchAppVersion} onChange={(e) => setFetchAppVersion(e.target.value)} />
-                        <label style={{ ...S.label, width: 35 }}>Role</label>
-                        <input style={S.inputShort} value={fetchRole} onChange={(e) => setFetchRole(e.target.value)} />
-                        <label style={{ ...S.label, width: 55 }}>AppType</label>
-                        <select style={S.select} value={fetchAppType} onChange={(e) => setFetchAppType(e.target.value)}>
-                          <option value="">Any</option>
-                          <option value="mobile">mobile</option>
-                          <option value="web">web</option>
-                          <option value="sfa">sfa</option>
-                        </select>
                       </div>
                       <div style={{ borderTop: "1px solid var(--th-border)", paddingTop: 6, marginTop: 2 }}>
                         <div style={{ fontSize: 10, color: "var(--th-text-subtle)", marginBottom: 4 }}>PWA Preview</div>
@@ -953,12 +915,7 @@ export default function TestHarness() {
                 }
 
                 if (configKey === "app") {
-                  await saveAppConfig(draft, {
-                    tenant: fetchTenant,
-                    env: fetchEnv,
-                    appVersion: fetchAppVersion || undefined,
-                    role: fetchRole || undefined,
-                  }, CONFIG_BASE_URL, token);
+                  await saveAppConfig(draft, { tenant: fetchTenant, env: fetchEnv }, CONFIG_BASE_URL, token);
                   setUpdateError(null);
                   setUpdateSuccess(`Saved ${configKey} at ${new Date().toLocaleTimeString()}`);
                   setSaveOutput({
