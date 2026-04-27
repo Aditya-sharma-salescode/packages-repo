@@ -1,5 +1,31 @@
-import { type CSSProperties, type ReactNode, useCallback, useEffect, useMemo, useRef } from 'react'
+import { type CSSProperties, type ReactNode, useCallback, useEffect, useMemo, useRef, Component } from 'react'
 import { createPortal } from 'react-dom'
+
+class FormBuilderErrorBoundary extends Component<
+  { children: ReactNode },
+  { error: Error | null }
+> {
+  state = { error: null }
+  static getDerivedStateFromError(error: Error) {
+    console.error('[FormBuilderModal] ErrorBoundary caught', error)
+    return { error }
+  }
+  render() {
+    if (this.state.error) {
+      return (
+        <div style={{ padding: 24, color: 'red', fontFamily: 'monospace', fontSize: 13 }}>
+          <strong>[FormBuilderModal] Render error:</strong>
+          <pre style={{ marginTop: 8, whiteSpace: 'pre-wrap' }}>
+            {(this.state.error as Error).message}
+            {'\n'}
+            {(this.state.error as Error).stack}
+          </pre>
+        </div>
+      )
+    }
+    return this.props.children
+  }
+}
 import {
   MemoryRouter,
   Routes,
@@ -125,6 +151,7 @@ export function FormBuilderModal({ activityId, onClose }: FormBuilderModalProps)
   return createPortal(
     <div ref={overlayRef} style={styles.overlay}>
       <div style={styles.body}>
+        <FormBuilderErrorBoundary>
         <RouterIsolator>
         <MemoryRouter initialEntries={[`/form-builder/${activityId}`]}>
           <FormBuilderProvider
@@ -152,6 +179,7 @@ export function FormBuilderModal({ activityId, onClose }: FormBuilderModalProps)
           </FormBuilderProvider>
         </MemoryRouter>
         </RouterIsolator>
+        </FormBuilderErrorBoundary>
       </div>
     </div>,
     document.body,
