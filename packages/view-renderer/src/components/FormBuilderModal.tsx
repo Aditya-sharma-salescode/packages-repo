@@ -115,6 +115,7 @@ export function FormBuilderModal({ activityId, onClose }: FormBuilderModalProps)
                 saveButton: false,
                 aiPromptBar: false,
                 fetchJira: false,
+                reports: false,
               },
             }}
           >
