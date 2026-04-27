@@ -322,6 +322,66 @@ export function ViewRendererProvider({
 
           setDraftMap(newDraftMap)
           break
+        } else {
+          // Custom activity — not in viewMeta children, controlled purely by outletActivityTabs presence
+          const targetKeys = resolveTargetKeys(undefined, node.target_config_keys, allConfigKeys)
+          const newDraftMap = { ...draftMap }
+
+          for (const key of targetKeys) {
+            const draft = newDraftMap[key]
+            if (!draft) continue
+            const updatedFeatures = { ...draft.features }
+
+            // Keep features[activityId] but flip .enabled so config is preserved
+            if (updatedFeatures[activityId]) {
+              updatedFeatures[activityId] = { ...updatedFeatures[activityId], enabled }
+            }
+
+            // Sync outletActivityTabs
+            const oa = updatedFeatures.outlet_activity ?? draft.features.outlet_activity
+            if (oa) {
+              const oaCfg = { ...(oa.config as Record<string, unknown>) }
+              const tabs = Array.isArray(oaCfg.outletActivityTabs)
+                ? [...(oaCfg.outletActivityTabs as Record<string, unknown>[])]
+                : []
+              if (enabled) {
+                if (!tabs.some((t) => (t as { id: string }).id === activityId)) {
+                  const schema = (updatedFeatures[activityId]?.config as Record<string, unknown>)?.schema as { formName?: string } | undefined
+                  const label = schema?.formName ?? activityId
+                  tabs.push({ id: activityId, label: label.toUpperCase(), iconPath: 'assets/svg/competition_tracking.svg', isDefault: false, themeColor: '#7B61FF', storeInRequired: '' })
+                }
+              } else {
+                const idx = tabs.findIndex((t) => (t as { id: string }).id === activityId)
+                if (idx !== -1) tabs.splice(idx, 1)
+              }
+              updatedFeatures.outlet_activity = { ...oa, config: { ...oaCfg, outletActivityTabs: tabs } }
+            }
+
+            // Sync activity_forms.activity_types
+            const af = updatedFeatures.activity_forms ?? draft.features.activity_forms
+            if (af) {
+              const afCfg = { ...(af.config as Record<string, unknown>) }
+              const types = Array.isArray(afCfg.activity_types)
+                ? [...(afCfg.activity_types as Record<string, unknown>[])]
+                : []
+              if (enabled) {
+                if (!types.some((t) => (t as { type: string }).type === activityId)) {
+                  const schema = (updatedFeatures[activityId]?.config as Record<string, unknown>)?.schema as { formName?: string } | undefined
+                  const label = schema?.formName ?? activityId
+                  types.push({ type: activityId, display_name: label, enabled: true, context_type: 'outlet_activity' })
+                }
+              } else {
+                const idx = types.findIndex((t) => (t as { type: string }).type === activityId)
+                if (idx !== -1) types.splice(idx, 1)
+              }
+              updatedFeatures.activity_forms = { ...af, config: { ...afCfg, activity_types: types } }
+            }
+
+            newDraftMap[key] = { ...draft, features: updatedFeatures }
+          }
+
+          setDraftMap(newDraftMap)
+          break
         }
       }
     }
