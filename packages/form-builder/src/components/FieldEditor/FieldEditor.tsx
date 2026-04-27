@@ -577,7 +577,7 @@ export function FieldEditor() {
                       <Label className="text-xs">Min Length</Label>
                       <Input
                         type="number"
-                        value={field.validation.minLength ?? ""}
+                        value={field.validation?.minLength ?? ""}
                         onChange={(e) =>
                           update({
                             validation: {
@@ -594,7 +594,7 @@ export function FieldEditor() {
                       <Label className="text-xs">Max Length</Label>
                       <Input
                         type="number"
-                        value={field.validation.maxLength ?? ""}
+                        value={field.validation?.maxLength ?? ""}
                         onChange={(e) =>
                           update({
                             validation: {
@@ -611,7 +611,7 @@ export function FieldEditor() {
                   <div className="space-y-1.5">
                     <Label className="text-xs">Regex Pattern</Label>
                     <Input
-                      value={field.validation.pattern || ""}
+                      value={field.validation?.pattern || ""}
                       onChange={(e) =>
                         update({
                           validation: {
@@ -627,7 +627,7 @@ export function FieldEditor() {
                   <div className="space-y-1.5">
                     <Label className="text-xs">Pattern Error Message</Label>
                     <Input
-                      value={field.validation.patternMessage || ""}
+                      value={field.validation?.patternMessage || ""}
                       onChange={(e) =>
                         update({
                           validation: {
@@ -649,7 +649,7 @@ export function FieldEditor() {
                     <Label className="text-xs">Min Value</Label>
                     <Input
                       type="number"
-                      value={field.validation.min ?? ""}
+                      value={field.validation?.min ?? ""}
                       onChange={(e) =>
                         update({
                           validation: {
@@ -665,7 +665,7 @@ export function FieldEditor() {
                     <Label className="text-xs">Max Value</Label>
                     <Input
                       type="number"
-                      value={field.validation.max ?? ""}
+                      value={field.validation?.max ?? ""}
                       onChange={(e) =>
                         update({
                           validation: {
