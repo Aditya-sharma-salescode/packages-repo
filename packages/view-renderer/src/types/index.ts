@@ -102,6 +102,8 @@ export interface ConfigEditorField {
   label_key?: string
   subtitle_key?: string
   toggle_key?: string
+  // per-field inline advanced settings:
+  advanced_config?: ConfigEditorField[]
 }
 
 export interface ConfigEditorNodeMeta extends NodeMetaBase {
@@ -131,6 +133,7 @@ export interface StoreActivityChild {
 export interface StoreActivityNodeMeta extends NodeMetaBase {
   node_type: 'store_activity'
   children: StoreActivityChild[]
+  outlet_tab_blocklist?: string[]
 }
 
 // Discriminated union — add new node types here
