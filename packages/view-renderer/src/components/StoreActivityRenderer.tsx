@@ -7,6 +7,7 @@ export interface StoreActivityRendererProps {
   activities: ActivityCardItem[]
   onToggleActivity?: (activityId: string, enabled: boolean) => void
   onAdvancedSettings?: (activityId: string) => void
+  onAddActivity?: () => void
 }
 
 const FIELD_ICONS: Record<string, string> = {
@@ -134,6 +135,22 @@ const styles = {
     marginTop: 6,
     transition: 'all 0.15s ease',
   } as CSSProperties,
+  addBtn: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    marginTop: 16,
+    padding: '12px 20px',
+    borderRadius: 12,
+    border: `1px dashed ${t.border}`,
+    background: 'transparent',
+    color: t.primary,
+    fontSize: 14,
+    fontWeight: 500,
+    cursor: 'pointer',
+    transition: 'all 0.15s ease',
+  } as CSSProperties,
 }
 
 function FieldTypeIcon({ type }: { type: string }) {
@@ -141,6 +158,15 @@ function FieldTypeIcon({ type }: { type: string }) {
   return (
     <svg style={styles.fieldIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
       <path d={path} />
+    </svg>
+  )
+}
+
+function PlusIcon() {
+  return (
+    <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+      <line x1={12} y1={5} x2={12} y2={19} />
+      <line x1={5} y1={12} x2={19} y2={12} />
     </svg>
   )
 }
@@ -169,7 +195,7 @@ function FieldTags({ fields }: { fields: ActivityFieldTag[] }) {
   )
 }
 
-export function StoreActivityRenderer({ activities, onToggleActivity, onAdvancedSettings }: StoreActivityRendererProps) {
+export function StoreActivityRenderer({ activities, onToggleActivity, onAdvancedSettings, onAddActivity }: StoreActivityRendererProps) {
   return (
     <div>
       <p style={styles.description}>
@@ -206,6 +232,12 @@ export function StoreActivityRenderer({ activities, onToggleActivity, onAdvanced
           </div>
         ))}
       </div>
+      {onAddActivity && (
+        <div style={styles.addBtn} onClick={onAddActivity}>
+          <PlusIcon />
+          Add New Activity
+        </div>
+      )}
     </div>
   )
 }

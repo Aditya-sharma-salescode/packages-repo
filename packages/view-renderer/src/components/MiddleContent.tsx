@@ -207,6 +207,7 @@ function NodeContent({ nodeType, features, onToggleFeature, ctx }: {
         activities={ctx.activityCards}
         onToggleActivity={ctx.handleToggleActivity}
         onAdvancedSettings={ctx.handleAdvancedSettings}
+        onAddActivity={ctx.handleStartAddActivity}
       />
     )
   }
