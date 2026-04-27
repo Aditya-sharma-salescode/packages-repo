@@ -128,6 +128,10 @@ export function FormBuilderModal({ activityId, onClose }: FormBuilderModalProps)
       }
       store.setActivities([activity])
       store.selectActivity(activityId)
+      // Persist to localStorage so FormBuilder's loadFromLocalStorage() on mount finds this
+      // activity by id — without this, loadFromLocalStorage overwrites the seeded activity
+      // with default/previous data, causing getActivity(activityId) to return undefined on close.
+      store.saveToLocalStorage()
       console.log('[FormBuilderModal] store seeded', { activityId })
     } catch (err) {
       console.error('[FormBuilderModal] error seeding activity store', err)
