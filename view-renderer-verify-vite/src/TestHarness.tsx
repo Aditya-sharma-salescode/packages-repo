@@ -1,23 +1,9 @@
 import { useState, useEffect, useCallback, useMemo, useRef, type CSSProperties } from "react";
 
+
 const CONFIG_BASE_URL = "http://localhost:1337/config-service";
 
-/** Hook: measure an element's size via ResizeObserver */
-function useElementSize<T extends HTMLElement>() {
-  const ref = useRef<T>(null);
-  const [size, setSize] = useState({ width: 0, height: 0 });
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const ro = new ResizeObserver(([entry]) => {
-      const { width, height } = entry.contentRect;
-      setSize({ width, height });
-    });
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, []);
-  return { ref, size };
-}
+
 import { JsonTab } from "./components/JsonTab";
 import { DiffTab } from "./components/DiffTab";
 import { SaveOutputTab } from "./components/SaveOutputTab";
@@ -524,19 +510,6 @@ export default function TestHarness() {
   const [updateError, setUpdateError] = useState<string | null>(null);
   const [updateSuccess, setUpdateSuccess] = useState<string | null>(null);
 
-  // Dynamic phone sizing — measure the right-side container and fit the phone
-  const { ref: phoneContainerRef, size: phoneContainerSize } = useElementSize<HTMLDivElement>();
-  const PHONE_ASPECT = 375 / 720; // width / height (screen only)
-  const BEZEL_EXTRA_H = 12 * 2 + 24 + 4 + 8; // bezel top+bottom + notch + home + gap
-  const BUTTON_AREA = 64; // preview button + toggle + error banner space
-  const SCALE = 0.85; // shrink phone to avoid overflow
-  const phoneDims = useMemo(() => {
-    const availH = phoneContainerSize.height - BUTTON_AREA;
-    if (availH <= 0) return { w: 320, h: 600 };
-    const screenH = Math.round((availH - BEZEL_EXTRA_H) * SCALE);
-    const screenW = Math.round(screenH * PHONE_ASPECT);
-    return { w: Math.max(screenW, 180), h: Math.max(screenH, 340) };
-  }, [phoneContainerSize.height]);
 
 
   // GET /tenant-config — app + portal in parallel (matches configUtils getAppConfig/getPortalConfig)
@@ -940,7 +913,7 @@ export default function TestHarness() {
                   <BottomActionBar />
                 </div>
                 {pwaUrl && (
-                  <div ref={phoneContainerRef} style={S.rightContentRight}>
+                  <div style={S.rightContentRight}>
                     {/* Live Preview toggle */}
                     <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: "var(--th-text-label)", cursor: "pointer", userSelect: "none", flexShrink: 0 }}>
                       <span style={{ fontWeight: 500, letterSpacing: "0.02em" }}>Live Preview</span>
@@ -951,7 +924,7 @@ export default function TestHarness() {
                         <div style={S.toggleThumb(livePreview)} />
                       </div>
                     </label>
-                    <PhoneMockup width={phoneDims.w} height={phoneDims.h}>
+                    <PhoneMockup responsive aspectRatio={430 / 932} maxHeightVh={82}>
                       <AppPwaPreview
                         ref={previewRef}
                         pwaUrl={pwaUrl}
