@@ -1,4 +1,5 @@
 import { createContext, useState, useMemo, useCallback, useEffect, type ReactNode } from 'react'
+import { useActivityStore } from '@aditya-sharma-salescode/form-builder'
 import type {
   ViewMeta,
   TenantConfig,
@@ -52,6 +53,7 @@ export interface ViewRendererContextValue {
   handleToggleFeature: (featureId: string, enabled: boolean) => void
   handleToggleActivity: (activityId: string, enabled: boolean) => void
   handleAdvancedSettings: (activityId: string) => void
+  handleStartAddActivity: () => void
   advancedSettingsTarget: string | null
   closeAdvancedSettings: () => void
   handleUpdateDraft: (path: string, value: unknown, targetKeys?: AppTypeKey[]) => void
@@ -116,6 +118,7 @@ export function ViewRendererProvider({
   )
   const [isSaving, setIsSaving] = useState(false)
   const [advancedSettingsTarget, setAdvancedSettingsTarget] = useState<string | null>(null)
+  const [pendingNewActivityId, setPendingNewActivityId] = useState<string | null>(null)
   const [activeNodeId, setActiveNodeId] = useState<string>(
     () => initialViewMeta?.nodes[0]?.node_id ?? '',
   )
@@ -167,8 +170,8 @@ export function ViewRendererProvider({
   )
 
   const activityCards = useMemo(
-    () => (viewMeta && draftMap && activeNodeId ? deriveActivityCards(viewMeta, draftMap, activeNodeId) : []),
-    [viewMeta, draftMap, activeNodeId],
+    () => (viewMeta && draftMap && activeNodeId ? deriveActivityCards(viewMeta, draftMap, activeNodeId, tenantConfigMap) : []),
+    [viewMeta, draftMap, activeNodeId, tenantConfigMap],
   )
 
   const dirtyKeys = useMemo(() => {
@@ -334,10 +337,91 @@ export function ViewRendererProvider({
     }
   }, [draftMap, allConfigKeys, onAdvancedSettings])
 
+  const handleStartAddActivity = useCallback(() => {
+    if (pendingNewActivityId || advancedSettingsTarget) return
+    const id = `custom_activity_${Date.now()}`
+    setDraftMap((prev) => {
+      if (!prev) return prev
+      const targetKeys = resolveTargetKeys(undefined, activeNodeMeta?.target_config_keys, Object.keys(prev))
+      const updated = { ...prev }
+      for (const key of targetKeys) {
+        if (!updated[key] || updated[key].features[id]) continue
+        updated[key] = {
+          ...updated[key],
+          features: {
+            ...updated[key].features,
+            [id]: {
+              enabled: true,
+              strategies: {},
+              services: {},
+              config: {
+                schema: {
+                  formName: 'New Activity',
+                  sections: [],
+                  meta: { submitLabel: 'Submit', submitEndpoint: '/outlet-activities' },
+                },
+              },
+            } as TenantFeatureConfig,
+          },
+        }
+      }
+      return updated
+    })
+    setPendingNewActivityId(id)
+    setAdvancedSettingsTarget(id)
+  }, [pendingNewActivityId, advancedSettingsTarget, activeNodeMeta])
+
   const closeAdvancedSettings = useCallback(() => {
     console.log('[ViewRenderer] closeAdvancedSettings called', new Error().stack?.split('\n')[2]?.trim())
+    if (pendingNewActivityId) {
+      const id = pendingNewActivityId
+      const formName = useActivityStore.getState().getActivity(id)?.schema?.formName ?? id
+      setDraftMap((prev) => {
+        if (!prev) return prev
+        const targetKeys = resolveTargetKeys(undefined, activeNodeMeta?.target_config_keys, Object.keys(prev))
+        const updated = { ...prev }
+        for (const key of targetKeys) {
+          if (!updated[key]) continue
+          const draft = updated[key]
+          const feats = { ...draft.features }
+
+          // outlet_activity tab
+          const oa = feats.outlet_activity ?? { enabled: true, strategies: {}, services: {}, config: { outletActivityTabs: [] } }
+          const oaCfg = { ...(oa.config as Record<string, unknown>) }
+          const tabs = Array.isArray(oaCfg.outletActivityTabs)
+            ? [...(oaCfg.outletActivityTabs as Record<string, unknown>[])]
+            : []
+          if (!tabs.some((t) => (t as { id: string }).id === id)) {
+            tabs.push({
+              id,
+              label: formName.toUpperCase(),
+              iconPath: 'assets/svg/competition_tracking.svg',
+              isDefault: false,
+              themeColor: '#7B61FF',
+              storeInRequired: '',
+            })
+          }
+          feats.outlet_activity = { ...oa, config: { ...oaCfg, outletActivityTabs: tabs } } as TenantFeatureConfig
+
+          // activity_forms type
+          const af = feats.activity_forms ?? { enabled: true, strategies: {}, services: {}, config: { activity_types: [] } }
+          const afCfg = { ...(af.config as Record<string, unknown>) }
+          const types = Array.isArray(afCfg.activity_types)
+            ? [...(afCfg.activity_types as Record<string, unknown>[])]
+            : []
+          if (!types.some((t) => (t as { type: string }).type === id)) {
+            types.push({ type: id, display_name: formName, enabled: true, context_type: 'outlet_activity' })
+          }
+          feats.activity_forms = { ...af, config: { ...afCfg, activity_types: types } } as TenantFeatureConfig
+
+          updated[key] = { ...draft, features: feats }
+        }
+        return updated
+      })
+      setPendingNewActivityId(null)
+    }
     setAdvancedSettingsTarget(null)
-  }, [])
+  }, [pendingNewActivityId, activeNodeMeta])
 
   const handleUpdateDraft = useCallback((path: string, value: unknown, targetKeys?: AppTypeKey[]) => {
     setDraftMap((prev) => {
@@ -440,6 +524,7 @@ export function ViewRendererProvider({
     handleToggleFeature,
     handleToggleActivity,
     handleAdvancedSettings,
+    handleStartAddActivity,
     advancedSettingsTarget,
     closeAdvancedSettings,
     handleUpdateDraft,
