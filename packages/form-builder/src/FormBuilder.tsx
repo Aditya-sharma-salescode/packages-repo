@@ -112,6 +112,7 @@ export function FormBuilder() {
   const showDarkModeToggle = features.darkModeToggle !== false;
   const showSaveButton = features.saveButton !== false;
   const showAiPromptBar = features.aiPromptBar !== false;
+  const showReportButton = features.reports !== false;
 
   const toggleTheme = () => {
     const next = !isDark;
@@ -518,16 +519,18 @@ export function FormBuilder() {
             </Button>
           )}
 
-          <Button
-            size="sm"
-            variant="outline"
-            className="h-8 text-xs gap-1.5"
-            onClick={() => navigate(routes.reportPreview)}
-            title="View Reports"
-          >
-            <BarChart2 className="h-3.5 w-3.5" />
-            Report
-          </Button>
+          {showReportButton && (
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-8 text-xs gap-1.5"
+              onClick={() => navigate(routes.reportPreview)}
+              title="View Reports"
+            >
+              <BarChart2 className="h-3.5 w-3.5" />
+              Report
+            </Button>
+          )}
         </div>
 
         {/* Jira bar for smaller screens */}
