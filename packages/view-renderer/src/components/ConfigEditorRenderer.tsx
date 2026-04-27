@@ -24,12 +24,17 @@ const styles = {
     color: t.fgMuted,
     fontSize: 13,
   } as CSSProperties,
-  advancedSection: {
+  fieldWrapper: (open: boolean): CSSProperties => ({
     marginBottom: 16,
-    borderRadius: '0 0 12px 12px',
-    border: `1.5px solid ${t.p35}`,
+    borderRadius: 12,
+    border: open ? `1.5px solid ${t.p35}` : '1.5px solid transparent',
+    overflow: 'hidden',
+    transition: 'border 0.15s ease',
+  }),
+  advancedSection: {
     borderTop: `1px solid ${t.border}`,
-    padding: '12px 16px 4px',
+    padding: '10px 16px 6px',
+    background: t.card,
   } as CSSProperties,
   advancedHeader: {
     fontSize: 10,
@@ -50,16 +55,16 @@ export function ConfigEditorRenderer({ node }: ConfigEditorRendererProps) {
     setExpandedFields((prev) => ({ ...prev, [fieldId]: !prev[fieldId] }))
   }
 
-  function renderField(field: ConfigEditorField, nodeTargetKeys?: string[], isNested = false) {
+  function renderField(field: ConfigEditorField, nodeTargetKeys?: string[]) {
     const targetKeys = resolveTargetKeys(field.target_config_keys, nodeTargetKeys ?? node.target_config_keys, allKeys)
     const primaryKey = targetKeys[0]
     const primaryDraft = primaryKey && draftMap ? draftMap[primaryKey] : null
     const currentValue = primaryDraft ? getByPath(primaryDraft, field.target_path) : undefined
-    const hasAdvanced = !isNested && !!field.advanced_config?.length
+    const hasAdvanced = !!field.advanced_config?.length
     const isOpen = expandedFields[field.field_id] ?? false
 
     return (
-      <div key={field.field_id}>
+      <div key={field.field_id} style={styles.fieldWrapper(isOpen && hasAdvanced)}>
         <FieldRenderer
           field={field}
           value={currentValue}
@@ -70,7 +75,21 @@ export function ConfigEditorRenderer({ node }: ConfigEditorRendererProps) {
         {hasAdvanced && isOpen && (
           <div style={styles.advancedSection}>
             <div style={styles.advancedHeader}>Advanced Settings</div>
-            {field.advanced_config!.map((af) => renderField(af, nodeTargetKeys, true))}
+            {field.advanced_config!.map((af) => {
+              const afTargetKeys = resolveTargetKeys(af.target_config_keys, nodeTargetKeys ?? node.target_config_keys, allKeys)
+              const afPrimaryKey = afTargetKeys[0]
+              const afDraft = afPrimaryKey && draftMap ? draftMap[afPrimaryKey] : null
+              const afValue = afDraft ? getByPath(afDraft, af.target_path) : undefined
+              return (
+                <FieldRenderer
+                  key={af.field_id}
+                  field={af}
+                  value={afValue}
+                  onChange={(v) => handleUpdateDraft(af.target_path, v, afTargetKeys)}
+                  compact
+                />
+              )
+            })}
           </div>
         )}
       </div>
