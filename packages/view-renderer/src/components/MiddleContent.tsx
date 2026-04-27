@@ -194,6 +194,7 @@ function NodeContent({ nodeType, features, onToggleFeature, ctx }: {
 
   if (nodeType === 'store_activity') {
     if (ctx.advancedSettingsTarget) {
+      console.log('[MiddleContent] rendering FormBuilderModal', { activityId: ctx.advancedSettingsTarget })
       return (
         <FormBuilderModal
           activityId={ctx.advancedSettingsTarget}

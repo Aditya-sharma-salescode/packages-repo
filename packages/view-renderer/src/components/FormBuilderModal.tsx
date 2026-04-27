@@ -1,4 +1,4 @@
-import { type CSSProperties, type ReactNode, useCallback, useMemo } from 'react'
+import { type CSSProperties, type ReactNode, useCallback, useEffect, useMemo, useRef } from 'react'
 import {
   MemoryRouter,
   Routes,
@@ -27,6 +27,7 @@ import {
 } from '@aditya-sharma-salescode/form-builder'
 import type { ViewMetaReport } from '@aditya-sharma-salescode/reports-setup'
 import { useViewRenderer } from '../context/useViewRenderer'
+import { t } from '../theme'
 import {
   tenantFeatureToActivity,
   buildFormBuilderConfig,
@@ -39,22 +40,38 @@ export interface FormBuilderModalProps {
 }
 
 const styles = {
-  root: {
+  overlay: {
+    position: 'fixed',
+    inset: 0,
+    zIndex: 1000,
+    background: t.card,
     display: 'flex',
     flexDirection: 'column',
-    width: '100%',
-    height: '100%',
-    minHeight: 0,
+    width: '100vw',
+    height: '100vh',
+    overflow: 'hidden',
   } as CSSProperties,
   body: {
     flex: 1,
     overflow: 'auto',
     minHeight: 0,
+    display: 'flex',
+    flexDirection: 'column',
   } as CSSProperties,
 }
 
 export function FormBuilderModal({ activityId, onClose }: FormBuilderModalProps) {
+  const overlayRef = useRef<HTMLDivElement>(null)
   const { draftMap, setDraftMap, currentNodeMeta } = useViewRenderer()
+
+  useEffect(() => {
+    console.log('[FormBuilderModal] mounted', { activityId })
+    if (overlayRef.current) {
+      const r = overlayRef.current.getBoundingClientRect()
+      console.log('[FormBuilderModal] overlay rect', { x: r.x, y: r.y, width: r.width, height: r.height })
+    }
+    return () => console.log('[FormBuilderModal] unmounted', { activityId })
+  }, [activityId])
   const catalog = (currentNodeMeta?.data?.reports_catalog ?? []) as ViewMetaReport[]
 
   // Seed the activity store synchronously so FormBuilder finds it on first mount
@@ -84,7 +101,7 @@ export function FormBuilderModal({ activityId, onClose }: FormBuilderModalProps)
   }, [activityId, setDraftMap, onClose])
 
   return (
-    <div style={styles.root}>
+    <div ref={overlayRef} style={styles.overlay}>
       <div style={styles.body}>
         <RouterIsolator>
         <MemoryRouter initialEntries={[`/form-builder/${activityId}`]}>
