@@ -1,0 +1,133 @@
+{
+  "view_id": "order_config",
+  "app_type": "sfa",
+  "nodes": [
+    {
+      "node_id": "checkout",
+      "node_label": "Order Checkout",
+      "node_logo": "",
+      "node_description": "Configure the order checkout screen — labels, section visibility, delivery date, remarks, and confirmation behaviour",
+      "node_type": "config_editor",
+      "target_config_keys": ["app"],
+      "preview": { "type": "pwa", "screen": "checkout", "action": "preview_screen" },
+      "config": [
+        {
+          "field_id": "checkout_app_bar_title",
+          "target_path": "features.order.config.checkout.screen.appBarTitle",
+          "label": "App Bar Title",
+          "description": "Title shown in the top bar of the checkout screen (e.g. Order Summary)",
+          "input_type": "text"
+        },
+        {
+          "field_id": "checkout_submit_label",
+          "target_path": "features.order.config.checkout.screen.submitButtonLabel",
+          "label": "Submit Button Label",
+          "description": "Label on the submit button at the bottom of checkout (e.g. SUBMIT, PLACE ORDER)",
+          "input_type": "text"
+        },
+        {
+          "field_id": "checkout_show_delivery_date",
+          "target_path": "features.order.config.checkout.screen.showDeliveryDate",
+          "label": "Show Delivery Date",
+          "description": "Display the estimated delivery date field on the checkout screen",
+          "input_type": "toggle"
+        },
+        {
+          "field_id": "checkout_show_remarks",
+          "target_path": "features.order.config.checkout.screen.showOrderRemarks",
+          "label": "Show Order Remarks",
+          "description": "Allow reps to add a free-text remark when placing an order",
+          "input_type": "toggle"
+        },
+        {
+          "field_id": "checkout_show_confirmation_popup",
+          "target_path": "features.order.config.checkout.screen.showConfirmationPopup",
+          "label": "Show Confirmation Popup",
+          "description": "Show a confirmation dialog before submitting the order",
+          "input_type": "toggle",
+          "advanced_config": [
+            {
+              "field_id": "section_order_summary",
+              "target_path": "features.order.config.checkout.sections.orderSummary.enabled",
+              "label": "Show Order Summary Section",
+              "description": "Display the order summary card (totals, quantities, bill value) on checkout",
+              "input_type": "toggle"
+            },
+            {
+              "field_id": "section_tax_summary",
+              "target_path": "features.order.config.checkout.sections.taxSummary.enabled",
+              "label": "Show Tax Summary Section",
+              "description": "Display a GST/tax breakdown section on the checkout screen",
+              "input_type": "toggle"
+            },
+            {
+              "field_id": "section_order_details",
+              "target_path": "features.order.config.checkout.sections.orderDetails.enabled",
+              "label": "Show Product Details Section",
+              "description": "Display the list of ordered products with quantities and prices on checkout",
+              "input_type": "toggle"
+            },
+            {
+              "field_id": "section_distributor_details",
+              "target_path": "features.order.config.checkout.sections.distributorDetails.enabled",
+              "label": "Show Distributor Details Section",
+              "description": "Display the assigned distributor's information on the checkout screen",
+              "input_type": "toggle"
+            },
+            {
+              "field_id": "section_remarks",
+              "target_path": "features.order.config.checkout.sections.remarks.enabled",
+              "label": "Show Remarks Section",
+              "description": "Show the remarks input as a dedicated card on checkout",
+              "input_type": "toggle"
+            },
+            {
+              "field_id": "section_disclaimer",
+              "target_path": "features.order.config.checkout.sections.disclaimer.enabled",
+              "label": "Show Disclaimer Section",
+              "description": "Display a disclaimer notice at the bottom of the checkout screen",
+              "input_type": "toggle"
+            }
+          ]
+        },
+        {
+          "field_id": "order_placed_title",
+          "target_path": "features.order.config.order_placed.header.title",
+          "label": "Order Placed — Title",
+          "description": "Heading on the success screen after order is placed (e.g. ORDER PLACED)",
+          "input_type": "text",
+          "advanced_config": [
+            {
+              "field_id": "order_placed_subtitle",
+              "target_path": "features.order.config.order_placed.header.subtitle",
+              "label": "Order Placed — Subtitle",
+              "description": "Subtitle below the heading on the success screen (e.g. SUCCESSFULLY)",
+              "input_type": "text"
+            },
+            {
+              "field_id": "order_placed_cta_label",
+              "target_path": "features.order.config.order_placed.cta.label",
+              "label": "CTA Button Label",
+              "description": "Label on the action button after order is placed (e.g. CONTINUE)",
+              "input_type": "text"
+            },
+            {
+              "field_id": "feedback_enabled",
+              "target_path": "features.order.config.order_placed.feedback.enabled",
+              "label": "Enable Feedback",
+              "description": "Show an issue selection panel after the order is placed",
+              "input_type": "toggle"
+            },
+            {
+              "field_id": "rating_enabled",
+              "target_path": "features.order.config.order_placed.rating.enabled",
+              "label": "Enable Rating",
+              "description": "Show a star or emoji rating prompt after the order is placed",
+              "input_type": "toggle"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

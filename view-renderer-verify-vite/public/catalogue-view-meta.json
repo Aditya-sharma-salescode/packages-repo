@@ -16,29 +16,44 @@
           "target_path": "features.catalogue.config.card_layout.show_ptr",
           "label": "Show PTR",
           "description": "Display Price to Retailer on the product card",
-          "input_type": "toggle"
-        },
-        {
-          "field_id": "show_mrp",
-          "target_path": "features.catalogue.config.card_layout.show_mrp",
-          "label": "Show MRP",
-          "description": "Display Maximum Retail Price on the product card",
-          "input_type": "toggle"
-        },
-        {
-          "field_id": "show_margin",
-          "target_path": "features.catalogue.config.card_layout.show_margin",
-          "label": "Show Margin %",
-          "description": "Display calculated margin percentage on the product card",
-          "input_type": "toggle"
-        },
-        {
-          "field_id": "uom_max_digits_case",
-          "target_path": "features.catalogue.config.uom_engine.max_digits.case",
-          "label": "Max Digits — Case",
-          "description": "Maximum digits allowed when entering case quantity (1–6)",
-          "input_type": "number",
-          "validation": { "min": 1, "max": 6 }
+          "input_type": "toggle",
+          "advanced_config": [
+            {
+              "field_id": "show_mrp",
+              "target_path": "features.catalogue.config.card_layout.show_mrp",
+              "label": "Show MRP",
+              "description": "Display Maximum Retail Price on the product card",
+              "input_type": "toggle"
+            },
+            {
+              "field_id": "show_margin",
+              "target_path": "features.catalogue.config.card_layout.show_margin",
+              "label": "Show Margin %",
+              "description": "Display calculated margin percentage on the product card",
+              "input_type": "toggle"
+            },
+            {
+              "field_id": "show_sku_code",
+              "target_path": "features.catalogue.config.card_layout.show_sku_code",
+              "label": "Show SKU Code",
+              "description": "Display the SKU code on the product card",
+              "input_type": "toggle"
+            },
+            {
+              "field_id": "show_stock",
+              "target_path": "features.catalogue.config.card_layout.show_stock",
+              "label": "Show Stock",
+              "description": "Display available stock count on the product card",
+              "input_type": "toggle"
+            },
+            {
+              "field_id": "show_piece_size",
+              "target_path": "features.catalogue.config.card_layout.show_piece_size",
+              "label": "Show Piece Size",
+              "description": "Display the piece size / pack size on the product card",
+              "input_type": "toggle"
+            }
+          ]
         },
         {
           "field_id": "uom_ordering_mode",
@@ -49,29 +64,79 @@
           "options": [
             { "value": "single", "label": "Single (one unit at a time)" },
             { "value": "multi", "label": "Piece and Case together" }
+          ],
+          "advanced_config": [
+            {
+              "field_id": "uom_piece_label",
+              "target_path": "features.catalogue.config.uom_engine.units.piece.label",
+              "label": "Piece Unit Label",
+              "description": "Button label for piece ordering (e.g. Piece, Pcs, Unit)",
+              "input_type": "text"
+            },
+            {
+              "field_id": "uom_case_label",
+              "target_path": "features.catalogue.config.uom_engine.units.case.label",
+              "label": "Case Unit Label",
+              "description": "Button label for case ordering (e.g. Case, Ctn, Box)",
+              "input_type": "text"
+            },
+            {
+              "field_id": "uom_other_label",
+              "target_path": "features.catalogue.config.uom_engine.units.other.label",
+              "label": "Other Unit Label",
+              "description": "Button label for the third ordering unit (e.g. Other, Strip)",
+              "input_type": "text"
+            },
+            {
+              "field_id": "uom_max_digits_piece",
+              "target_path": "features.catalogue.config.uom_engine.max_digits.piece",
+              "label": "Max Digits — Piece",
+              "description": "Maximum digits allowed when entering piece quantity (1–6)",
+              "input_type": "number",
+              "validation": { "min": 1, "max": 6 }
+            },
+            {
+              "field_id": "uom_max_digits_case",
+              "target_path": "features.catalogue.config.uom_engine.max_digits.case",
+              "label": "Max Digits — Case",
+              "description": "Maximum digits allowed when entering case quantity (1–6)",
+              "input_type": "number",
+              "validation": { "min": 1, "max": 6 }
+            }
           ]
         },
         {
-          "field_id": "uom_piece_label",
-          "target_path": "features.catalogue.config.uom_engine.units.piece.label",
-          "label": "Piece Unit Label",
-          "description": "Button label for piece ordering (e.g. Piece, Pcs, Unit)",
-          "input_type": "text"
-        },
-        {
-          "field_id": "uom_case_label",
-          "target_path": "features.catalogue.config.uom_engine.units.case.label",
-          "label": "Case Unit Label",
-          "description": "Button label for case ordering (e.g. Case, Ctn, Box)",
-          "input_type": "text"
-        },
-        {
-          "field_id": "uom_max_digits_piece",
-          "target_path": "features.catalogue.config.uom_engine.max_digits.piece",
-          "label": "Max Digits — Piece",
-          "description": "Maximum digits allowed when entering piece quantity (1–6)",
-          "input_type": "number",
-          "validation": { "min": 1, "max": 6 }
+          "field_id": "search_enabled",
+          "target_path": "features.catalogue.config.search.enabled",
+          "label": "Enable Product Search",
+          "description": "Allow reps to search for products by name, SKU, brand, or variant",
+          "input_type": "toggle",
+          "advanced_config": [
+            {
+              "field_id": "search_debounce_ms",
+              "target_path": "features.catalogue.config.search.debounce_ms",
+              "label": "Search Debounce (ms)",
+              "description": "Delay in milliseconds before search fires after the user stops typing",
+              "input_type": "number",
+              "validation": { "min": 100, "max": 2000 }
+            },
+            {
+              "field_id": "search_fuzzy_threshold",
+              "target_path": "features.catalogue.config.search.fuzzy_threshold",
+              "label": "Fuzzy Match Threshold",
+              "description": "How closely a result must match the query (0 = exact, 1 = anything)",
+              "input_type": "number",
+              "validation": { "min": 0, "max": 1 }
+            },
+            {
+              "field_id": "search_min_query_length",
+              "target_path": "features.catalogue.config.search.min_query_length",
+              "label": "Min Query Length",
+              "description": "Minimum characters required before search triggers",
+              "input_type": "number",
+              "validation": { "min": 1, "max": 10 }
+            }
+          ]
         }
       ]
     }

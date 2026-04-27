@@ -579,7 +579,9 @@ export default function TestHarness() {
       const res = await fetch(`${CONFIG_BASE_URL}/view`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
-      setViewMetaJson(JSON.stringify(data, null, 2));
+      const json = JSON.stringify(data, null, 2);
+      setViewMetaJson(json);
+      setVmParsed(safeParse<ViewMeta>(json));
     } catch (err: unknown) {
       setViewMetaJson(JSON.stringify({ error: (err as Error).message }, null, 2));
     }

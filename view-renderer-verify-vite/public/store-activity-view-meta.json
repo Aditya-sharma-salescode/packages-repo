@@ -1,0 +1,360 @@
+{
+    "node_id": "store_activity",
+    "node_label": "Store Activity",
+    "node_logo": "",
+    "node_description": "Select store-level activities and configure the data capture form for each. Use advanced settings to customize fields.",
+    "node_type": "store_activity",
+    "target_config_keys": [
+        "app"
+    ],
+    "outlet_tab_blocklist": [
+        "outletProfile",
+        "taskRecommendations"
+    ],
+    "show_in_self_serve_home_page": "true",
+    "preview": {
+        "type": "pwa",
+        "screen": "outlet_detail",
+        "action": "preview_screen"
+    },
+    "children": [
+        {
+            "activity_id": "asset_tracking",
+            "activity_label": "Asset Tracking",
+            "activity_description": "Asset Tracking",
+            "advance_settings_handler": "form-package",
+            "activity_default": {
+                "enabled": true,
+                "strategies": {},
+                "config": {
+                    "formHeaderLabel": "Capture asset details accurately. Required fields are marked with *.",
+                    "formHeaderVariant": "info",
+                    "schema": {
+                        "formName": "Asset Tracking",
+                        "sections": [
+                            {
+                                "id": "at-new-asset",
+                                "title": "New Asset",
+                                "fields": [
+                                    {
+                                        "id": "assetImage",
+                                        "type": "camera",
+                                        "label": "Asset Image",
+                                        "required": true,
+                                        "columnName": "imageUrl",
+                                        "apiKey": "",
+                                        "allowCamera": true,
+                                        "allowGallery": false,
+                                        "hintText": "Capture the asset on-site — GPS is recorded automatically.",
+                                        "captureLocationWithImage": true,
+                                        "showLiveLocationTag": true,
+                                        "linkedLatFieldId": "latitude",
+                                        "linkedLngFieldId": "longitude"
+                                    },
+                                    {
+                                        "id": "latitude",
+                                        "type": "text",
+                                        "label": "Latitude",
+                                        "required": false,
+                                        "columnName": "latitude",
+                                        "apiKey": "lat",
+                                        "apiType": "double",
+                                        "condition": {
+                                            "fieldId": "latitude",
+                                            "operator": "equals",
+                                            "value": "__never__"
+                                        }
+                                    },
+                                    {
+                                        "id": "longitude",
+                                        "type": "text",
+                                        "label": "Longitude",
+                                        "required": false,
+                                        "columnName": "longitude",
+                                        "apiKey": "lng",
+                                        "apiType": "double",
+                                        "condition": {
+                                            "fieldId": "longitude",
+                                            "operator": "equals",
+                                            "value": "__never__"
+                                        }
+                                    },
+                                    {
+                                        "id": "at-brand",
+                                        "type": "text",
+                                        "label": "Equipment Brand",
+                                        "required": true,
+                                        "columnName": "equipment_brand",
+                                        "placeholder": "Enter equipment brand"
+                                    },
+                                    {
+                                        "id": "at-equipment-number",
+                                        "type": "text",
+                                        "label": "Equipment Number",
+                                        "required": true,
+                                        "columnName": "equipment_number",
+                                        "placeholder": "Enter equipment number"
+                                    },
+                                    {
+                                        "id": "at-serial-number",
+                                        "type": "text",
+                                        "label": "Serial Number",
+                                        "required": true,
+                                        "columnName": "serial_number",
+                                        "placeholder": "Enter serial number"
+                                    },
+                                    {
+                                        "id": "at-cooler-category",
+                                        "type": "dropdown",
+                                        "label": "Cooler Category",
+                                        "required": true,
+                                        "columnName": "cooler_category",
+                                        "options": [
+                                            "Single Door Visi Cooler",
+                                            "Double Door Visi Cooler",
+                                            "Chest Freezer",
+                                            "Deep Freezer",
+                                            "Bottle Cooler"
+                                        ]
+                                    },
+                                    {
+                                        "id": "at-remarks",
+                                        "type": "textarea",
+                                        "label": "Remarks",
+                                        "required": false,
+                                        "columnName": "remarks",
+                                        "placeholder": "Add any remarks"
+                                    }
+                                ]
+                            }
+                        ],
+                        "meta": {
+                            "submitLabel": "Submit",
+                            "submitEndpoint": "/outlet-activities"
+                        }
+                    }
+                },
+                "services": {}
+            },
+            "outlet_activity_tab_default": {
+                "id": "asset_tracking",
+                "label": "ASSET TRACKING",
+                "iconPath": "assets/svg/asset_tracking.svg",
+                "isDefault": false,
+                "themeColor": "#7B61FF",
+                "storeInRequired": ""
+            },
+            "activity_form_activity_type_default": {
+                "type": "asset_tracking",
+                "display_name": "Asset Tracking",
+                "enabled": true,
+                "context_type": "outlet_activity"
+            }
+        },
+        {
+            "activity_id": "merchandising",
+            "activity_label": "Merchandising",
+            "activity_description": "Merchandising",
+            "advance_settings_handler": "form-package",
+            "activity_default": {
+                "enabled": true,
+                "strategies": {},
+                "config": {
+                    "formHeaderLabel": "Complete minimum one task.",
+                    "formHeaderVariant": "warning",
+                    "schema": {
+                        "formName": "Merchandising",
+                        "sections": [
+                            {
+                                "id": "6fb4ab91-83d4-487f-8ff5-b95a5c5d0b82",
+                                "title": "Store Details",
+                                "fields": [
+                                    {
+                                        "id": "mr-task",
+                                        "type": "dropdown",
+                                        "label": "Select Merchandising Task",
+                                        "required": false,
+                                        "columnName": "type",
+                                        "options": [
+                                            "JAR MANAGEMENT",
+                                            "HANGING MANAGEMENT",
+                                            "SHELF MANAGEMENT"
+                                        ]
+                                    },
+                                    {
+                                        "id": "mr-image",
+                                        "type": "camera",
+                                        "label": "Upload Image",
+                                        "required": false,
+                                        "columnName": "blobKey",
+                                        "allowCamera": true,
+                                        "allowGallery": true
+                                    },
+                                    {
+                                        "id": "mr-remarks",
+                                        "type": "textarea",
+                                        "label": "Remarks",
+                                        "required": false,
+                                        "columnName": "remarks",
+                                        "placeholder": "Enter remarks..."
+                                    }
+                                ]
+                            }
+                        ],
+                        "meta": {
+                            "submitLabel": "Submit",
+                            "submitEndpoint": "/outlet-activities"
+                        }
+                    }
+                },
+                "services": {}
+            },
+            "outlet_activity_tab_default": {
+                "id": "merchandising",
+                "label": "MERCHANDISING",
+                "iconPath": "assets/svg/competition_tracking.svg",
+                "isDefault": false,
+                "themeColor": "#2bbbad",
+                "storeInRequired": ""
+            },
+            "activity_form_activity_type_default": {
+                "type": "merchandising",
+                "display_name": "Merchandising",
+                "enabled": true,
+                "context_type": "outlet_activity"
+            }
+        },
+        {
+            "activity_id": "competition_tracking",
+            "activity_label": "Competition Tracking",
+            "activity_description": "Competition Tracking",
+            "advance_settings_handler": "form-package",
+            "activity_default": {
+                "enabled": true,
+                "strategies": {},
+                "config": {
+                    "formHeaderLabel": "Minimum one image capture is mandatory.",
+                    "formHeaderVariant": "warning",
+                    "schema": {
+                        "formName": "Competition Tracking",
+                        "sections": [
+                            {
+                                "id": "6c12416b-86d9-4532-a85b-a698290be1a6",
+                                "title": "Details",
+                                "fields": [
+                                    {
+                                        "id": "ct-activity",
+                                        "type": "dropdown",
+                                        "label": "Select Activity",
+                                        "required": false,
+                                        "columnName": "activity",
+                                        "options": [
+                                            "Promos & Offer",
+                                            "New product launch",
+                                            "New branding visibility"
+                                        ]
+                                    },
+                                    {
+                                        "id": "ct-competitor",
+                                        "type": "dropdown",
+                                        "label": "Select Competitor",
+                                        "required": true,
+                                        "columnName": "competitor",
+                                        "options": [
+                                            "Competitor A",
+                                            "Competitor B",
+                                            "Competitor C"
+                                        ]
+                                    },
+                                    {
+                                        "id": "ct-duration",
+                                        "type": "dateRange",
+                                        "label": "Activity Duration",
+                                        "required": true,
+                                        "columnName": "date_range",
+                                        "showDifference": true
+                                    },
+                                    {
+                                        "id": "ct-image",
+                                        "type": "camera",
+                                        "label": "Upload Image",
+                                        "required": false,
+                                        "columnName": "blobKey",
+                                        "allowGallery": true,
+                                        "allowCamera": true
+                                    },
+                                    {
+                                        "id": "ct-remarks",
+                                        "type": "textarea",
+                                        "label": "Remarks",
+                                        "required": false,
+                                        "columnName": "remarks",
+                                        "placeholder": "Enter remarks..."
+                                    }
+                                ]
+                            }
+                        ],
+                        "meta": {
+                            "submitLabel": "Submit",
+                            "submitEndpoint": "/outlet-activities"
+                        }
+                    }
+                },
+                "services": {}
+            },
+            "outlet_activity_tab_default": {
+                "id": "competition_tracking",
+                "label": "COMPETITION TRACKING",
+                "iconPath": "assets/svg/competition_tracking.svg",
+                "isDefault": false,
+                "themeColor": "#e1ad01",
+                "storeInRequired": ""
+            },
+            "activity_form_activity_type_default": {
+                "type": "competition_tracking",
+                "display_name": "Competition Tracking",
+                "enabled": true,
+                "context_type": "outlet_activity"
+            }
+        },
+        {
+            "activity_id": "storeInventory",
+            "activity_label": "Stock Inventory",
+            "activity_description": "Stock Inventory",
+            "outlet_activity_tab_default": {
+                "id": "storeInventory",
+                "label": "STOCK INVENTORY",
+                "iconPath": "assets/svg/store_inventory.svg",
+                "isDefault": false,
+                "themeColor": "#32a785",
+                "storeInRequired": ""
+            }
+        },
+        {
+            "activity_id": "invoiceCollection",
+            "activity_label": "Collection",
+            "activity_description": "Collection",
+            "outlet_activity_tab_default": {
+                "id": "invoiceCollection",
+                "label": "COLLECTION",
+                "iconPath": "assets/svg/competition_tracking.svg",
+                "isDefault": false,
+                "themeColor": "#DE715B",
+                "storeInRequired": ""
+            }
+        },
+        {
+            "activity_id": "stockReturn",
+            "activity_label": "Stock Return",
+            "activity_description": "Stock Return",
+            "outlet_activity_tab_default": {
+                "id": "stockReturn",
+                "label": "STOCK RETURN",
+                "iconPath": "assets/svg/stock_return.svg",
+                "isDefault": false,
+                "themeColor": "#FF5722",
+                "storeInRequired": ""
+            }
+        }
+    ]
+}
