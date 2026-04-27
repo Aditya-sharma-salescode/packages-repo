@@ -1,6 +1,6 @@
 {
   "name": "@aditya-sharma-salescode/view-renderer",
-  "version": "0.3.11",
+  "version": "0.3.12",
   "private": false,
   "publishConfig": {
     "registry": "https://npm.pkg.github.com",

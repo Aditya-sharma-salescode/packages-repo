@@ -1,4 +1,5 @@
 import { type CSSProperties, type ReactNode, useCallback, useEffect, useMemo, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import {
   MemoryRouter,
   Routes,
@@ -119,7 +120,9 @@ export function FormBuilderModal({ activityId, onClose }: FormBuilderModalProps)
     onClose()
   }, [activityId, setDraftMap, onClose])
 
-  return (
+  // createPortal escapes any CSS transform ancestor (eg. framer-motion motion.div)
+  // that would otherwise confine position:fixed to the transformed container.
+  return createPortal(
     <div ref={overlayRef} style={styles.overlay}>
       <div style={styles.body}>
         <RouterIsolator>
@@ -150,6 +153,7 @@ export function FormBuilderModal({ activityId, onClose }: FormBuilderModalProps)
         </MemoryRouter>
         </RouterIsolator>
       </div>
-    </div>
+    </div>,
+    document.body,
   )
 }
