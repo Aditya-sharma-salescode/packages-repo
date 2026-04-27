@@ -335,6 +335,7 @@ export function ViewRendererProvider({
   }, [draftMap, allConfigKeys, onAdvancedSettings])
 
   const closeAdvancedSettings = useCallback(() => {
+    console.log('[ViewRenderer] closeAdvancedSettings called', new Error().stack?.split('\n')[2]?.trim())
     setAdvancedSettingsTarget(null)
   }, [])
 

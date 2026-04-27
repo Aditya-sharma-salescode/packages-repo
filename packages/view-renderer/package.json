@@ -1,7 +1,8 @@
 {
   "name": "@aditya-sharma-salescode/view-renderer",
-  "version": "0.3.13",
+  "version": "0.3.14",
   "private": false,
+  "files": ["dist", "src"],
   "publishConfig": {
     "registry": "https://npm.pkg.github.com",
     "access": "restricted"
@@ -30,8 +31,8 @@
   "dependencies": {
     "lodash.merge": "^4.6.2",
     "uuid": "^11.1.0",
-    "@aditya-sharma-salescode/reports-setup": "^1.1.4",
-    "@aditya-sharma-salescode/form-builder": "^1.3.2",
+    "@aditya-sharma-salescode/reports-setup": "^1.1.5",
+    "@aditya-sharma-salescode/form-builder": "^1.3.3",
     "@aditya-sharma-salescode/shared-ui": "^1.0.4"
   },
   "devDependencies": {
