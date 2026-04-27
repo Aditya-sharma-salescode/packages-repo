@@ -65,32 +65,51 @@ export function FormBuilderModal({ activityId, onClose }: FormBuilderModalProps)
   const { draftMap, setDraftMap, currentNodeMeta } = useViewRenderer()
 
   useEffect(() => {
-    console.log('[FormBuilderModal] mounted', { activityId })
+    const featureKeys = draftMap?.app?.features ? Object.keys(draftMap.app.features) : []
+    const featureExists = Boolean(draftMap?.app?.features?.[activityId])
+    console.log('[FormBuilderModal] mounted', { activityId, featureExists, featureKeys })
     if (overlayRef.current) {
       const r = overlayRef.current.getBoundingClientRect()
       console.log('[FormBuilderModal] overlay rect', { x: r.x, y: r.y, width: r.width, height: r.height })
     }
     return () => console.log('[FormBuilderModal] unmounted', { activityId })
-  }, [activityId])
+  }, [activityId, draftMap])
   const catalog = (currentNodeMeta?.data?.reports_catalog ?? []) as ViewMetaReport[]
 
   // Seed the activity store synchronously so FormBuilder finds it on first mount
   useMemo(() => {
     const feature = draftMap?.app?.features?.[activityId]
-    if (!feature) return
-    const activity = tenantFeatureToActivity(activityId, feature)
-    const store = useActivityStore.getState()
-    const existing = store.getActivity(activityId)
-    if (!existing || JSON.stringify(existing.schema) !== JSON.stringify(activity.schema)) {
-      store.setActivities([activity])
+    console.log('[FormBuilderModal] seeding store', { activityId, featureFound: Boolean(feature) })
+    if (!feature) {
+      console.warn('[FormBuilderModal] feature not found in draftMap.app.features — FormBuilder will render empty', { activityId })
+      return
     }
-    store.selectActivity(activityId)
+    try {
+      const activity = tenantFeatureToActivity(activityId, feature)
+      console.log('[FormBuilderModal] activity built', { activityId, schemaKeys: activity.schema ? Object.keys(activity.schema) : [] })
+      const store = useActivityStore.getState()
+      const existing = store.getActivity(activityId)
+      if (!existing || JSON.stringify(existing.schema) !== JSON.stringify(activity.schema)) {
+        store.setActivities([activity])
+        console.log('[FormBuilderModal] store.setActivities called')
+      }
+      store.selectActivity(activityId)
+      console.log('[FormBuilderModal] store.selectActivity called', { activityId })
+    } catch (err) {
+      console.error('[FormBuilderModal] error seeding activity store', err)
+    }
   }, [activityId, draftMap])
 
-  const portalConfig = useMemo(
-    () => buildFormBuilderConfig(draftMap, catalog),
-    [draftMap, catalog],
-  )
+  const portalConfig = useMemo(() => {
+    try {
+      const cfg = buildFormBuilderConfig(draftMap, catalog)
+      console.log('[FormBuilderModal] portalConfig built', { hasApp: Boolean(cfg?.features?.app), catalogLength: catalog.length })
+      return cfg
+    } catch (err) {
+      console.error('[FormBuilderModal] error building portalConfig', err)
+      return undefined
+    }
+  }, [draftMap, catalog])
 
   const handleClose = useCallback(() => {
     const updatedActivity = useActivityStore.getState().getActivity(activityId)
