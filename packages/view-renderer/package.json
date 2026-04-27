@@ -1,6 +1,6 @@
 {
   "name": "@aditya-sharma-salescode/view-renderer",
-  "version": "0.3.15",
+  "version": "0.3.16",
   "private": false,
   "files": ["dist", "src"],
   "publishConfig": {

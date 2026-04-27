@@ -87,6 +87,8 @@ const styles = {
   } as CSSProperties,
 }
 
+const VR_VERSION = '0.3.16'
+
 export function FormBuilderModal({ activityId, onClose }: FormBuilderModalProps) {
   const overlayRef = useRef<HTMLDivElement>(null)
   const { draftMap, setDraftMap, currentNodeMeta } = useViewRenderer()
@@ -94,7 +96,7 @@ export function FormBuilderModal({ activityId, onClose }: FormBuilderModalProps)
   useEffect(() => {
     const featureKeys = draftMap?.app?.features ? Object.keys(draftMap.app.features) : []
     const featureExists = Boolean(draftMap?.app?.features?.[activityId])
-    console.log('[FormBuilderModal] mounted', { activityId, featureExists, featureKeys })
+    console.log(`[FormBuilderModal] v${VR_VERSION} mounted`, { activityId, featureExists, featureKeys })
     if (overlayRef.current) {
       const r = overlayRef.current.getBoundingClientRect()
       console.log('[FormBuilderModal] overlay rect', { x: r.x, y: r.y, width: r.width, height: r.height })
@@ -103,25 +105,30 @@ export function FormBuilderModal({ activityId, onClose }: FormBuilderModalProps)
   }, [activityId, draftMap])
   const catalog = (currentNodeMeta?.data?.reports_catalog ?? []) as ViewMetaReport[]
 
-  // Seed the activity store synchronously so FormBuilder finds it on first mount
+  // Seed the activity store synchronously so FormBuilder finds it on first mount.
+  // When the feature is absent from draftMap, seed an empty activity so FormBuilder
+  // does not render stale data from a previously-opened activity.
   useMemo(() => {
     const feature = draftMap?.app?.features?.[activityId]
     console.log('[FormBuilderModal] seeding store', { activityId, featureFound: Boolean(feature) })
-    if (!feature) {
-      console.warn('[FormBuilderModal] feature not found in draftMap.app.features — FormBuilder will render empty', { activityId })
-      return
-    }
+    const store = useActivityStore.getState()
     try {
-      const activity = tenantFeatureToActivity(activityId, feature)
-      console.log('[FormBuilderModal] activity built', { activityId, schemaKeys: activity.schema ? Object.keys(activity.schema) : [] })
-      const store = useActivityStore.getState()
-      const existing = store.getActivity(activityId)
-      if (!existing || JSON.stringify(existing.schema) !== JSON.stringify(activity.schema)) {
-        store.setActivities([activity])
-        console.log('[FormBuilderModal] store.setActivities called')
+      let activity
+      if (!feature) {
+        console.warn('[FormBuilderModal] feature not found — seeding empty activity', { activityId })
+        activity = tenantFeatureToActivity(activityId, {
+          enabled: false,
+          strategies: {},
+          services: {},
+          config: { schema: { formId: activityId, formName: activityId, version: '1.0', sections: [], meta: { submitLabel: 'Submit', submitEndpoint: '/api/forms/submit', createdAt: new Date().toISOString() } } },
+        })
+      } else {
+        activity = tenantFeatureToActivity(activityId, feature)
+        console.log('[FormBuilderModal] activity built', { activityId, schemaKeys: activity.schema ? Object.keys(activity.schema) : [] })
       }
+      store.setActivities([activity])
       store.selectActivity(activityId)
-      console.log('[FormBuilderModal] store.selectActivity called', { activityId })
+      console.log('[FormBuilderModal] store seeded', { activityId })
     } catch (err) {
       console.error('[FormBuilderModal] error seeding activity store', err)
     }
